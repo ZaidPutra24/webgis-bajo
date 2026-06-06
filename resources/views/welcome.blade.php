@@ -718,11 +718,11 @@ var boundsArray = [];
             '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
             '<div style="width:32px;height:32px;border-radius:50%;background:#e6fafa;display:flex;align-items:center;justify-content:center;">' +
             '<span class="material-symbols-outlined" style="color:#00696b;font-size:18px;">terrain</span></div>' +
-            '<div><p style="font-size:11px;color:#43474f;margin:0;letter-spacing:.05em;font-weight:600;text-transform:uppercase;">ROI Wilayah</p>' +
+            '<div><p style="font-size:11px;color:#43474f;margin:0;letter-spacing:.05em;font-weight:600;text-transform:uppercase;">Regional ROI</p>' +
             '<h4 style="font-size:16px;font-weight:700;color:#001e40;margin:0;">{{ addslashes($wilayah->nama_wilayah) }}</h4></div></div>' +
             '<div style="background:#f4f3f8;border-radius:12px;padding:10px;font-size:13px;color:#43474f;">' +
             '<div style="display:flex;justify-content:space-between;padding-bottom:6px;">' +
-            '<span>Luas Wilayah</span>' +
+            '<span>Region Area</span>' +
             '<span style="font-weight:700;color:#001e40;">{{ $wilayah->luas_wilayah ?? "-" }} Ha</span>' +
             '</div></div></div>'
         );

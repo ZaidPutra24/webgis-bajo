@@ -96,6 +96,14 @@
         background: #4F46E5; border-color: #4F46E5; color: #fff;
     }
     .no-results-row { display: none; }
+    /* Pagination */
+    .pagination-wrapper { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 0.5rem; }
+    .pagination-info { font-size: 0.8rem; color: #94a3b8; }
+    .pagination-controls { display: flex; gap: 0.35rem; align-items: center; }
+    .page-btn { border: 1.5px solid #e2e8f0; background: #fff; color: #64748b; border-radius: 0.5rem; padding: 0.3rem 0.65rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.15s; line-height: 1.4; }
+    .page-btn:hover:not(:disabled) { border-color: #4F46E5; color: #4F46E5; }
+    .page-btn.active { background: #4F46E5; border-color: #4F46E5; color: #fff; }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>
 
 <div class="container-fluid px-0 mb-5">
@@ -218,6 +226,10 @@
                 </table>
             </div>
         </div>
+        <div class="pagination-wrapper" id="paginationWrapper">
+            <span class="pagination-info" id="paginationInfo"></span>
+            <div class="pagination-controls" id="paginationControls"></div>
+        </div>
     </div>
     
 </div>
@@ -225,44 +237,108 @@
 <script>
 (function () {
     const searchInput = document.getElementById('tableSearch');
-    const rows = document.querySelectorAll('#sekolahTableBody .searchable-row');
+    const rows = Array.from(document.querySelectorAll('#sekolahTableBody .searchable-row'));
     const noResults = document.getElementById('noResultsRow');
     const countEl = document.getElementById('searchCount');
+    const paginationInfo = document.getElementById('paginationInfo');
+    const paginationControls = document.getElementById('paginationControls');
     const filterPills = document.querySelectorAll('.filter-pill');
+    const PER_PAGE = 10;
     const total = rows.length;
     let activeFilter = 'all';
+    let currentPage = 1;
+    let filteredRows = [];
 
-    function applyFilters() {
+    function getFilteredRows() {
         const q = searchInput.value.toLowerCase().trim();
-        let visible = 0;
-        rows.forEach(function (row) {
+        return rows.filter(function (row) {
             const text = row.textContent.toLowerCase();
             const status = row.dataset.status;
             const matchSearch = q === '' || text.includes(q);
             const matchFilter = activeFilter === 'all' || status === activeFilter;
-            if (matchSearch && matchFilter) {
-                row.style.display = '';
-                visible++;
-            } else {
-                row.style.display = 'none';
-            }
+            return matchSearch && matchFilter;
         });
-        noResults.style.display = (visible === 0) ? '' : 'none';
-        countEl.textContent = (q !== '' || activeFilter !== 'all')
-            ? visible + ' dari ' + total + ' data'
-            : total + ' data';
     }
 
-    applyFilters();
+    function renderPage() {
+        filteredRows = getFilteredRows();
+        const totalFiltered = filteredRows.length;
+        const totalPages = Math.max(1, Math.ceil(totalFiltered / PER_PAGE));
+        if (currentPage > totalPages) currentPage = totalPages;
 
-    searchInput.addEventListener('input', applyFilters);
+        const start = (currentPage - 1) * PER_PAGE;
+        const end = start + PER_PAGE;
+
+        // Hide all rows first
+        rows.forEach(r => r.style.display = 'none');
+
+        // Show only current page rows and renumber
+        let displayNum = 1;
+        filteredRows.forEach(function (row, idx) {
+            if (idx >= start && idx < end) {
+                row.style.display = '';
+                row.querySelector('td:first-child').textContent = start + displayNum;
+                displayNum++;
+            }
+        });
+
+        noResults.style.display = (totalFiltered === 0) ? '' : 'none';
+
+        const q = searchInput.value.trim();
+        countEl.textContent = (q !== '' || activeFilter !== 'all')
+            ? totalFiltered + ' dari ' + total + ' data'
+            : total + ' data';
+
+        // Pagination info
+        if (totalFiltered > 0) {
+            const from = start + 1;
+            const to = Math.min(end, totalFiltered);
+            paginationInfo.textContent = 'Showing ' + from + '–' + to + ' of ' + totalFiltered + ' entries';
+        } else {
+            paginationInfo.textContent = '';
+        }
+
+        // Render page buttons
+        paginationControls.innerHTML = '';
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'page-btn';
+        prevBtn.textContent = '‹';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.addEventListener('click', function () { currentPage--; renderPage(); });
+        paginationControls.appendChild(prevBtn);
+
+        const maxBtns = 5;
+        let pageStart = Math.max(1, currentPage - Math.floor(maxBtns / 2));
+        let pageEnd = Math.min(totalPages, pageStart + maxBtns - 1);
+        if (pageEnd - pageStart < maxBtns - 1) pageStart = Math.max(1, pageEnd - maxBtns + 1);
+
+        for (let i = pageStart; i <= pageEnd; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+            btn.textContent = i;
+            btn.addEventListener('click', (function(p) { return function() { currentPage = p; renderPage(); }; })(i));
+            paginationControls.appendChild(btn);
+        }
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'page-btn';
+        nextBtn.textContent = '›';
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.addEventListener('click', function () { currentPage++; renderPage(); });
+        paginationControls.appendChild(nextBtn);
+    }
+
+    renderPage();
+
+    searchInput.addEventListener('input', function () { currentPage = 1; renderPage(); });
 
     filterPills.forEach(function (pill) {
         pill.addEventListener('click', function () {
             filterPills.forEach(p => p.classList.remove('active'));
             this.classList.add('active');
             activeFilter = this.dataset.filter;
-            applyFilters();
+            currentPage = 1;
+            renderPage();
         });
     });
 })();
