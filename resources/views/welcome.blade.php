@@ -283,7 +283,12 @@
             padding: 5px 6px;
             box-shadow: 0 4px 20px rgba(0,30,64,0.14);
             border: 1px solid rgba(255,255,255,0.8);
+            max-width: calc(100% - 32px);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
+        .map-mode-switcher::-webkit-scrollbar { display: none; }
         .map-mode-btn {
             display: flex; align-items: center; gap: 6px;
             padding: 6px 14px; border-radius: 999px;
@@ -294,6 +299,7 @@
             color: #43474f; background: transparent;
             transition: all .2s ease;
             white-space: nowrap;
+            flex-shrink: 0;
         }
         .map-mode-btn:hover { background: #f4f3f8; color: #001e40; }
         .map-mode-btn.active {
@@ -309,6 +315,37 @@
         .mode-icon-satellite { background: linear-gradient(135deg,#2c3e50,#4a6741); }
         .mode-icon-terrain   { background: linear-gradient(135deg,#c5a55a,#7a9e6e); }
         .mode-icon-dark      { background: linear-gradient(135deg,#1a1a2e,#16213e); }
+
+        /* ── RESPONSIVE FIXES ── */
+        @media (max-width: 640px) {
+            /* Map mode switcher: hide label text, show icon only */
+            .map-mode-btn .mode-label { display: none; }
+            .map-mode-btn { padding: 6px 10px; gap: 0; }
+
+            /* Legend: smaller padding & font on mobile */
+            .map-legend {
+                bottom: 8px;
+                left: 8px;
+                padding: 6px 10px;
+                font-size: 9px;
+            }
+            .legend-title { font-size: 9px; margin-bottom: 4px; }
+            .legend-item  { gap: 5px; margin-bottom: 2px; }
+            .legend-dot, .legend-item > div[style] { width: 10px !important; height: 10px !important; flex-shrink: 0; }
+
+            /* Toast: allow wrapping on small screens */
+            #toast-ukur {
+                white-space: normal;
+                max-width: 88vw;
+                text-align: center;
+                font-size: 11px;
+                padding: 10px 16px;
+                line-height: 1.4;
+            }
+
+            /* Popup: narrower on mobile */
+            .popup-wrapper { min-width: 260px; max-width: 280px; }
+        }
     </style>
 </head>
 
@@ -452,9 +489,9 @@
 <nav class="bg-white/70 backdrop-blur-md sticky top-0 z-[1000] border-b border-white/50 shadow-sm">
     <div class="flex justify-between items-center w-full px-5 md:px-16 py-4 max-w-[1440px] mx-auto">
         <!-- Logo -->
-        <div class="flex items-center gap-3 cursor-pointer" onclick="openUserPanel()" title="Open Info Panel">
+        <div class="flex items-center gap-2 md:gap-3 cursor-pointer" onclick="openUserPanel()" title="Open Info Panel">
             <!-- SVG Logo sama dengan panel -->
-            <svg width="36" height="36" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="28" height="28" class="md:w-9 md:h-9 flex-shrink-0" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect width="44" height="44" rx="10" fill="#001e40"/>
                 <rect x="21.5" y="9" width="2" height="18" rx="1" fill="white"/>
                 <path d="M23 10 L23 25 L10 25 Z" fill="white" opacity="0.9"/>
@@ -462,28 +499,28 @@
                 <path d="M6 33 Q11 30 16 33 Q21 36 26 33 Q31 30 36 33" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
                 <path d="M9 37 Q14 34 19 37 Q24 40 29 37 Q34 34 39 37" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
             </svg>
-            <span class="font-headline-md text-headline-md font-extrabold text-primary tracking-tight">WEBGIS BAJO</span>
+            <span class="font-[Montserrat] font-extrabold text-primary tracking-tight whitespace-nowrap text-base md:text-[24px]">WEBGIS BAJO</span>
         </div>
 
         <!-- Kanan: hanya tombol Login Dashboard -->
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 md:gap-3">
             <!-- Tombol buka panel info (mobile) -->
             <button onclick="openUserPanel()"
-                class="flex items-center gap-2 px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-all font-label-md text-label-md">
+                class="flex items-center gap-2 px-3 md:px-4 py-2 rounded-full border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-all font-label-md text-label-md">
                 <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 0;">info</span>
                 <span class="hidden md:inline">Info</span>
             </button>
 
             @auth
                 <a href="{{ route('dashboard') }}"
-                   class="bg-primary text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md shadow-lg hover:-translate-y-0.5 transition-all active:scale-95">
+                   class="bg-primary text-on-primary px-4 md:px-6 py-2 md:py-2.5 rounded-full font-label-md text-label-md shadow-lg hover:-translate-y-0.5 transition-all active:scale-95 whitespace-nowrap text-xs md:text-label-md">
                     Dashboard
                 </a>
             @else
                 <a href="{{ route('login') }}"
-                   class="bg-primary text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md shadow-lg hover:-translate-y-0.5 transition-all active:scale-95 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1;">login</span>
-                    Login Dashboard
+                   class="bg-primary text-on-primary px-4 md:px-6 py-2 md:py-2.5 rounded-full font-label-md text-label-md shadow-lg hover:-translate-y-0.5 transition-all active:scale-95 flex items-center gap-1.5 md:gap-2 whitespace-nowrap text-xs md:text-label-md">
+                    <span class="material-symbols-outlined text-sm md:text-base" style="font-variation-settings:'FILL' 1;">login</span>
+                    <span class="hidden sm:inline">Login </span>Dashboard
                 </a>
             @endauth
         </div>
@@ -491,7 +528,7 @@
 </nav>
 
 <!-- ===================== MAIN ===================== -->
-<main class="max-w-[1440px] mx-auto px-5 md:px-16 py-20">
+<main class="max-w-[1440px] mx-auto px-5 md:px-16 py-10 md:py-20">
 
     <!-- Hero Header -->
     <header class="mb-12 text-center md:text-left max-w-4xl">
@@ -499,7 +536,7 @@
             <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 1;">verified</span>
             <span class="font-label-md text-[12px] uppercase tracking-widest">Integrated Geographic Information System</span>
         </div>
-        <h1 class="font-display-lg text-4xl md:text-[56px] leading-tight font-extrabold text-primary mb-6 tracking-tight">
+        <h1 class="font-display-lg text-2xl sm:text-4xl md:text-[56px] leading-snug md:leading-tight font-extrabold text-primary mb-6 tracking-tight">
             Spatial Mapping of Education Facilities
             <span class="text-secondary">Bajo Region</span>
         </h1>
@@ -526,26 +563,26 @@
 
         <div class="relative">
             <div id="map"
-                 class="relative w-full h-[650px] rounded-[32px] shadow-2xl border-4 border-white overflow-hidden bg-surface-container z-10">
+                 class="relative w-full h-[350px] sm:h-[480px] md:h-[580px] lg:h-[650px] rounded-[32px] shadow-2xl border-4 border-white overflow-hidden bg-surface-container z-10">
             </div>
 
             <!-- ── MAP MODE SWITCHER ── -->
             <div class="map-mode-switcher" id="mapModeSwitcher">
                 <button class="map-mode-btn active" id="btn-mode-standard" onclick="switchMapMode('standard')">
                     <span class="mode-icon mode-icon-standard"></span>
-                    Standard
+                    <span class="mode-label">Standard</span>
                 </button>
                 <button class="map-mode-btn" id="btn-mode-satellite" onclick="switchMapMode('satellite')">
                     <span class="mode-icon mode-icon-satellite"></span>
-                    Satellite
+                    <span class="mode-label">Satellite</span>
                 </button>
                 <button class="map-mode-btn" id="btn-mode-terrain" onclick="switchMapMode('terrain')">
                     <span class="mode-icon mode-icon-terrain"></span>
-                    Terrain
+                    <span class="mode-label">Terrain</span>
                 </button>
                 <button class="map-mode-btn" id="btn-mode-dark" onclick="switchMapMode('dark')">
                     <span class="mode-icon mode-icon-dark"></span>
-                    Dark
+                    <span class="mode-label">Dark</span>
                 </button>
             </div>
 
@@ -578,7 +615,7 @@
             <!-- Tombol Mode Ukur -->
             <button id="btn-ukur"
                     onclick="aktifkanModeUkur()"
-                    class="absolute bottom-10 right-10 z-50 w-20 h-20 bg-white shadow-2xl rounded-full flex items-center justify-center text-primary group/compass hover:scale-110 active:scale-90 transition-all border border-outline-variant/30">
+                    class="absolute bottom-6 right-4 md:bottom-10 md:right-10 z-50 w-14 h-14 md:w-20 md:h-20 bg-white shadow-2xl rounded-full flex items-center justify-center text-primary group/compass hover:scale-110 active:scale-90 transition-all border border-outline-variant/30">
                 <div class="relative flex items-center justify-center">
                     <span class="material-symbols-outlined text-4xl">explore</span>
                     <div class="absolute inset-0 rounded-full border-2 border-secondary border-dashed animate-[spin_10s_linear_infinite]"></div>
@@ -918,7 +955,7 @@ var boundsArray = [];
 
     L.marker([lat, lng], { icon: markerIcon })
         .addTo(map)
-        .bindPopup(popupContent, { maxWidth: 370, minWidth: 330 });
+        .bindPopup(popupContent, { maxWidth: 350, minWidth: Math.min(300, window.innerWidth - 40) });
 })();
 @endforeach
 
