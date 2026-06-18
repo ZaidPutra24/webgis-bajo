@@ -13,6 +13,9 @@ class WilayahDesa extends Model
     protected $fillable = [
         'nama_wilayah',
         'geojson',
-        'luas_wilayah'
+        'luas_wilayah',
+        'gambar',
+        'penduduk_usia_sekolah_l',
+        'penduduk_usia_sekolah_p',
     ];
 }

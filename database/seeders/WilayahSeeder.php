@@ -23,8 +23,11 @@ class WilayahSeeder extends Seeder
         $dataWilayah = [
             [
                 'id'           => 1,
+                'gambar' => 'desa1.jpg',
                 'nama_wilayah' => 'Desa Bajo Indah',
                 'luas_wilayah' => null,
+                'penduduk_usia_sekolah_l' => 142,
+                'penduduk_usia_sekolah_p' => 117,
                 'geojson'      => '{
 "type": "FeatureCollection",
 "name": "BAJO INDAH",
@@ -38,8 +41,11 @@ class WilayahSeeder extends Seeder
             ],
             [
                 'id'           => 2,
+                'gambar' => 'desa2.jpg',
                 'nama_wilayah' => 'Desa Bajoe',
                 'luas_wilayah' => null,
+                'penduduk_usia_sekolah_l' => 58,
+                'penduduk_usia_sekolah_p' => 67,
                 'geojson'      => '{
 "type": "FeatureCollection",
 "name": "BAJOE",
@@ -53,8 +59,11 @@ class WilayahSeeder extends Seeder
             ],
             [
                 'id'           => 3,
+                'gambar' => 'desa3.jpg',
                 'nama_wilayah' => 'Desa Bungin Permai',
                 'luas_wilayah' => null,
+                'penduduk_usia_sekolah_l' => 268,
+                'penduduk_usia_sekolah_p' => 257,
                 'geojson'      => '{
 "type": "FeatureCollection",
 "name": "BUNGIN PERMAI",
@@ -68,8 +77,11 @@ class WilayahSeeder extends Seeder
             ],
             [
                 'id'           => 4,
+                'gambar' => 'desa4.jpg',
                 'nama_wilayah' => 'Desa Langara Bajo',
                 'luas_wilayah' => null,
+                'penduduk_usia_sekolah_l' => 49,
+                'penduduk_usia_sekolah_p' => 52,
                 'geojson'      => '{
 "type": "FeatureCollection",
 "name": "LANGARA BAJOO",
@@ -83,8 +95,11 @@ class WilayahSeeder extends Seeder
             ],
             [
                 'id'           => 5,
+                'gambar' => 'desa5.jpg',
                 'nama_wilayah' => 'Desa Langara Indah',
                 'luas_wilayah' => null,
+                'penduduk_usia_sekolah_l' => 180,
+                'penduduk_usia_sekolah_p' => 247,
                 'geojson'      => '{
 "type": "FeatureCollection",
 "name": "LANGARA INDAH",
@@ -98,8 +113,11 @@ class WilayahSeeder extends Seeder
             ],
             [
                 'id'           => 6,
+                'gambar' => 'desa6.jpg',
                 'nama_wilayah' => 'Desa Langara Laut',
                 'luas_wilayah' => null,
+                'penduduk_usia_sekolah_l' => Null,
+                'penduduk_usia_sekolah_p' => Null,
                 'geojson'      => '{
 "type": "FeatureCollection",
 "name": "LANGARA LAUT",
@@ -113,8 +131,11 @@ class WilayahSeeder extends Seeder
             ],
             [
                 'id'           => 7,
+                'gambar' => 'desa7.jpg',
                 'nama_wilayah' => 'Desa Lappe',
                 'luas_wilayah' => null,
+                'penduduk_usia_sekolah_l' => 47,
+                'penduduk_usia_sekolah_p' => 56,
                 'geojson'      => '{
 "type": "FeatureCollection",
 "name": "LAPPE",
@@ -128,8 +149,11 @@ class WilayahSeeder extends Seeder
             ],
             [
                 'id'           => 8,
+                'gambar' => 'desa8.jpg',
                 'nama_wilayah' => 'Desa Mekar',
                 'luas_wilayah' => null,
+                'penduduk_usia_sekolah_l' => 149,
+                'penduduk_usia_sekolah_p' => 138,
                 'geojson'      => '{
 "type": "FeatureCollection",
 "name": "MEKAR",
@@ -143,8 +167,11 @@ class WilayahSeeder extends Seeder
             ],
             [
                 'id'           => 9,
+                'gambar' => 'desa9.jpg',
                 'nama_wilayah' => 'Desa Saponda Laut',
                 'luas_wilayah' => null,
+                'penduduk_usia_sekolah_l' => 90,
+                'penduduk_usia_sekolah_p' => 82,
                 'geojson'      => '{
 "type": "FeatureCollection",
 "name": "SAPONDA LAUT",

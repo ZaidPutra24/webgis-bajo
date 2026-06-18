@@ -9,23 +9,30 @@ class JenjangSeeder extends Seeder
 {
     public function run(): void
     {
-        // Kosongkan tabel dulu agar idempotent — aman dijalankan berulang kali
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('jenjang')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $jenjang = [
-            ['kode' => 'SD',  'nama_jenjang' => 'Sekolah Dasar',              'created_at' => now(), 'updated_at' => now()],
-            ['kode' => 'MI',  'nama_jenjang' => 'Madrasah Ibtidaiyah',         'created_at' => now(), 'updated_at' => now()],
-            ['kode' => 'SMP', 'nama_jenjang' => 'Sekolah Menengah Pertama',    'created_at' => now(), 'updated_at' => now()],
-            ['kode' => 'MTS', 'nama_jenjang' => 'Madrasah Tsanawiyah',         'created_at' => now(), 'updated_at' => now()],
-            ['kode' => 'SMA', 'nama_jenjang' => 'Sekolah Menengah Atas',       'created_at' => now(), 'updated_at' => now()],
-            ['kode' => 'MA',  'nama_jenjang' => 'Madrasah Aliyah',             'created_at' => now(), 'updated_at' => now()],
-            ['kode' => 'SMK', 'nama_jenjang' => 'Sekolah Menengah Kejuruan',   'created_at' => now(), 'updated_at' => now()],
+            ['id' => 1, 'kode' => 'TK', 'nama_jenjang' => 'Taman Kanak-Kanak', 'jenis_pendidikan' => 'Formal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 2, 'kode' => 'RA', 'nama_jenjang' => 'Raudhatul Athfal', 'jenis_pendidikan' => 'Formal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 3, 'kode' => 'SD', 'nama_jenjang' => 'Sekolah Dasar', 'jenis_pendidikan' => 'Formal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 4, 'kode' => 'MI', 'nama_jenjang' => 'Madrasah Ibtidaiyah', 'jenis_pendidikan' => 'Formal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 5, 'kode' => 'SMP', 'nama_jenjang' => 'Sekolah Menengah Pertama', 'jenis_pendidikan' => 'Formal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 6, 'kode' => 'MTS', 'nama_jenjang' => 'Madrasah Tsanawiyah', 'jenis_pendidikan' => 'Formal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 7, 'kode' => 'SMA', 'nama_jenjang' => 'Sekolah Menengah Atas', 'jenis_pendidikan' => 'Formal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 8, 'kode' => 'MA', 'nama_jenjang' => 'Madrasah Aliyah', 'jenis_pendidikan' => 'Formal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 9, 'kode' => 'SMK', 'nama_jenjang' => 'Sekolah Menengah Kejuruan', 'jenis_pendidikan' => 'Formal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 10, 'kode' => 'PAUD', 'nama_jenjang' => 'Pendidikan Anak Usia Dini', 'jenis_pendidikan' => 'Anak Usia Dini', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 11, 'kode' => 'KB', 'nama_jenjang' => 'Kelompok Belajar', 'jenis_pendidikan' => 'Non-Formal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 12, 'kode' => 'PKBM', 'nama_jenjang' => 'Pusat Kegiatan Belajar Masyarakat', 'jenis_pendidikan' => 'Non-Formal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 13, 'kode' => 'SKB', 'nama_jenjang' => 'Sanggar Kegiatan Belajar', 'jenis_pendidikan' => 'Non-Formal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 14, 'kode' => 'LKP', 'nama_jenjang' => 'Lembaga Kursus dan Pelatihan', 'jenis_pendidikan' => 'Non-Formal', 'created_at' => now(), 'updated_at' => now()],
+            ['id' => 15, 'kode' => 'TBM', 'nama_jenjang' => 'Taman Baca Masyarakat', 'jenis_pendidikan' => 'Non-Formal', 'created_at' => now(), 'updated_at' => now()],
         ];
 
         DB::table('jenjang')->insert($jenjang);
 
-        $this->command->info('Sukses! 7 data jenjang berhasil dimasukkan.');
+        $this->command->info('Sukses! 15 data jenjang berhasil dimasukkan.');
     }
 }

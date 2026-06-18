@@ -70,6 +70,9 @@
         box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); outline: none;
     }
     .search-count { font-size: 0.8rem; color: #94a3b8; }
+    .filter-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .filter-pill { border: 1.5px solid #e2e8f0; border-radius: 2rem; padding: 0.25rem 0.85rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.15s; background: transparent; color: #64748b; }
+    .filter-pill:hover, .filter-pill.active { background: #4F46E5; border-color: #4F46E5; color: #fff; }
     .no-results-row { display: none; }
     /* Pagination */
     .pagination-wrapper { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 0.5rem; }
@@ -99,7 +102,7 @@
 
     <div class="card modern-card shadow-sm">
         <div class="card-header bg-white py-3 border-0 rounded-top-4">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-2">
                 <h5 class="table-header-title fw-bold mb-0">School List & Metric Status Input</h5>
                 <div class="d-flex align-items-center gap-3">
                     <span class="search-count" id="searchCount"></span>
@@ -111,8 +114,13 @@
                     </div>
                 </div>
             </div>
+            <div class="filter-pills ps-1">
+                <button class="filter-pill active" data-filter-jenis="all">Semua</button>
+                <button class="filter-pill" data-filter-jenis="Formal">Formal</button>
+                <button class="filter-pill" data-filter-jenis="Non-Formal">Non-Formal</button>
+                <button class="filter-pill" data-filter-jenis="Anak Usia Dini">PAUD</button>
+            </div>
         </div>
-
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table custom-table table-hover align-middle mb-0" style="min-width: 1100px;">
@@ -129,8 +137,8 @@
                     </thead>
                     <tbody id="statistikTableBody">
                         @forelse($sekolahs as $index => $sekolah)
-                        <tr class="searchable-row">
-                            <td class="ps-4 text-center fw-semibold text-muted">{{ $index + 1 }}</td>
+                        <tr class="searchable-row" data-jenis="{{ $sekolah->jenjang->jenis_pendidikan ?? '' }}">
+                            <td class="ps-4 text-center fw-semibold text-muted row-number">{{ $index + 1 }}</td>
                             <td>
                                 <span class="fw-bold text-dark fs-6">{{ $sekolah->nama_sekolah }}</span>
                             </td>
@@ -204,13 +212,20 @@
     const countEl = document.getElementById('searchCount');
     const paginationInfo = document.getElementById('paginationInfo');
     const paginationControls = document.getElementById('paginationControls');
+    const filterPills = document.querySelectorAll('.filter-pill');
     const PER_PAGE = 10;
     const total = rows.length;
+    let activeJenis = 'all';
     let currentPage = 1;
 
     function getFilteredRows() {
         const q = input.value.toLowerCase().trim();
-        return rows.filter(r => q === '' || r.textContent.toLowerCase().includes(q));
+        return rows.filter(function(r) {
+            const matchSearch = q === '' || r.textContent.toLowerCase().includes(q);
+            const jenis = r.dataset.jenis || '';
+            const matchJenis = activeJenis === 'all' || jenis === activeJenis;
+            return matchSearch && matchJenis;
+        });
     }
 
     function renderPage() {
@@ -226,7 +241,7 @@
         filteredRows.forEach(function (row, idx) {
             if (idx >= start && idx < end) {
                 row.style.display = '';
-                row.querySelector('td:first-child').textContent = start + displayNum;
+                row.querySelector('td.row-number').textContent = start + displayNum;
                 displayNum++;
             }
         });
@@ -264,6 +279,16 @@
 
     renderPage();
     input.addEventListener('input', function () { currentPage = 1; renderPage(); });
+
+    filterPills.forEach(function(pill) {
+        pill.addEventListener('click', function() {
+            filterPills.forEach(p => p.classList.remove('active'));
+            this.classList.add('active');
+            activeJenis = this.dataset.filterJenis;
+            currentPage = 1;
+            renderPage();
+        });
+    });
 })();
 </script>
 @endsection

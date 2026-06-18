@@ -108,7 +108,7 @@
                 </div>
                 
                 <div class="card-body p-4 pt-2">
-                    <form action="{{ route('sekolah.store') }}" method="POST">
+                    <form action="{{ route('sekolah.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         
                         <div class="mb-4">
@@ -161,12 +161,12 @@
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
                                 <label for="latitude" class="form-label form-label-custom mb-2">Latitude</label>
-                                <input type="number" step="any" class="form-control form-control-custom @error('latitude') is-invalid @enderror" id="latitude" name="latitude" value="{{ old('latitude') }}" placeholder="Example: -5.44321" required>
+                                <input type="number" step="any" class="form-control form-control-custom @error('latitude') is-invalid @enderror" id="latitude" name="latitude" value="{{ old('latitude') }}" placeholder="Opsional — contoh: -5.44321">
                                 @error('latitude') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="longitude" class="form-label form-label-custom mb-2">Longitude</label>
-                                <input type="number" step="any" class="form-control form-control-custom @error('longitude') is-invalid @enderror" id="longitude" name="longitude" value="{{ old('longitude') }}" placeholder="Example: 122.5112" required>
+                                <input type="number" step="any" class="form-control form-control-custom @error('longitude') is-invalid @enderror" id="longitude" name="longitude" value="{{ old('longitude') }}" placeholder="Opsional — contoh: 122.5112">
                                 @error('longitude') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
                             </div>
                         </div>
@@ -175,6 +175,14 @@
                             <label for="alamat" class="form-label form-label-custom mb-2">Address Sekolah</label>
                             <textarea class="form-control form-control-custom @error('alamat') is-invalid @enderror" id="alamat" name="alamat" rows="3" placeholder="Example: Jl. Raya Bajo No. 123">{{ old('alamat') }}</textarea>
                             @error('alamat') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="img" class="form-label form-label-custom mb-2">Foto Sekolah <span class="text-muted fw-normal">(Opsional)</span></label>
+                            <input type="file" class="form-control form-control-custom @error('img') is-invalid @enderror"
+                                   id="img" name="img" accept="image/jpg,image/jpeg,image/png,image/webp">
+                            <div class="form-text text-muted mt-1">Format: JPG, PNG, WEBP. Maks 2MB.</div>
+                            @error('img') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="d-flex gap-2 justify-content-end pt-3 border-top border-1 border-light">

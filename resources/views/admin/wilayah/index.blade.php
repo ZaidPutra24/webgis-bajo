@@ -188,9 +188,11 @@
                     <thead class="table-light text-secondary">
                         <tr>
                             <th width="5%" class="ps-4 text-center">No.</th>
-                            <th width="25%">Village Name/Desa</th>
-                            <th width="20%">Land Area</th>
-                            <th width="35%">GeoJSON Data (Potongan)</th>
+                            <th width="18%">Village Name/Desa</th>
+                            <th width="8%">Image</th>
+                            <th width="15%">Land Area</th>
+                            <th width="16%">School Age</th>
+                            <th width="23%">GeoJSON Data (Potongan)</th>
                             <th width="15%" class="text-center pe-4">Action</th>
                         </tr>
                     </thead>
@@ -202,7 +204,22 @@
                                 <span class="fw-bold text-dark fs-6">{{ $w->nama_wilayah }}</span>
                             </td>
                             <td>
+                                @if($w->gambar)
+                                    <img src="{{ asset('img/wilayah/' . $w->gambar) }}"
+                                         class="rounded-2" style="width:48px;height:48px;object-fit:cover;"
+                                         onerror="this.style.display='none'">
+                                @else
+                                    <span class="text-muted small">—</span>
+                                @endif
+                            </td>
+                            <td>
                                 <span class="fw-bold text-primary fs-6">{{ $w->luas_wilayah ?? '-' }} <span class="text-muted fw-normal small">Ha</span></span>
+                            </td>
+                            <td>
+                                <span class="small">
+                                    L: {{ $w->penduduk_usia_sekolah_l ?? '—' }}<br>
+                                    P: {{ $w->penduduk_usia_sekolah_p ?? '—' }}
+                                </span>
                             </td>
                             <td>
                                 <code class="geojson-code text-truncate d-inline-block" style="max-width: 350px;">
@@ -227,13 +244,13 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="text-center py-5 text-muted small">
+                            <td colspan="7" class="text-center py-5 text-muted small">
                                 No school data available. Please add new schools and their utility information by clicking the "Add School Data" button in the Schools menu.
                             </td>
                         </tr>
                         @endforelse
                         <tr class="no-results-row" id="noResultsRow">
-                            <td colspan="5" class="text-center py-5 text-muted small">
+                            <td colspan="7" class="text-center py-5 text-muted small">
                                 <svg width="40" height="40" fill="none" stroke="#cbd5e1" viewBox="0 0 24 24" class="mb-2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                                 <div>No data found matching your search.</div>
                             </td>

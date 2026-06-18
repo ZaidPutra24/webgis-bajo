@@ -170,6 +170,9 @@
                 <button class="filter-pill active" data-filter="all">All</button>
                 <button class="filter-pill" data-filter="Negeri">Negeri</button>
                 <button class="filter-pill" data-filter="Swasta">Swasta</button>
+                <button class="filter-pill" data-filter-jenis="Formal">Formal</button>
+                <button class="filter-pill" data-filter-jenis="Non-Formal">Non-Formal</button>
+                <button class="filter-pill" data-filter-jenis="Anak Usia Dini">PAUD</button>
             </div>
         </div>
         
@@ -178,20 +181,21 @@
                 <table class="table custom-table table-hover align-middle mb-0" style="min-width: 1000px;" id="sekolahTable">
                     <thead class="table-light text-secondary">
                         <tr>
-                            <th width="5%" class="ps-4 text-center">No.</th>
+                            <th width="4%" class="ps-4 text-center">No.</th>
                             <th width="20%">School Name</th>
                             <th width="10%">NPSN</th>
                             <th width="10%">Level</th>
-                            <th width="15%">Status</th>
+                            <th width="12%">Status</th>
                             <th width="10%">Accreditation</th>
                             <th width="15%">Coordinates (Lat, Long)</th>
-                            <th width="15%" class="text-center pe-4">Action</th>
+                            <th width="6%" class="text-center">Image</th>
+                            <th width="13%" class="text-center pe-4">Action</th>
                         </tr>
                     </thead>
                     <tbody id="sekolahTableBody">
                         @forelse($sekolahs as $index => $s)
-                        <tr class="searchable-row" data-status="{{ $s->status }}">
-                            <td class="ps-4 text-center fw-semibold text-muted">{{ $index + 1 }}</td>
+                        <tr class="searchable-row" data-status="{{ $s->status }}" data-jenis="{{ $s->jenjang->jenis_pendidikan ?? '' }}">
+                            <td class="ps-4 text-center fw-semibold text-muted row-number">{{ $index + 1 }}</td>
                             <td>
                                 <span class="fw-bold text-dark fs-6">{{ $s->nama_sekolah }}</span>
                             </td>
@@ -218,7 +222,20 @@
                                 <span class="fw-bold text-primary fs-6">{{ $s->akreditasi ?? '-' }}</span>
                             </td>
                             <td>
-                                <span class="small text-muted fw-medium">{{ $s->latitude }}, {{ $s->longitude }}</span>
+                                <span class="small text-muted fw-medium">{{ $s->latitude !== null ? $s->latitude . ', ' . $s->longitude : '—' }}</span>
+                            </td>
+                            <td class="text-center">
+                            @if($s->img)
+                                <img src="{{ asset('img/sekolah/' . $s->img) }}" alt="{{ $s->nama_sekolah }}"
+                                    class="rounded-2" style="width:48px;height:48px;object-fit:cover;"
+                                    onerror="this.src='https://via.placeholder.com/48x48?text=?'">
+                            @else
+                                <div class="rounded-2 bg-light d-inline-flex align-items-center justify-content-center" style="width:48px;height:48px;">
+                                    <svg width="20" height="20" fill="none" stroke="#cbd5e1" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16"/>
+                                    </svg>
+                                </div>
+                            @endif
                             </td>
                             <td class="text-center pe-4">
                                 <form action="{{ route('sekolah.destroy', $s->id) }}" method="POST" onsubmit="return confirm('Delete this school data?')" class="d-inline-flex gap-2 justify-content-center w-100">
@@ -238,13 +255,13 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center py-5 text-muted small">
+                            <td colspan="9" class="text-center py-5 text-muted small">
                                 No school data has been saved in the system yet.
                             </td>
                         </tr>
                         @endforelse
                         <tr class="no-results-row" id="noResultsRow">
-                            <td colspan="8" class="text-center py-5 text-muted small">
+                            <td colspan="9" class="text-center py-5 text-muted small">
                                 <svg width="40" height="40" fill="none" stroke="#cbd5e1" viewBox="0 0 24 24" class="mb-2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                                 <div>Tidak ada sekolah yang cocok dengan pencarian.</div>
                             </td>
@@ -273,6 +290,7 @@
     const PER_PAGE = 10;
     const total = rows.length;
     let activeFilter = 'all';
+    let activeJenis = 'all';
     let currentPage = 1;
     let filteredRows = [];
 
@@ -281,9 +299,11 @@
         return rows.filter(function (row) {
             const text = row.textContent.toLowerCase();
             const status = row.dataset.status;
+            const jenis = row.dataset.jenis || '';
             const matchSearch = q === '' || text.includes(q);
             const matchFilter = activeFilter === 'all' || status === activeFilter;
-            return matchSearch && matchFilter;
+            const matchJenis = activeJenis === 'all' || jenis === activeJenis;
+            return matchSearch && matchFilter && matchJenis;
         });
     }
 
@@ -304,7 +324,7 @@
         filteredRows.forEach(function (row, idx) {
             if (idx >= start && idx < end) {
                 row.style.display = '';
-                row.querySelector('td:first-child').textContent = start + displayNum;
+                row.querySelector('td.row-number').textContent = start + displayNum;
                 displayNum++;
             }
         });
@@ -363,7 +383,13 @@
         pill.addEventListener('click', function () {
             filterPills.forEach(p => p.classList.remove('active'));
             this.classList.add('active');
-            activeFilter = this.dataset.filter;
+            if (this.dataset.filter !== undefined) {
+                activeFilter = this.dataset.filter;
+                activeJenis = 'all';
+            } else if (this.dataset.filterJenis !== undefined) {
+                activeJenis = this.dataset.filterJenis;
+                activeFilter = 'all';
+            }
             currentPage = 1;
             renderPage();
         });

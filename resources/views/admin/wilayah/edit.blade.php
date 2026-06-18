@@ -93,7 +93,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h4 class="mb-1 text-dark fw-bold">Village Area Management</h4>
-                    <p class="text-muted small mb-0">Ubah konfigurasi batas spasial, kalkulasi luas area, dan struktur sintaksis representasi data GeoJSON.</p>
+                    <p class="text-muted small mb-0">Edit spatial boundaries, calculate area, and modify GeoJSON data structure.</p>
                 </div>
                 <a href="{{ route('wilayah.index') }}" class="btn btn-action-cancel px-4 py-2 rounded-pill shadow-sm">
                     Back
@@ -106,7 +106,7 @@
                 </div>
                 
                 <div class="card-body p-4 pt-2">
-                    <form action="{{ route('wilayah.update', $wilayah->id) }}" method="POST">
+                    <form action="{{ route('wilayah.update', $wilayah->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         
@@ -117,9 +117,123 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="luas_wilayah" class="form-label form-label-custom mb-2">Luas Wilayah (Hektar)</label>
+                            <label for="luas_wilayah" class="form-label form-label-custom mb-2">Land Area (Hektar)</label>
                             <input type="number" step="0.01" class="form-control form-control-custom @error('luas_wilayah') is-invalid @enderror" id="luas_wilayah" name="luas_wilayah" value="{{ old('luas_wilayah', $wilayah->luas_wilayah) }}">
                             @error('luas_wilayah') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="gambar" class="form-label form-label-custom mb-2">Village Image <span class="text-muted fw-normal">(Optional)</span></label>
+                            @if(isset($wilayah) && $wilayah->gambar)
+                                <div class="mb-3 p-3 rounded-3 border border-2" style="border-color:#e2e8f0;background:#f8fafc;" id="fotoPreviewBox">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="{{ asset('img/wilayah/' . $wilayah->gambar) }}"
+                                             alt="Current Image" class="rounded-2" id="fotoPreviewImg"
+                                             style="width:80px;height:80px;object-fit:cover;flex-shrink:0;"
+                                             onerror="this.style.display='none'">
+                                        <div class="flex-grow-1">
+                                            <div class="small text-muted mb-1">Current Image:</div>
+                                            <code class="small">{{ $wilayah->gambar }}</code>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3" id="btnHapusFoto">
+                                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="me-1">
+                                                <polyline points="3 6 5 6 21 6"/><path d="m19 6-.867 12.142A2 2 0 0 1 16.138 20H7.862a2 2 0 0 1-1.995-1.858L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"/>
+                                            </svg>
+                                            Delete Image
+                                        </button>
+                                    </div>
+                                    <div class="mt-2 p-2 rounded-2 bg-danger bg-opacity-10 border border-danger border-opacity-25 d-none" id="konfirmasiHapusFoto">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <span class="small text-danger fw-semibold">Are you sure you want to delete this photo?</span>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="btnBatalHapus">Cancel</button>
+                                                <button type="button" class="btn btn-sm btn-danger rounded-pill px-3" id="btnKonfirmasiHapus">Yes, Delete</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-3 rounded-3 border border-2 d-none" style="background:#f0fdf4;border-color:#86efac!important;" id="fotoTerhapusBox">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <svg width="18" height="18" fill="none" stroke="#16a34a" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        <span class="small text-success fw-semibold">Image will be deleted when saving.</span>
+                                        <button type="button" class="btn btn-sm btn-link text-muted p-0 ms-auto" id="btnUndoHapus">Undo</button>
+                                    </div>
+                                </div>
+                            @endif
+                            <input type="hidden" name="hapus_gambar" id="hapusGambarInput" value="0">
+                            <div class="mt-2" id="uploadFotoWrap">
+                                <input type="file" class="form-control form-control-custom @error('gambar') is-invalid @enderror"
+                                       id="gambar" name="gambar" accept="image/*">
+                                <div class="form-text text-muted mt-1">
+                                    {{ isset($wilayah) && $wilayah->gambar ? 'Upload new image to replace the existing one.' : 'Format: JPG, PNG, WEBP. Max 2MB.' }}
+                                </div>
+                            </div>
+                            @error('gambar') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
+                        </div>
+
+                        <script>
+                        (function() {
+                            var btnHapus      = document.getElementById('btnHapusFoto');
+                            var btnBatal      = document.getElementById('btnBatalHapus');
+                            var btnKonfirmasi = document.getElementById('btnKonfirmasiHapus');
+                            var btnUndo       = document.getElementById('btnUndoHapus');
+                            var konfirmasiBox = document.getElementById('konfirmasiHapusFoto');
+                            var previewBox    = document.getElementById('fotoPreviewBox');
+                            var terhapusBox   = document.getElementById('fotoTerhapusBox');
+                            var hapusInput    = document.getElementById('hapusGambarInput');
+                            var fileInput     = document.getElementById('gambar');
+
+                            if (btnHapus) {
+                                btnHapus.addEventListener('click', function() {
+                                    konfirmasiBox.classList.remove('d-none');
+                                    btnHapus.classList.add('d-none');
+                                });
+                            }
+                            if (btnBatal) {
+                                btnBatal.addEventListener('click', function() {
+                                    konfirmasiBox.classList.add('d-none');
+                                    btnHapus.classList.remove('d-none');
+                                });
+                            }
+                            if (btnKonfirmasi) {
+                                btnKonfirmasi.addEventListener('click', function() {
+                                    hapusInput.value = '1';
+                                    previewBox.classList.add('d-none');
+                                    terhapusBox.classList.remove('d-none');
+                                    if (fileInput) fileInput.value = '';
+                                });
+                            }
+                            if (btnUndo) {
+                                btnUndo.addEventListener('click', function() {
+                                    hapusInput.value = '0';
+                                    previewBox.classList.remove('d-none');
+                                    terhapusBox.classList.add('d-none');
+                                    konfirmasiBox.classList.add('d-none');
+                                    if (btnHapus) btnHapus.classList.remove('d-none');
+                                });
+                            }
+                        })();
+                        </script>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label for="penduduk_usia_sekolah_l" class="form-label form-label-custom mb-2">Penduduk Usia Sekolah (L)</label>
+                                <input type="number" min="0"
+                                       class="form-control form-control-custom @error('penduduk_usia_sekolah_l') is-invalid @enderror"
+                                       id="penduduk_usia_sekolah_l" name="penduduk_usia_sekolah_l"
+                                       value="{{ old('penduduk_usia_sekolah_l', $wilayah->penduduk_usia_sekolah_l ?? '') }}"
+                                       placeholder="Jumlah laki-laki">
+                                @error('penduduk_usia_sekolah_l') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="penduduk_usia_sekolah_p" class="form-label form-label-custom mb-2">Penduduk Usia Sekolah (P)</label>
+                                <input type="number" min="0"
+                                       class="form-control form-control-custom @error('penduduk_usia_sekolah_p') is-invalid @enderror"
+                                       id="penduduk_usia_sekolah_p" name="penduduk_usia_sekolah_p"
+                                       value="{{ old('penduduk_usia_sekolah_p', $wilayah->penduduk_usia_sekolah_p ?? '') }}"
+                                       placeholder="Jumlah perempuan">
+                                @error('penduduk_usia_sekolah_p') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
                         </div>
 
                         <div class="mb-4">
@@ -133,7 +247,7 @@
                                 Cancel
                             </a>
                             <button type="submit" class="btn btn-action-save px-4 py-2 rounded-pill">
-                                Perbarui Data
+                                Save Change
                             </button>
                         </div>
                     </form>

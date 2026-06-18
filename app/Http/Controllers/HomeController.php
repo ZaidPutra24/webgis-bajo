@@ -13,33 +13,32 @@ class HomeController extends Controller
     {
         $wilayahs = WilayahDesa::all();
         $jenjangs = Jenjang::all();
-        $sekolahs = Sekolah::with(['semuaJarakLokasi', 'jenjang', 'statistik', 'utilitas'])->get();
+
+        // Semua sekolah untuk statistik panel (termasuk yang tanpa koordinat)
+        $sekolahsAll = Sekolah::with(['jenjang', 'statistik'])->get();
+
+        // Untuk peta: hanya sekolah yang punya koordinat
+        $sekolahs = Sekolah::with(['semuaJarakLokasi', 'jenjang', 'statistik', 'utilitas'])
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->get();
 
         $totalWilayah = $wilayahs->count();
-        $totalSekolah = $sekolahs->count();
+        $totalSekolah = $sekolahsAll->count();
 
-        $totalBajo = $sekolahs->filter(function ($item) {
-            return str_contains(strtolower($item->nama_sekolah ?? ''), 'bajo');
-        })->count();
-
-        $sdCount  = $sekolahs->whereIn('jenjang_id', [1, 2])->count();  // SD + MI
-        $smpCount = $sekolahs->whereIn('jenjang_id', [3, 4])->count();  // SMP + MTS
-        $smaCount = $sekolahs->whereIn('jenjang_id', [5, 6, 7])->count(); // SMA + MA + SMK
-
-        $persenSd  = $totalSekolah > 0 ? round(($sdCount  / $totalSekolah) * 100) : 0;
-        $persenSmp = $totalSekolah > 0 ? round(($smpCount / $totalSekolah) * 100) : 0;
-        $persenSma = $totalSekolah > 0 ? round(($smaCount / $totalSekolah) * 100) : 0;
+        // Total siswa dari SEMUA sekolah (bukan hanya yang berkoordinat)
+        $totalSiswa = $sekolahsAll->reduce(
+            fn($carry, $s) => $carry + ($s->statistik->jumlah_siswa ?? 0), 0
+        );
 
         return view('welcome', compact(
             'wilayahs',
             'sekolahs',
+            'sekolahsAll',
             'jenjangs',
             'totalWilayah',
             'totalSekolah',
-            'totalBajo',
-            'persenSd',
-            'persenSmp',
-            'persenSma'
+            'totalSiswa'
         ));
     }
 }

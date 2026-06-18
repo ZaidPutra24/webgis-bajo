@@ -29,33 +29,30 @@ class SekolahController extends Controller
             'status'       => 'required|in:Negeri,Swasta',
             'npsn'         => 'nullable|string|max:20',
             'akreditasi'   => 'nullable|string|max:5',
-            'latitude'     => 'required|numeric|between:-90,90',
-            'longitude'    => 'required|numeric|between:-180,180',
+            'latitude'     => 'nullable|numeric|between:-90,90',
+            'longitude'    => 'nullable|numeric|between:-180,180',
             'alamat'       => 'nullable|string',
+            'img'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        Sekolah::create($request->only([
+        $data = $request->only([
             'nama_sekolah', 'jenjang_id', 'status',
             'npsn', 'akreditasi', 'latitude', 'longitude', 'alamat'
-        ]));
+        ]);
+
+        if ($request->hasFile('img')) {
+            $filename = time() . '_' . $request->file('img')->getClientOriginalName();
+            $request->file('img')->move(public_path('img/sekolah'), $filename);
+            $data['img'] = $filename;
+        }
+
+        Sekolah::create($data);
 
         return redirect()->route('sekolah.index')->with('success', 'Data Sekolah berhasil ditambahkan!');
     }
 
-    /*
-     * BUG FIX #4 — Method show() memanggil view 'admin.sekolah.show' yang tidak ada.
-     * Alih-alih menampilkan error 404/view not found saat user mengakses detail sekolah,
-     * kita redirect ke halaman index dengan pesan yang lebih ramah, atau bisa juga
-     * dibuat view-nya. Solusi terbaik: redirect ke edit agar admin tetap bisa bekerja,
-     * dan tandai dengan komentar bahwa view show perlu dibuat jika dibutuhkan.
-     *
-     * Jika view admin.sekolah.show tersedia di masa depan, ganti body method ini kembali ke:
-     *   $sekolah = Sekolah::with(['jenjang', 'statistik', 'utilitas', 'wilayahDesa'])->findOrFail($id);
-     *   return view('admin.sekolah.show', compact('sekolah'));
-     */
     public function show($id)
     {
-        // View 'admin.sekolah.show' belum tersedia — redirect ke halaman edit sebagai fallback.
         return redirect()->route('sekolah.edit', $id);
     }
 
@@ -74,16 +71,36 @@ class SekolahController extends Controller
             'status'       => 'required|in:Negeri,Swasta',
             'npsn'         => 'nullable|string|max:20',
             'akreditasi'   => 'nullable|string|max:5',
-            'latitude'     => 'required|numeric|between:-90,90',
-            'longitude'    => 'required|numeric|between:-180,180',
+            'latitude'     => 'nullable|numeric|between:-90,90',
+            'longitude'    => 'nullable|numeric|between:-180,180',
             'alamat'       => 'nullable|string',
+            'img'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $sekolah = Sekolah::findOrFail($id);
-        $sekolah->update($request->only([
+
+        $data = $request->only([
             'nama_sekolah', 'jenjang_id', 'status',
             'npsn', 'akreditasi', 'latitude', 'longitude', 'alamat'
-        ]));
+        ]);
+
+        if ($request->hasFile('img')) {
+            // Hapus file lama jika ada
+            if ($sekolah->img && file_exists(public_path('img/sekolah/' . $sekolah->img))) {
+                unlink(public_path('img/sekolah/' . $sekolah->img));
+            }
+            $filename = time() . '_' . $request->file('img')->getClientOriginalName();
+            $request->file('img')->move(public_path('img/sekolah'), $filename);
+            $data['img'] = $filename;
+        } elseif ($request->boolean('hapus_img')) {
+            // Hapus foto tanpa ganti baru
+            if ($sekolah->img && file_exists(public_path('img/sekolah/' . $sekolah->img))) {
+                unlink(public_path('img/sekolah/' . $sekolah->img));
+            }
+            $data['img'] = null;
+        }
+
+        $sekolah->update($data);
 
         return redirect()->route('sekolah.index')->with('success', 'Data Sekolah berhasil diperbarui!');
     }

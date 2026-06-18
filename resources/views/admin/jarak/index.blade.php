@@ -180,7 +180,7 @@
                     <tbody id="jarakTableBody">
                         @forelse($matriksJarak as $index => $j)
                         <tr class="searchable-row">
-                            <td class="ps-4 text-center fw-semibold text-muted">{{ $index + 1 }}</td>
+                            <td class="ps-4 text-center fw-semibold text-muted row-number">{{ $index + 1 }}</td>
                             <td>
                                 <span class="fw-bold text-dark fs-6">{{ $j->sekolah->nama_sekolah ?? '-' }}</span>
                             </td>
@@ -263,7 +263,7 @@
         filteredRows.forEach(function (row, idx) {
             if (idx >= start && idx < end) {
                 row.style.display = '';
-                row.querySelector('td:first-child').textContent = start + displayNum;
+                row.querySelector('td.row-number').textContent = start + displayNum;
                 displayNum++;
             }
         });

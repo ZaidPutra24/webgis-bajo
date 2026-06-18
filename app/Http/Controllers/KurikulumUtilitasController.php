@@ -10,9 +10,10 @@ class KurikulumUtilitasController extends Controller
 {
     public function index()
     {
-        $sekolah = Sekolah::with('utilitas')->orderBy('nama_sekolah', 'asc')->get();
+        $sekolah = Sekolah::with(['utilitas', 'jenjang'])->orderBy('nama_sekolah', 'asc')->get();
         return view('admin.utilitas.index', compact('sekolah'));
     }
+
 
     public function edit($id)
     {

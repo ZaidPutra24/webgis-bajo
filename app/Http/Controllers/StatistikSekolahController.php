@@ -10,7 +10,7 @@ class StatistikSekolahController extends Controller
 {
     public function index()
     {
-        $sekolahs = Sekolah::with('statistik')->orderBy('nama_sekolah')->get();
+        $sekolahs = Sekolah::with(['statistik', 'jenjang'])->orderBy('nama_sekolah')->get();
         return view('admin.statistik.index', compact('sekolahs'));
     }
 

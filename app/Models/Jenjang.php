@@ -11,6 +11,7 @@ class Jenjang extends Model
 
     protected $fillable = [
         'nama_jenjang',
-        'kode'
+        'kode',
+        'jenis_pendidikan'
     ];
 }

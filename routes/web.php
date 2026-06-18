@@ -16,30 +16,12 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // tidak duplikasi kode, dan gunakan whereIn dengan ID jenjang yang benar.
 // ID jenjang sesuai JenjangSeeder: SD=1, MI=2, SMP=3, MTS=4, SMA=5, MA=6, SMK=7
 Route::get('/dashboard', function () {
-    $wilayahs     = \App\Models\WilayahDesa::all();
-    $sekolahs     = \App\Models\Sekolah::all();
+    // Dashboard menghitung statistik detail secara mandiri via @php di view-nya.
+    // Route hanya perlu inject totalWilayah dan totalSekolah untuk stat cards.
+    $totalWilayah = \App\Models\WilayahDesa::count();
+    $totalSekolah = \App\Models\Sekolah::count();
 
-    $totalWilayah = $wilayahs->count();
-    $totalSekolah = $sekolahs->count();
-
-    $totalBajo = $sekolahs->filter(function ($item) {
-        return str_contains(strtolower($item->nama_sekolah ?? ''), 'bajo');
-    })->count();
-
-    // BUG FIX #5 & #6: Sebelumnya where('jenjang_id', 1/2/3) — salah semua.
-    // Sekarang pakai whereIn sesuai data JenjangSeeder.
-    $sdCount  = $sekolahs->whereIn('jenjang_id', [1, 2])->count();   // SD + MI
-    $smpCount = $sekolahs->whereIn('jenjang_id', [3, 4])->count();   // SMP + MTS
-    $smaCount = $sekolahs->whereIn('jenjang_id', [5, 6, 7])->count(); // SMA + MA + SMK
-
-    $persenSd  = $totalSekolah > 0 ? round(($sdCount  / $totalSekolah) * 100) : 0;
-    $persenSmp = $totalSekolah > 0 ? round(($smpCount / $totalSekolah) * 100) : 0;
-    $persenSma = $totalSekolah > 0 ? round(($smaCount / $totalSekolah) * 100) : 0;
-
-    return view('dashboard', compact(
-        'totalWilayah', 'totalSekolah', 'totalBajo',
-        'persenSd', 'persenSmp', 'persenSma'
-    ));
+    return view('dashboard', compact('totalWilayah', 'totalSekolah'));
 })->middleware(['auth'])->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {

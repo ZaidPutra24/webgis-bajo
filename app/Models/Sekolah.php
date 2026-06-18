@@ -16,7 +16,8 @@ class Sekolah extends Model
         'alamat',
         'akreditasi',
         'latitude',
-        'longitude'
+        'longitude',
+        'img'
     ];
 
     // Relasi ke model Jenjang

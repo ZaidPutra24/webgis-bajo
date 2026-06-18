@@ -178,4 +178,35 @@
         </div>
     </form>
 </div>
+
+<script>
+// Auto-hitung jumlah_siswa = siswa_l + siswa_p saat salah satu berubah
+(function () {
+    var inpL    = document.getElementById('inpSiswaL');
+    var inpP    = document.getElementById('inpSiswaP');
+    var inpTot  = document.getElementById('inpSiswa');
+
+    if (!inpL || !inpP || !inpTot) return;
+
+    function recalc() {
+        var l = parseInt(inpL.value, 10) || 0;
+        var p = parseInt(inpP.value, 10) || 0;
+        if (l > 0 || p > 0) {
+            inpTot.value = l + p;
+            inpTot.style.background = '#f0fdf4';
+            inpTot.title = 'Auto-calculated from Male + Female students';
+        }
+    }
+
+    inpL.addEventListener('input', recalc);
+    inpP.addEventListener('input', recalc);
+
+    // Reset highlight when user manually edits total
+    inpTot.addEventListener('focus', function () {
+        this.style.background = '';
+        this.title = '';
+    });
+})();
+</script>
+
 @endsection
