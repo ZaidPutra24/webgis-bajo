@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Sekolah;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class SekolahSeeder extends Seeder
 {
@@ -15,10 +15,9 @@ class SekolahSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Schema::disableForeignKeyConstraints();
         Sekolah::truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-
+        Schema::enableForeignKeyConstraints();
         $dataSekolah = [
             ['id' => 1, 'jenjang_id' => 3, 'nama_sekolah' => 'SD NEGERI 2 TAPULAGA', 'npsn' => '40400481', 'status' => 'Negeri', 'alamat' => 'Tapulaga, Kec. Soropia, Kab. Konawe', 'akreditasi' => 'B', 'latitude' => -3.93571378, 'longitude' => 122.63770969, 'img' => 'sdn2tapulaga.jpg'], // [cite: 1]
             ['id' => 2, 'jenjang_id' => 3, 'nama_sekolah' => 'SD NEGERI BAJO INDAH', 'npsn' => '40400195', 'status' => 'Negeri', 'alamat' => 'Bajo Indah, Kec. Soropia, Kab. Konawe', 'akreditasi' => 'B', 'latitude' => -3.92774700, 'longitude' => 122.64500500, 'img' => 'sdnbajoindah.jpg'], // [cite: 1]
