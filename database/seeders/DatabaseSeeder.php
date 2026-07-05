@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         // Memanggil call untuk seeder lainnya
         $this->call([
             JenjangSeeder::class,
+            WilayahKecamatanSeeder::class,
             WilayahSeeder::class,
             SekolahSeeder::class,
             StatistikSekolahSeeder::class,

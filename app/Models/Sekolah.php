@@ -42,6 +42,6 @@ class Sekolah extends Model
     public function semuaJarakLokasi()
     {
         return $this->belongsToMany(WilayahDesa::class, 'jaraksekolahlokasi', 'sekolah_id', 'wilayah_id')
-                    ->withPivot('jarak');
+                    ->withPivot('jarak', 'walk_mnt', 'drive_mnt', 'boat_mnt', 'jarak_laut', 'mode_transport', 'route_geojson');
     }
 }

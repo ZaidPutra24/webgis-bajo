@@ -216,17 +216,104 @@
             line-height: 1.1;
         }
 
-        /* ── POPUP TAB STYLES ── */
-        .popup-wrapper { font-family: 'Source Sans 3', sans-serif; min-width: 320px; max-width: 350px; }
-        .popup-header { padding: 14px 16px 12px; }
+        /* ── DETAIL PANEL (side sheet — replaces floating popup) ── */
+        .detail-panel-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            background: rgba(0,30,64,0.15);
+            backdrop-filter: blur(2px);
+        }
+        .detail-panel-overlay.open { display: block; }
+
+        .detail-panel {
+            position: fixed;
+            top: 0; right: 0; bottom: 0;
+            width: 380px;
+            max-width: 100vw;
+            background: #fff;
+            z-index: 9001;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+            overflow-y: auto;
+            box-shadow: -8px 0 40px rgba(0,30,64,0.18);
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-panel.open { transform: translateX(0); }
+
+        @media (max-width: 640px) {
+            .detail-panel {
+                top: auto; left: 0; right: 0; bottom: 0;
+                width: 100%;
+                max-height: 80vh;
+                border-radius: 20px 20px 0 0;
+                transform: translateY(100%);
+            }
+            .detail-panel.open { transform: translateY(0); }
+            /* drag handle on mobile */
+            .detail-panel::before {
+                content: '';
+                display: block;
+                width: 40px; height: 4px;
+                background: #e2e2e7;
+                border-radius: 2px;
+                margin: 10px auto 0;
+                flex-shrink: 0;
+            }
+        }
+
+        .detail-panel-header {
+            padding: 16px 18px 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            flex-shrink: 0;
+        }
+        .detail-panel-header-content { flex: 1; min-width: 0; }
+        .detail-panel-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+            margin: 0 0 3px;
+            line-height: 1.3;
+        }
+        .detail-panel-sub {
+            font-size: 11px;
+            color: rgba(255,255,255,0.75);
+            font-weight: 500;
+        }
+        .detail-panel-close {
+            background: rgba(255,255,255,0.15);
+            border: 1.5px solid rgba(255,255,255,0.25);
+            border-radius: 50%;
+            width: 32px; height: 32px;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            transition: background .2s;
+        }
+        .detail-panel-close:hover { background: rgba(255,255,255,0.25); }
+
+        /* Tab bar */
         .popup-tab-bar {
             display: flex;
             background: #f4f3f8;
             border-bottom: 1px solid #e2e2e7;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 4;
         }
         .popup-tab {
             flex: 1;
-            padding: 9px 4px;
+            padding: 10px 4px;
             font-size: 10.5px;
             font-weight: 700;
             letter-spacing: .04em;
@@ -242,39 +329,40 @@
             transition: all .2s;
             border-bottom: 3px solid transparent;
         }
-        .popup-tab.active {
-            color: #001e40;
-            background: #fff;
-            border-bottom: 3px solid #001e40;
-        }
+        .popup-tab.active { color: #001e40; background: #fff; border-bottom: 3px solid #001e40; }
         .popup-tab:hover:not(.active) { background: #eeedf2; color: #001e40; }
         .popup-panel { display: none; padding: 14px 16px; background: #fff; }
         .popup-panel.active { display: block; }
+
+        /* Thumbnail inside detail panel */
+        .detail-panel-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .detail-panel-img-placeholder {
+            width: 100%; height: 120px;
+            background: #f1f5f9;
+            display: flex; align-items: center; justify-content: center;
+            color: #94a3b8; font-size: 12px; font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* Row & chip shared */
         .popup-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            padding: 5px 0;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 12px; padding: 5px 0;
             border-bottom: 1px dashed #e2e2e7;
         }
         .popup-row:last-child { border-bottom: none; }
         .popup-row .label { color: #43474f; }
-        .popup-row .value { font-weight: 700; color: #001e40; text-align: right; max-width: 180px; }
-        .popup-chip {
-            padding: 2px 8px;
-            border-radius: 999px;
-            font-size: 10px;
-            font-weight: 700;
-        }
+        .popup-row .value { font-weight: 700; color: #001e40; text-align: right; max-width: 200px; }
+        .popup-chip { padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; }
         .popup-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px; }
         .popup-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; }
-        .popup-stat-card {
-            background: #f4f3f8;
-            border-radius: 10px;
-            padding: 8px 10px;
-            font-size: 11px;
-        }
+        .popup-stat-card { background: #f4f3f8; border-radius: 10px; padding: 8px 10px; font-size: 11px; }
         .popup-stat-card .sc-label { color: #43474f; margin-bottom: 2px; font-size: 10px; }
         .popup-stat-card .sc-value { font-weight: 800; color: #001e40; font-size: 15px; }
         .popup-stat-card.sc-accent { background: #e6fafa; }
@@ -282,31 +370,85 @@
         .popup-jarak-list::-webkit-scrollbar { width: 4px; }
         .popup-jarak-list::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         .popup-jarak-list::-webkit-scrollbar-thumb { background: #00696b; border-radius: 4px; }
-        .popup-empty {
-            text-align: center;
-            padding: 20px 10px;
-            font-size: 12px;
-            color: #737780;
-            font-style: italic;
-        }
+        .popup-empty { text-align: center; padding: 20px 10px; font-size: 12px; color: #737780; font-style: italic; }
         .popup-btn-ukur {
-            width: 100%;
-            margin-top: 12px;
-            background: #001e40;
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            padding: 10px 0;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background .2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
+            width: 100%; margin-top: 12px; background: #001e40; color: #fff;
+            border: none; border-radius: 12px; padding: 10px 0;
+            font-size: 12px; font-weight: 700; cursor: pointer; transition: background .2s;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
         }
         .popup-btn-ukur:hover { background: #003366; }
+
+        /* ── ACTIVE ROUTE INDICATOR (floating bar di peta) ── */
+        #active-route-bar {
+            display: none;
+            position: absolute;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 998;
+            background: #fff;
+            border-radius: 999px;
+            padding: 7px 14px 7px 12px;
+            box-shadow: 0 4px 20px rgba(0,30,64,0.18);
+            border: 1.5px solid #e2e2e7;
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            color: #001e40;
+            white-space: nowrap;
+            max-width: calc(100% - 80px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+        #active-route-bar.visible {
+            display: flex;
+        }
+        #active-route-bar .route-bar-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        #active-route-bar .route-bar-label {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #active-route-bar .route-bar-close {
+            background: #f4f3f8;
+            border: none;
+            border-radius: 50%;
+            width: 22px; height: 22px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            color: #43474f;
+            transition: background .15s;
+        }
+        #active-route-bar .route-bar-close:hover { background: #ffdad6; color: #ba1a1a; }
+        .route-toggle-btn {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 999px;
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+            border: none; cursor: pointer; color: #43474f; background: transparent;
+            transition: all .2s ease; white-space: nowrap; flex-shrink: 0;
+        }
+        .route-toggle-btn:hover { background: #f4f3f8; color: #001e40; }
+        .route-toggle-btn.active { background: #00696b; color: #fff; box-shadow: 0 2px 10px rgba(0,105,107,0.3); }
+        .route-icon { width: 18px; height: 18px; border-radius: 5px; background: linear-gradient(135deg,#00696b,#0ea5e9); flex-shrink: 0; display: inline-block; }
+        .kecamatan-icon { width: 18px; height: 18px; border-radius: 5px; background: linear-gradient(135deg,#ea580c,#f59e0b); flex-shrink: 0; display: inline-block; }
+
+        /* ── POPUP WRAPPER (fallback, kept for compatibility) ── */
+        .popup-wrapper { font-family: 'Source Sans 3', sans-serif; min-width: 320px; max-width: 350px; }
+        .popup-header { padding: 14px 16px 12px; }
+        .popup-img-thumb { width:100%; height:140px; object-fit:cover; border-radius:8px 8px 0 0; cursor:pointer; transition:opacity .2s; }
+        .popup-img-thumb:hover { opacity:.85; }
+        .popup-img-thumb-placeholder { width:100%; height:100px; background:#f1f5f9; border-radius:8px 8px 0 0; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:12px; font-weight:600; }
 
         /* ── LEGEND ── */
         .map-legend {
@@ -643,6 +785,12 @@
 <div class="water-pattern"></div>
 <div id="toast-ukur"></div>
 
+<!-- ─── DETAIL PANEL (side/bottom sheet for school info) ─── -->
+<div class="detail-panel-overlay" id="detailPanelOverlay" onclick="closeDetailPanel()"></div>
+<aside class="detail-panel" id="detailPanel">
+    <!-- content injected by JS -->
+</aside>
+
 <!-- ─── IMAGE MODAL ─── -->
 <div class="image-modal-overlay" id="imageModal" onclick="closeImageModal()">
     <button class="image-modal-close" onclick="closeImageModal()">✕</button>
@@ -684,6 +832,16 @@
             <div>
                 <div class="panel-stat-label">Schools with Coordinates</div>
                 <div class="panel-stat-value">{{ $sekolahs->count() }}/{{ $totalSekolah }}</div>
+            </div>
+        </div>
+
+        <div class="panel-stat-card">
+            <div class="panel-stat-icon" style="background:#ffedd5;">
+                <span class="material-symbols-outlined" style="color:#9a3412;" aria-hidden="true">layers</span>
+            </div>
+            <div>
+                <div class="panel-stat-label">Kecamatan Areas</div>
+                <div class="panel-stat-value">{{ $kecamatans->count() }}</div>
             </div>
         </div>
 
@@ -749,6 +907,32 @@
             <span style="font-size:18px;font-weight:800;color:{{ $tc }};">{{ $group->count() }}</span>
         </div>
         @endforeach
+    </div>
+
+    <!-- Schools by Kecamatan (ROI Analysis) -->
+    <div class="panel-section" style="padding-top:18px;">
+        <div class="panel-section-title">Schools within Kecamatan Reach (ROI)</div>
+        @forelse($kecamatans as $kec)
+        <div style="padding:12px 14px;border-radius:14px;background:#f4f3f8;margin-bottom:8px;transition:background .2s;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:{{ $kec->warna ?? '#ea580c' }};flex-shrink:0;"></span>
+                    <span style="font-size:12px;font-weight:700;color:#001e40;">{{ $kec->nama_kecamatan }}</span>
+                </div>
+                <span style="font-size:18px;font-weight:800;color:#00696b;">{{ $kec->jumlah_sekolah }}</span>
+            </div>
+            @if($kec->jumlah_sekolah > 0)
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;">
+                @foreach($kec->sekolah_by_jenjang as $nama => $jumlah)
+                <span style="font-size:10px;font-weight:700;color:#43474f;background:#fff;border-radius:999px;padding:3px 10px;">{{ $nama }} · {{ $jumlah }}</span>
+                @endforeach
+            </div>
+            <div style="font-size:10px;color:#9aa0a6;font-weight:600;margin-top:7px;">{{ $kec->jumlah_jenis_sekolah }} jenis sekolah tercakup</div>
+            @endif
+        </div>
+        @empty
+        <div style="text-align:center;padding:16px;font-size:12px;color:#737780;font-style:italic;">No kecamatan boundary data entered yet.</div>
+        @endforelse
     </div>
 
     <!-- Power Sources Summary -->
@@ -870,6 +1054,22 @@
                     <span class="mode-icon mode-icon-dark"></span>
                     <span class="mode-label">Dark</span>
                 </button>
+                <div style="width:1px;height:24px;background:#e2e2e7;margin:0 2px;flex-shrink:0;"></div>
+                <button class="route-toggle-btn" id="btn-route-toggle" onclick="toggleRouteLayer()">
+                    <span class="route-icon"></span>
+                    <span class="mode-label">Routes</span>
+                </button>
+                <button class="route-toggle-btn active" id="btn-kecamatan-toggle" onclick="toggleKecamatanLayer()">
+                    <span class="kecamatan-icon"></span>
+                    <span class="mode-label">Kecamatan</span>
+                </button>
+            </div>
+
+            <!-- Active Route Indicator Bar -->
+            <div id="active-route-bar">
+                <div class="route-bar-dot" id="route-bar-dot"></div>
+                <span class="route-bar-label" id="route-bar-label"></span>
+                <button class="route-bar-close" onclick="sembunyikanSatuRute()" title="Hapus rute">✕</button>
             </div>
 
             {{-- LEGENDA MARKER PER JENJANG --}}
@@ -894,6 +1094,20 @@
                 <div class="legend-item">
                     <div class="legend-dot" style="background:#8b5cf6;"></div>
                     <span>Non-Formal</span>
+                </div>
+                <div class="legend-title mt-2">Kecamatan Boundary (ROI)</div>
+                <div class="legend-item">
+                    <div style="width:22px;height:3px;background:#ea580c;border-radius:2px;flex-shrink:0;border-top:2px dashed #ea580c;"></div>
+                    <span>Kecamatan Border</span>
+                </div>
+                <div class="legend-title mt-2">Route Lines</div>
+                <div class="legend-item">
+                    <div style="width:22px;height:3px;background:#00696b;border-radius:2px;flex-shrink:0;"></div>
+                    <span>Land Route</span>
+                </div>
+                <div class="legend-item">
+                    <div style="width:22px;height:3px;background:#0ea5e9;border-radius:2px;flex-shrink:0;"></div>
+                    <span>Multimode (Land+Sea)</span>
                 </div>
                 <div class="legend-title mt-2">School Type</div>
                 <div class="legend-item">
@@ -1016,7 +1230,38 @@ function closeUserPanel() {
     document.body.style.overflow = '';
 }
 
-// ── POPUP TAB HELPER ──
+// ── DETAIL PANEL (replaces floating popup for school markers) ──
+var currentDetailLat = null, currentDetailLng = null, currentDetailName = '';
+
+function openDetailPanel(html, lat, lng, name) {
+    var panel = document.getElementById('detailPanel');
+    panel.innerHTML = html;
+    panel.classList.add('open');
+    document.getElementById('detailPanelOverlay').classList.add('open');
+    currentDetailLat  = lat;
+    currentDetailLng  = lng;
+    currentDetailName = name;
+}
+
+function closeDetailPanel() {
+    document.getElementById('detailPanel').classList.remove('open');
+    document.getElementById('detailPanelOverlay').classList.remove('open');
+    document.getElementById('detailPanel').innerHTML = '';
+    // Rute tetap tampil di peta meski panel ditutup
+    // Gunakan tombol "✕ Sembunyikan Rute" di panel untuk mematikan rute
+}
+
+function switchPanelTab(tabId) {
+    var panel = document.getElementById('detailPanel');
+    panel.querySelectorAll('.popup-tab').forEach(function(t) { t.classList.remove('active'); });
+    panel.querySelectorAll('.popup-panel').forEach(function(p) { p.classList.remove('active'); });
+    var t = panel.querySelector('[data-tab="' + tabId + '"]');
+    var p = panel.querySelector('[data-panel="' + tabId + '"]');
+    if (t) t.classList.add('active');
+    if (p) p.classList.add('active');
+}
+
+// ── POPUP TAB HELPER (kept for wilayah popups) ──
 function switchTab(containerId, tabId) {
     var wrapper = document.getElementById(containerId);
     if (!wrapper) return;
@@ -1144,8 +1389,95 @@ var boundsArray = [];
     }
 @endforeach
 
+// ── KECAMATAN LAYERS (ROI lebih luas dari Wilayah Desa) ──
+// Menampilkan batas administrasi kecamatan beserta jumlah sekolah yang berada
+// dalam jangkauannya (dihitung server-side via point-in-polygon di HomeController).
+var kecamatanLayerGroup = L.layerGroup().addTo(map);
+var kecamatanLayerVisible = true;
+
+@foreach($kecamatans as $kecamatan)
+    try {
+        var geojsonDataKec_{{ $kecamatan->id }} = {!! $kecamatan->geojson !!};
+        var kecamatanColor_{{ $kecamatan->id }} = "{{ $kecamatan->warna ?? '#ea580c' }}";
+        var kecamatanLayer_{{ $kecamatan->id }} = L.geoJSON(geojsonDataKec_{{ $kecamatan->id }}, {
+            style: {
+                color: kecamatanColor_{{ $kecamatan->id }}, weight: 3, opacity: 0.85,
+                fillColor: kecamatanColor_{{ $kecamatan->id }}, fillOpacity: 0.06, dashArray: '10, 8'
+            }
+        });
+
+        var kecamatanPopupContent_{{ $kecamatan->id }} = `
+            <div style="min-width:220px;font-family:'Source Sans 3',sans-serif;padding:12px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:#ffedd5;display:flex;align-items:center;justify-content:center;">
+                        <span class="material-symbols-outlined" style="color:#9a3412;font-size:18px;">layers</span>
+                    </div>
+                    <div>
+                        <p style="font-size:11px;color:#43474f;margin:0;letter-spacing:.05em;font-weight:600;text-transform:uppercase;">Kecamatan ROI</p>
+                        <h4 style="font-size:16px;font-weight:700;color:#001e40;margin:0;">{{ addslashes($kecamatan->nama_kecamatan) }}</h4>
+                    </div>
+                </div>
+                <div style="background:#f4f3f8;border-radius:12px;padding:10px;font-size:13px;color:#43474f;margin-bottom:10px;">
+                    <div style="display:flex;justify-content:space-between;padding-bottom:6px;">
+                        <span>Kabupaten</span>
+                        <span style="font-weight:700;color:#001e40;">{{ $kecamatan->kabupaten ?? '—' }}</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;padding-bottom:6px;border-top:1px solid #e2e8f0;padding-top:6px;">
+                        <span>Provinsi</span>
+                        <span style="font-weight:700;color:#001e40;">{{ $kecamatan->provinsi ?? '—' }}</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;border-top:1px solid #e2e8f0;padding-top:6px;">
+                        <span>Land Area</span>
+                        <span style="font-weight:700;color:#001e40;">{{ $kecamatan->luas_wilayah ?? '—' }} Ha</span>
+                    </div>
+                </div>
+                @if($kecamatan->jumlah_sekolah > 0)
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+                    @foreach($kecamatan->sekolah_by_jenjang as $namaJenjang => $jumlahJenjang)
+                    <span style="font-size:10px;font-weight:700;color:#43474f;background:#f4f3f8;border-radius:999px;padding:3px 10px;">{{ $namaJenjang }} · {{ $jumlahJenjang }}</span>
+                    @endforeach
+                </div>
+                @endif
+                <div style="display:flex;align-items:center;justify-content:space-between;background:#001e40;border-radius:12px;padding:12px 14px;">
+                    <span style="font-size:12px;font-weight:600;color:#fff;">Schools within reach</span>
+                    <span style="font-size:20px;font-weight:800;color:#fff;">{{ $kecamatan->jumlah_sekolah }}</span>
+                </div>
+            </div>
+        `;
+
+        kecamatanLayer_{{ $kecamatan->id }}.bindPopup(kecamatanPopupContent_{{ $kecamatan->id }});
+        kecamatanLayer_{{ $kecamatan->id }}.bindTooltip(
+            "{{ addslashes($kecamatan->nama_kecamatan) }} ({{ $kecamatan->jumlah_sekolah }} sekolah)",
+            { sticky: true }
+        );
+        kecamatanLayer_{{ $kecamatan->id }}.addTo(kecamatanLayerGroup);
+    } catch (e) {
+        console.error("Gagal memuat GeoJSON untuk kecamatan ID: {{ $kecamatan->id }}", e);
+    }
+@endforeach
+
+function toggleKecamatanLayer() {
+    kecamatanLayerVisible = !kecamatanLayerVisible;
+    var btn = document.getElementById('btn-kecamatan-toggle');
+    if (kecamatanLayerVisible) {
+        map.addLayer(kecamatanLayerGroup);
+        if (btn) btn.classList.add('active');
+    } else {
+        map.removeLayer(kecamatanLayerGroup);
+        if (btn) btn.classList.remove('active');
+    }
+}
+
 // ── SCHOOL MARKERS & FILTER ──
 var schoolMarkers = [];
+
+// ── ROUTE DATA (collected from school distance matrix) ──
+// allRouteData adalah object berkey unik "route_{sekolah_id}_{wilayah_id}"
+var allRouteData      = {};
+var routeLayerGroup   = L.layerGroup();   // untuk mode "tampilkan semua rute"
+var routeLayerVisible = false;
+var activeRouteLayer  = null;             // untuk mode "tampilkan satu rute dari panel"
+var activeRouteKey    = null;             // key rute yang sedang aktif
 
 @foreach($sekolahs as $sekolah)
 @if($sekolah->latitude !== null && $sekolah->longitude !== null)
@@ -1198,20 +1530,85 @@ var schoolMarkers = [];
         popupAnchor: [0, -46]
     });
 
-    @php $jarakRows = ''; @endphp
-    @if($sekolah->semuaJarakLokasi->count() > 0)
-        @php
-            $jarakRows = '';
-            foreach($sekolah->semuaJarakLokasi as $dj) {
-                $namaWilayah = htmlspecialchars($dj->nama_wilayah ?? 'Desa', ENT_QUOTES, 'UTF-8');
-                $nilaiJarak  = number_format($dj->pivot->jarak, 2);
-                $jarakRows  .= '<div class="popup-row">' .
-                                '<span class="label">' . $namaWilayah . '</span>' .
-                                '<span style="font-weight:700;color:#ba1a1a;background:#ffdad6;padding:1px 8px;border-radius:999px;font-size:11px;">' .
-                                $nilaiJarak . ' Km</span></div>';
+    @php
+        // Ambil data jarak lengkap dengan semua kolom dari tabel pivot
+        $jarakLengkap = \App\Models\JarakSekolahLokasi::with('wilayahDesa')
+            ->where('sekolah_id', $sekolah->id)
+            ->get();
+        $jarakRows = '';
+        $routeGeojsons = [];
+        foreach($jarakLengkap as $dj) {
+            $namaWilayah = htmlspecialchars($dj->wilayahDesa->nama_wilayah ?? 'Desa', ENT_QUOTES, 'UTF-8');
+            $nilaiJarak  = number_format((float)$dj->jarak, 2);
+            $modeTrans   = $dj->mode_transport === 'multimoda' ? 'Darat+Perahu' : 'Darat';
+            $modeColor   = $dj->mode_transport === 'multimoda' ? '#0ea5e9' : '#22c55e';
+            $modeBg      = $dj->mode_transport === 'multimoda' ? '#e0f2fe' : '#dcfce7';
+
+            $walkFmt  = $dj->walk_mnt  ? (intdiv((int)$dj->walk_mnt,60) > 0 ? intdiv((int)$dj->walk_mnt,60).'j '.((int)$dj->walk_mnt%60).'m' : (int)$dj->walk_mnt.'m') : '-';
+            $driveFmt = $dj->drive_mnt ? (intdiv((int)$dj->drive_mnt,60) > 0 ? intdiv((int)$dj->drive_mnt,60).'j '.((int)$dj->drive_mnt%60).'m' : (int)$dj->drive_mnt.'m') : '-';
+            $boatFmt  = $dj->boat_mnt  ? (intdiv((int)$dj->boat_mnt,60) > 0 ? intdiv((int)$dj->boat_mnt,60).'j '.((int)$dj->boat_mnt%60).'m' : (int)$dj->boat_mnt.'m') : '-';
+            $jarakLaut = $dj->jarak_laut ? number_format((float)$dj->jarak_laut, 2).' km' : '-';
+
+            $hasRoute    = !empty($dj->route_geojson);
+            $routeKey    = 'route_' . $sekolah->id . '_' . $dj->wilayah_id;
+            $btnRute     = $hasRoute
+                ? '<button onclick="tampilkanSatuRute(\''.$routeKey.'\')" id="btn_'.$routeKey.'" ' .
+                  'style="margin-top:6px;width:100%;padding:5px 0;border-radius:8px;border:1.5px solid #00696b;' .
+                  'background:transparent;color:#00696b;font-size:10px;font-weight:700;cursor:pointer;' .
+                  'display:flex;align-items:center;justify-content:center;gap:5px;transition:all .2s;"' .
+                  ' onmouseover="this.style.background=\'#00696b\';this.style.color=\'#fff\'"' .
+                  ' onmouseout="if(!this.classList.contains(\'rute-aktif\')){this.style.background=\'transparent\';this.style.color=\'#00696b\'}">' .
+                  '<span style="font-size:12px;">&#x2192;</span> Tampilkan Rute</button>'
+                : '';
+
+            $jarakRows .= '<div style="border:1px solid #e2e2e7;border-radius:10px;padding:8px 10px;margin-bottom:6px;background:#fafafa;">' .
+                '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">' .
+                  '<span style="font-weight:700;color:#001e40;font-size:12px;">' . $namaWilayah . '</span>' .
+                  '<span style="background:'.$modeBg.';color:'.$modeColor.';padding:1px 7px;border-radius:999px;font-size:9px;font-weight:700;">'.$modeTrans.'</span>' .
+                '</div>' .
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">' .
+                  '<div style="background:#fff;border:1px solid #e2e2e7;border-radius:6px;padding:4px 6px;">' .
+                    '<div style="font-size:9px;color:#737780;font-weight:600;">Jarak Darat</div>' .
+                    '<div style="font-size:12px;font-weight:800;color:#ba1a1a;">'.$nilaiJarak.' km</div>' .
+                  '</div>' .
+                  ($dj->jarak_laut ? '<div style="background:#fff;border:1px solid #e2e2e7;border-radius:6px;padding:4px 6px;">' .
+                    '<div style="font-size:9px;color:#737780;font-weight:600;">Jarak Laut</div>' .
+                    '<div style="font-size:12px;font-weight:800;color:#0ea5e9;">'.$jarakLaut.'</div>' .
+                  '</div>' : '') .
+                  '<div style="background:#fff;border:1px solid #e2e2e7;border-radius:6px;padding:4px 6px;">' .
+                    '<div style="font-size:9px;color:#737780;font-weight:600;">Jalan Kaki</div>' .
+                    '<div style="font-size:11px;font-weight:700;color:#43474f;">'.$walkFmt.'</div>' .
+                  '</div>' .
+                  '<div style="background:#fff;border:1px solid #e2e2e7;border-radius:6px;padding:4px 6px;">' .
+                    '<div style="font-size:9px;color:#737780;font-weight:600;">Berkendara</div>' .
+                    '<div style="font-size:11px;font-weight:700;color:#43474f;">'.$driveFmt.'</div>' .
+                  '</div>' .
+                  ($dj->boat_mnt ? '<div style="background:#fff;border:1px solid #e2e2e7;border-radius:6px;padding:4px 6px;grid-column:span 2;">' .
+                    '<div style="font-size:9px;color:#737780;font-weight:600;">Perahu</div>' .
+                    '<div style="font-size:11px;font-weight:700;color:#0ea5e9;">'.$boatFmt.'</div>' .
+                  '</div>' : '') .
+                '</div>' .
+                $btnRute .
+                '</div>';
+
+            // Kumpulkan route GeoJSON untuk ditampilkan di peta
+            if (!empty($dj->route_geojson)) {
+                $routeGeojsons[] = [
+                    'key'        => 'route_' . $sekolah->id . '_' . $dj->wilayah_id,
+                    'geojson'    => $dj->route_geojson,
+                    'wilayah'    => htmlspecialchars($dj->wilayahDesa->nama_wilayah ?? '', ENT_QUOTES, 'UTF-8'),
+                    'sekolah'    => htmlspecialchars($sekolah->nama_sekolah, ENT_QUOTES, 'UTF-8'),
+                    'jarak'      => number_format((float)$dj->jarak, 2),
+                    'mode'       => $dj->mode_transport ?? 'darat',
+                    'drive_mnt'  => $driveFmt,
+                    'walk_mnt'   => $walkFmt,
+                    'boat_mnt'   => $boatFmt,
+                ];
             }
-        @endphp
-        var jarakHtml = '<div class="popup-jarak-list" style="max-height:110px;overflow-y:auto;margin-top:4px;">' +
+        }
+    @endphp
+    @if($jarakLengkap->count() > 0)
+        var jarakHtml = '<div class="popup-jarak-list" style="max-height:150px;overflow-y:auto;margin-top:4px;">' +
                         {!! json_encode($jarakRows) !!} +
                         '</div>';
     @else
@@ -1224,6 +1621,7 @@ var schoolMarkers = [];
             $siswaL     = $s->siswa_l       ?? 0;
             $siswaP     = $s->siswa_p       ?? 0;
             $totalSiswa = $s->jumlah_siswa  ?? 0;
+            $dayaTampung = $s->daya_tampung ?? 0;
             $guru       = $s->jumlah_guru   ?? 0;
             $rombel     = $s->jumlah_rombel ?? 0;
             $rKelas     = $s->ruang_kelas   ?? 0;
@@ -1236,6 +1634,7 @@ var schoolMarkers = [];
             '  <div class="popup-stat-card sc-accent"><div class="sc-label">Male Students</div><div class="sc-value">{{ $siswaL }}</div></div>' +
             '  <div class="popup-stat-card sc-accent"><div class="sc-label">Female Students</div><div class="sc-value">{{ $siswaP }}</div></div>' +
             '  <div class="popup-stat-card sc-accent"><div class="sc-label">Total Students</div><div class="sc-value">{{ $totalSiswa }}</div></div>' +
+            '  <div class="popup-stat-card sc-accent"><div class="sc-label">Capacity</div><div class="sc-value">{{ $dayaTampung }}</div></div>' +
             '</div>' +
             '<p style="font-size:10px;font-weight:700;color:#43474f;letter-spacing:.05em;text-transform:uppercase;margin:8px 0 4px;">Personel</p>' +
             '<div class="popup-grid-2">' +
@@ -1294,12 +1693,12 @@ var schoolMarkers = [];
     var imgHtml = '';
     @if($hasImage)
         imgHtml = '<img src="{{ asset('img/sekolah/' . $sekolah->img) }}" ' +
-                  'class="popup-img-thumb" ' +
-                  'onclick="event.stopPropagation(); openImageModal(this.src, \'{{ $namaSekolah }}\')" ' +
+                  'class="detail-panel-img" ' +
+                  'onclick="openImageModal(this.src, \'{{ $namaSekolah }}\')" ' +
                   'onerror="this.style.display=\'none\'" ' +
                   'alt="{{ $namaSekolah }}">';
     @else
-        imgHtml = '<div class="popup-img-thumb-placeholder"><span>📷 No Image</span></div>';
+        imgHtml = '<div class="detail-panel-img-placeholder"><span>No Image</span></div>';
     @endif
 
     var tabInfoHtml =
@@ -1312,7 +1711,7 @@ var schoolMarkers = [];
         '<span class="popup-chip" style="background:#e6fafa;color:#00696b;font-size:13px;font-weight:900;">{{ $akreditasi }}</span></div>' +
         '<div class="popup-row"><span class="label">Address</span><span class="value" style="font-size:11px;font-weight:600;color:#43474f;">{{ $alamat }}</span></div>' +
         '<div style="margin-top:10px;padding-top:6px;border-top:1px dashed #e2e2e7;">' +
-        '<p style="font-size:10px;color:#43474f;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin:0 0 4px;">Distance to Village</p>' +
+        '<p style="font-size:10px;color:#43474f;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin:0 0 6px;">Distance to Village</p>' +
         jarakHtml + '</div>';
 
     var btnUkur =
@@ -1320,32 +1719,50 @@ var schoolMarkers = [];
         '<span class="material-symbols-outlined" style="font-size:16px;">straighten</span>' +
         'Measure Distance to Other Points</button>';
 
-    var popupContent =
-        '<div class="popup-wrapper" id="' + uid + '">' +
+    // Build detail panel HTML
+    var panelHtml =
         imgHtml +
-        '<div class="popup-header" style="background:{{ $headerColor }};">' +
-        '<h4 style="font-size:14px;font-weight:700;color:#fff;margin:0 0 3px;line-height:1.3;">{{ $namaSekolah }}</h4>' +
-        '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">' +
-        '<span style="font-size:10px;color:rgba(255,255,255,0.8);font-weight:600;">{{ $namaJenjang }}</span>' +
-        @if($wilayahNama)
-        '<span style="color:rgba(255,255,255,0.5);font-size:10px;">•</span>' +
-        '<span style="font-size:10px;color:rgba(255,255,255,0.75);">{{ $wilayahNama }}</span>' +
-        @endif
+        '<div class="detail-panel-header" style="background:{{ $headerColor }};">' +
+        '<div class="detail-panel-header-content">' +
+        '<div class="detail-panel-title">{{ $namaSekolah }}</div>' +
+        '<div class="detail-panel-sub">{{ $namaJenjang }}' +
+        @if($wilayahNama) ' &nbsp;·&nbsp; {{ $wilayahNama }}' + @endif
         '</div>' +
+        '</div>' +
+        '<button class="detail-panel-close" onclick="closeDetailPanel()">✕</button>' +
         '</div>' +
         '<div class="popup-tab-bar">' +
-        '<button class="popup-tab active" data-tab="info" onclick="switchTab(\'' + uid + '\',\'info\')">Info</button>' +
-        '<button class="popup-tab" data-tab="statistik" onclick="switchTab(\'' + uid + '\',\'statistik\')">Statistics</button>' +
-        '<button class="popup-tab" data-tab="utilitas" onclick="switchTab(\'' + uid + '\',\'utilitas\')">Utilities</button>' +
+        '<button class="popup-tab active" data-tab="info" onclick="switchPanelTab(\'info\')">Info</button>' +
+        '<button class="popup-tab" data-tab="statistik" onclick="switchPanelTab(\'statistik\')">Statistics</button>' +
+        '<button class="popup-tab" data-tab="utilitas" onclick="switchPanelTab(\'utilitas\')">Utilities</button>' +
         '</div>' +
         '<div class="popup-panel active" data-panel="info">' + tabInfoHtml + btnUkur + '</div>' +
         '<div class="popup-panel" data-panel="statistik">' + tabStatistikHtml + btnUkur + '</div>' +
-        '<div class="popup-panel" data-panel="utilitas">' + tabUtilitasHtml + btnUkur + '</div>' +
-        '</div>';
+        '<div class="popup-panel" data-panel="utilitas">' + tabUtilitasHtml + btnUkur + '</div>';
 
-    var marker = L.marker([lat, lng], { icon: markerIcon })
-        .addTo(map)
-        .bindPopup(popupContent, { maxWidth: 350, minWidth: Math.min(300, window.innerWidth - 40) });
+    @if(count($routeGeojsons) > 0)
+    // Register route GeoJSONs untuk sekolah ini (keyed by unique id)
+    @foreach($routeGeojsons as $rg)
+    allRouteData[{!! json_encode($rg['key']) !!}] = {
+        geojson:   {!! $rg['geojson'] !!},
+        wilayah:   {!! json_encode($rg['wilayah']) !!},
+        sekolah:   {!! json_encode($rg['sekolah']) !!},
+        jarak:     {!! json_encode($rg['jarak']) !!},
+        mode:      {!! json_encode($rg['mode']) !!},
+        drive_mnt: {!! json_encode($rg['drive_mnt']) !!},
+        walk_mnt:  {!! json_encode($rg['walk_mnt']) !!},
+        boat_mnt:  {!! json_encode($rg['boat_mnt']) !!},
+    };
+    @endforeach
+    @endif
+
+    var marker = L.marker([lat, lng], { icon: markerIcon }).addTo(map);
+
+    marker.on('click', (function(pHtml, pLat, pLng, pName) {
+        return function(e) {
+            openDetailPanel(pHtml, pLat, pLng, pName);
+        };
+    })(panelHtml, lat, lng, '{{ $namaSekolah }}'));
 
     schoolMarkers.push({
         marker: marker,
@@ -1361,6 +1778,160 @@ if (boundsArray.length > 0) {
         boundsArray.map(function(b) { return L.rectangle(b); })
     );
     map.fitBounds(group.getBounds(), { padding: [20, 20] });
+}
+
+// ── ROUTE LAYER TOGGLE ──
+// ── MODE 1: TAMPILKAN SEMUA RUTE (tombol "Routes" di switcher) ──
+function buildRouteLayers() {
+    routeLayerGroup.clearLayers();
+    Object.keys(allRouteData).forEach(function(key) {
+        var rd = allRouteData[key];
+        var color = rd.mode === 'multimoda' ? '#0ea5e9' : '#00696b';
+        var dashArray = rd.mode === 'multimoda' ? '8, 6' : null;
+        try {
+            var poly = L.geoJSON(rd.geojson, {
+                style: { color: color, weight: 4, opacity: 0.85, dashArray: dashArray }
+            });
+            var popHtml =
+                '<div style="font-family:\'Source Sans 3\',sans-serif;min-width:200px;padding:12px;">' +
+                '<p style="font-size:10px;font-weight:700;color:#43474f;text-transform:uppercase;letter-spacing:.05em;margin:0 0 4px;">Rute</p>' +
+                '<p style="font-size:14px;font-weight:800;color:#001e40;margin:0 0 4px;">' + rd.sekolah + '</p>' +
+                '<p style="font-size:12px;color:#43474f;margin:0 0 8px;">ke ' + rd.wilayah + '</p>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">' +
+                '<div style="background:#f4f3f8;border-radius:8px;padding:6px 8px;"><div style="font-size:9px;color:#737780;font-weight:600;">Jarak</div><div style="font-size:13px;font-weight:800;color:#ba1a1a;">' + rd.jarak + ' km</div></div>' +
+                '<div style="background:#f4f3f8;border-radius:8px;padding:6px 8px;"><div style="font-size:9px;color:#737780;font-weight:600;">Berkendara</div><div style="font-size:13px;font-weight:700;color:#001e40;">' + (rd.drive_mnt || '-') + '</div></div>' +
+                '<div style="background:#f4f3f8;border-radius:8px;padding:6px 8px;"><div style="font-size:9px;color:#737780;font-weight:600;">Jalan Kaki</div><div style="font-size:12px;font-weight:700;color:#43474f;">' + (rd.walk_mnt || '-') + '</div></div>' +
+                (rd.boat_mnt && rd.boat_mnt !== '-' ? '<div style="background:#e0f2fe;border-radius:8px;padding:6px 8px;"><div style="font-size:9px;color:#0369a1;font-weight:600;">Perahu</div><div style="font-size:12px;font-weight:700;color:#0ea5e9;">' + rd.boat_mnt + '</div></div>' : '') +
+                '</div></div>';
+            poly.bindPopup(popHtml);
+            routeLayerGroup.addLayer(poly);
+        } catch(e) {
+            console.warn('Route GeoJSON parse error:', e);
+        }
+    });
+}
+
+function toggleRouteLayer() {
+    var btn = document.getElementById('btn-route-toggle');
+    if (routeLayerVisible) {
+        map.removeLayer(routeLayerGroup);
+        routeLayerVisible = false;
+        if (btn) btn.classList.remove('active');
+        showToast('Semua rute disembunyikan', 1500);
+    } else {
+        // Sembunyikan dulu rute tunggal jika ada
+        sembunyikanSatuRute();
+        buildRouteLayers();
+        var count = Object.keys(allRouteData).length;
+        if (count === 0) {
+            showToast('Belum ada data rute tersedia', 2500);
+            return;
+        }
+        routeLayerGroup.addTo(map);
+        routeLayerVisible = true;
+        if (btn) btn.classList.add('active');
+        showToast('Menampilkan ' + routeLayerGroup.getLayers().length + ' rute', 2000);
+    }
+}
+
+// ── MODE 2: TAMPILKAN SATU RUTE (dari tombol di kartu jarak panel) ──
+function tampilkanSatuRute(key) {
+    var rd = allRouteData[key];
+    if (!rd) {
+        showToast('Data rute tidak ditemukan', 2000);
+        return;
+    }
+
+    // Jika rute ini sudah aktif → toggle off
+    if (activeRouteKey === key) {
+        sembunyikanSatuRute();
+        return;
+    }
+
+    // Hapus rute sebelumnya (tanpa tutup panel)
+    if (activeRouteLayer) {
+        map.removeLayer(activeRouteLayer);
+        activeRouteLayer = null;
+        if (activeRouteKey) { _updateRuteBtn(activeRouteKey, false); }
+        activeRouteKey = null;
+    }
+
+    // Sembunyikan mode "semua rute" agar tidak tumpang tindih
+    if (routeLayerVisible) {
+        map.removeLayer(routeLayerGroup);
+        routeLayerVisible = false;
+        var btnAll = document.getElementById('btn-route-toggle');
+        if (btnAll) btnAll.classList.remove('active');
+    }
+
+    var color = rd.mode === 'multimoda' ? '#0ea5e9' : '#00696b';
+    var dashArray = rd.mode === 'multimoda' ? '8, 6' : null;
+
+    try {
+        activeRouteLayer = L.geoJSON(rd.geojson, {
+            style: {
+                color: color, weight: 5, opacity: 0.95,
+                dashArray: dashArray, lineCap: 'round', lineJoin: 'round'
+            }
+        }).addTo(map);
+
+        // Zoom peta ke rute
+        map.fitBounds(activeRouteLayer.getBounds(), { padding: [40, 40] });
+
+        activeRouteKey = key;
+
+        // Update tombol di panel (jika panel masih terbuka)
+        _updateRuteBtn(key, true);
+
+        // Tampilkan floating bar di peta
+        _showRouteBar(rd.sekolah + ' → ' + rd.wilayah, color);
+
+        showToast('Rute ' + rd.sekolah + ' → ' + rd.wilayah + ' ditampilkan', 2000);
+    } catch(e) {
+        console.warn('Gagal render rute:', e);
+        showToast('Gagal menampilkan rute (format GeoJSON tidak valid)', 3000);
+    }
+}
+
+function sembunyikanSatuRute() {
+    if (activeRouteLayer) {
+        map.removeLayer(activeRouteLayer);
+        activeRouteLayer = null;
+    }
+    if (activeRouteKey) {
+        _updateRuteBtn(activeRouteKey, false);
+        activeRouteKey = null;
+    }
+    _hideRouteBar();
+}
+
+function _showRouteBar(label, color) {
+    var bar   = document.getElementById('active-route-bar');
+    var dot   = document.getElementById('route-bar-dot');
+    var lbl   = document.getElementById('route-bar-label');
+    dot.style.background = color;
+    lbl.textContent = label;
+    bar.classList.add('visible');
+}
+
+function _hideRouteBar() {
+    document.getElementById('active-route-bar').classList.remove('visible');
+}
+
+function _updateRuteBtn(key, aktif) {
+    var btn = document.getElementById('btn_' + key);
+    if (!btn) return;
+    if (aktif) {
+        btn.classList.add('rute-aktif');
+        btn.style.background = '#00696b';
+        btn.style.color = '#fff';
+        btn.innerHTML = '<span style="font-size:12px;">&#x2715;</span> Sembunyikan Rute';
+    } else {
+        btn.classList.remove('rute-aktif');
+        btn.style.background = 'transparent';
+        btn.style.color = '#00696b';
+        btn.innerHTML = '<span style="font-size:12px;">&#x2192;</span> Tampilkan Rute';
+    }
 }
 
 // ── FILTER LOGIC ──
@@ -1443,7 +2014,7 @@ function aktifkanModeUkur() {
 }
 
 function hitungJarakKeKlik(sekolahLat, sekolahLng, namaSekolah) {
-    map.closePopup();
+    closeDetailPanel();
     showToast('📍 Click on the map to measure distance from "' + namaSekolah + '"', 5000);
     map.once('click', function(e) {
         var clickLat = e.latlng.lat;

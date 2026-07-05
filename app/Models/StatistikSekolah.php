@@ -13,6 +13,7 @@ class StatistikSekolah extends Model
         'siswa_l',
         'siswa_p',
         'jumlah_siswa',
+        'daya_tampung',
         'jumlah_guru',
         'jumlah_rombel',
         'ruang_kelas',

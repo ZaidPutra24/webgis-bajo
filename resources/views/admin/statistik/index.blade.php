@@ -146,7 +146,8 @@
                                 <div class="small">
                                     <div class="text-muted mb-1">Male: <strong class="text-dark">{{ $sekolah->statistik->siswa_l ?? '0' }}</strong></div>
                                     <div class="text-muted mb-1">Female: <strong class="text-dark">{{ $sekolah->statistik->siswa_p ?? '0' }}</strong></div>
-                                    <div class="text-muted">Total: <strong class="text-primary fw-bold">{{ $sekolah->statistik->jumlah_siswa ?? '0' }}</strong></div>
+                                    <div class="text-muted mb-1">Total: <strong class="text-primary fw-bold">{{ $sekolah->statistik->jumlah_siswa ?? '0' }}</strong></div>
+                                    <div class="text-muted">Daya Tampung: <strong class="text-dark">{{ $sekolah->statistik->daya_tampung ?? '0' }}</strong></div>
                                 </div>
                             </td>
                             <td class="text-center">

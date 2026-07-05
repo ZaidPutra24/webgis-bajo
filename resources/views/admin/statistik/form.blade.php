@@ -113,6 +113,13 @@
                     </div>
 
                     <div class="form-floating mb-3">
+                        <input type="number" name="daya_tampung" class="form-control modern-input" id="inpDayaTampung" 
+                               value="{{ old('daya_tampung', $sekolah->statistik->daya_tampung ?? 0) }}" min="0"
+                               placeholder="Example: 400">
+                        <label for="inpDayaTampung" class="modern-label">Daya Tampung (Capacity)</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
                         <input type="number" name="jumlah_guru" class="form-control modern-input" id="inpGuru" 
                                value="{{ old('jumlah_guru', $sekolah->statistik->jumlah_guru ?? 0) }}" min="0"
                                placeholder="Example: 24">

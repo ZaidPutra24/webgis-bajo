@@ -23,12 +23,13 @@ class StatistikSekolahController extends Controller
 
     public function update(Request $request, $sekolah_id)
     {
-        // BUG FIX #3 & #8: Hapus validasi 'daya_tampung' dan 'ruang_guru'
-        // karena kolom sudah dihapus dari DB dan form tidak mengirimkan field ini.
+        // daya_tampung kembali divalidasi karena kolomnya sudah ditambahkan lagi ke DB.
+        // Tetap nullable: beberapa satuan non-formal (LKP/PKBM/SKB) memang belum punya datanya.
         $request->validate([
             'siswa_l'       => 'nullable|integer|min:0',
             'siswa_p'       => 'nullable|integer|min:0',
             'jumlah_siswa'  => 'nullable|integer|min:0',
+            'daya_tampung'  => 'nullable|integer|min:0',
             'jumlah_guru'   => 'nullable|integer|min:0',
             'jumlah_rombel' => 'nullable|integer|min:0',
             'ruang_kelas'   => 'nullable|integer|min:0',
@@ -53,16 +54,17 @@ class StatistikSekolahController extends Controller
             $request->merge(['jumlah_siswa' => $siswaL + $siswaP]);
         }
 
-        // BUG FIX #3: $fields tidak lagi menyertakan 'daya_tampung' dan 'ruang_guru'
-        // sehingga updateOrCreate tidak akan mencoba menulis ke kolom yang tidak ada.
+        // UPDATE: 'daya_tampung' dikembalikan ke $fields karena kolomnya sudah ada
+        // lagi di DB (lihat migration add_daya_tampung_to_statistik_sekolah_table),
+        // sehingga nilainya kini ikut disimpan oleh updateOrCreate. 'ruang_guru'
+        // tetap tidak disertakan karena kolom tsb memang belum ada di tabel.
         $fields = [
-            'siswa_l', 'siswa_p', 'jumlah_siswa', 'jumlah_guru',
+            'siswa_l', 'siswa_p', 'jumlah_siswa', 'daya_tampung', 'jumlah_guru',
             'jumlah_rombel', 'ruang_kelas', 'laboratorium', 'perpustakaan',
         ];
 
-        // BUG FIX #8: Loop $semuaNol sekarang hanya mengecek field yang benar-benar
-        // dikirim oleh form (8 field), sehingga tidak salah trigger delete karena
-        // field yang dihapus (daya_tampung, ruang_guru) selalu bernilai null.
+        // Loop $semuaNol mengecek seluruh field yang benar-benar dikirim oleh form
+        // (9 field, termasuk daya_tampung) sehingga tidak salah trigger delete.
         $semuaNol = true;
         foreach ($fields as $field) {
             $nilai = $request->input($field);

@@ -138,6 +138,10 @@
 
         <div class="sidebar-section mt-2">Master Data</div>
         <nav>
+            <a href="{{ route('kecamatan.index') }}"
+               class="nav-link {{ Request::is('kecamatan*') ? 'active' : '' }}">
+                <i class="bi bi-bounding-box-circles"></i> Kecamatan Areas
+            </a>
             <a href="{{ route('wilayah.index') }}"
                class="nav-link {{ Request::is('wilayah*') ? 'active' : '' }}">
                 <i class="bi bi-map"></i> Village Areas
