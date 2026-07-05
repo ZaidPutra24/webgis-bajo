@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\WilayahDesa;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class WilayahSeeder extends Seeder
 {
@@ -16,9 +16,9 @@ class WilayahSeeder extends Seeder
     public function run(): void
     {
         // Kosongkan tabel sebelum insert agar idempotent
-        Schema::disableForeignKeyConstraints();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         WilayahDesa::truncate();
-        Schema::enableForeignKeyConstraints();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $dataWilayah = [
             [

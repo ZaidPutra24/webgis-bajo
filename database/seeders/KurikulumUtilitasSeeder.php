@@ -4,15 +4,15 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\KurikulumUtilitas;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class KurikulumUtilitasSeeder extends Seeder
 {
     public function run(): void
     {
-        Schema::disableForeignKeyConstraints();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         KurikulumUtilitas::truncate();
-        Schema::enableForeignKeyConstraints();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $data = [
             ['sekolah_id' => 1, 'kurikulum' => 'Kurikulum SD Merdeka', 'penyelenggara' => 'Double Shift/6 hari', 'akses_internet' => 'Dedicated', 'sumber_listrik' => 'PLN', 'daya_listrik' => 1300, 'luas_tanah' => 4200.0],

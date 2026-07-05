@@ -4,15 +4,14 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class JenjangSeeder extends Seeder
 {
     public function run(): void
     {
-        Schema::disableForeignKeyConstraints();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('jenjang')->truncate();
-        Schema::enableForeignKeyConstraints();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $jenjang = [
             ['id' => 1, 'kode' => 'TK', 'nama_jenjang' => 'Taman Kanak-Kanak', 'jenis_pendidikan' => 'Formal', 'created_at' => now(), 'updated_at' => now()],

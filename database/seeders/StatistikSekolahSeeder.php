@@ -4,15 +4,15 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\StatistikSekolah;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class StatistikSekolahSeeder extends Seeder
 {
     public function run(): void
     {
-        Schema::disableForeignKeyConstraints();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         StatistikSekolah::truncate();
-        Schema::enableForeignKeyConstraints();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $data = [
             ['sekolah_id' => 1, 'siswa_l' => 23, 'siswa_p' => 20, 'jumlah_siswa' => 43, 'daya_tampung' => 168, 'jumlah_guru' => 5, 'jumlah_rombel' => 6, 'ruang_kelas' => 3, 'laboratorium' => 0, 'perpustakaan' => 0],
