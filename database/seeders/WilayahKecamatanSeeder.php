@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\WilayahKecamatan;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class WilayahKecamatanSeeder extends Seeder
 {
@@ -15,9 +15,9 @@ class WilayahKecamatanSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Schema::disableForeignKeyConstraints();
         WilayahKecamatan::truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        Schema::enableForeignKeyConstraints();
 
         $dataKecamatan = [
             [
