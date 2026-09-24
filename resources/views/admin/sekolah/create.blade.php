@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'Add School')
-@section('page-title', 'Add School Baru')
+@section('page-title', 'Add New School')
 
 @section('content')
 <style>
@@ -104,7 +104,7 @@
 
             <div class="card modern-card shadow-sm">
                 <div class="card-header bg-white py-4 border-0 rounded-top-4">
-                    <h5 class="form-header-title fw-bold mb-0">Add School Baru</h5>
+                    <h5 class="form-header-title fw-bold mb-0">Add New School</h5>
                 </div>
                 
                 <div class="card-body p-4 pt-2">
@@ -161,27 +161,27 @@
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
                                 <label for="latitude" class="form-label form-label-custom mb-2">Latitude</label>
-                                <input type="number" step="any" class="form-control form-control-custom @error('latitude') is-invalid @enderror" id="latitude" name="latitude" value="{{ old('latitude') }}" placeholder="Opsional — contoh: -5.44321">
+                                <input type="number" step="any" class="form-control form-control-custom @error('latitude') is-invalid @enderror" id="latitude" name="latitude" value="{{ old('latitude') }}" placeholder="Optional — example: -5.44321">
                                 @error('latitude') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="longitude" class="form-label form-label-custom mb-2">Longitude</label>
-                                <input type="number" step="any" class="form-control form-control-custom @error('longitude') is-invalid @enderror" id="longitude" name="longitude" value="{{ old('longitude') }}" placeholder="Opsional — contoh: 122.5112">
+                                <input type="number" step="any" class="form-control form-control-custom @error('longitude') is-invalid @enderror" id="longitude" name="longitude" value="{{ old('longitude') }}" placeholder="Optional — example: 122.5112">
                                 @error('longitude') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <label for="alamat" class="form-label form-label-custom mb-2">Address Sekolah</label>
+                            <label for="alamat" class="form-label form-label-custom mb-2">School Address</label>
                             <textarea class="form-control form-control-custom @error('alamat') is-invalid @enderror" id="alamat" name="alamat" rows="3" placeholder="Example: Jl. Raya Bajo No. 123">{{ old('alamat') }}</textarea>
                             @error('alamat') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="mb-4">
-                            <label for="img" class="form-label form-label-custom mb-2">Foto Sekolah <span class="text-muted fw-normal">(Opsional)</span></label>
+                            <label for="img" class="form-label form-label-custom mb-2">School Photo <span class="text-muted fw-normal">(Optional)</span></label>
                             <input type="file" class="form-control form-control-custom @error('img') is-invalid @enderror"
                                    id="img" name="img" accept="image/jpg,image/jpeg,image/png,image/webp">
-                            <div class="form-text text-muted mt-1">Format: JPG, PNG, WEBP. Maks 2MB.</div>
+                            <div class="form-text text-muted mt-1">Format: JPG, PNG, WEBP. Max 2MB.</div>
                             @error('img') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
                         </div>
 
@@ -190,7 +190,7 @@
                                 Cancel
                             </a>
                             <button type="submit" class="btn btn-action-save px-4 py-2 rounded-pill">
-                                Save Sekolah
+                                Save School
                             </button>
                         </div>
                     </form>

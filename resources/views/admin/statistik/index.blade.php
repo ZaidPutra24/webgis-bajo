@@ -115,7 +115,7 @@
                 </div>
             </div>
             <div class="filter-pills ps-1">
-                <button class="filter-pill active" data-filter-jenis="all">Semua</button>
+                <button class="filter-pill active" data-filter-jenis="all">All</button>
                 <button class="filter-pill" data-filter-jenis="Formal">Formal</button>
                 <button class="filter-pill" data-filter-jenis="Non-Formal">Non-Formal</button>
                 <button class="filter-pill" data-filter-jenis="Anak Usia Dini">PAUD</button>
@@ -248,7 +248,7 @@
         });
 
         noResults.style.display = (totalFiltered === 0 && input.value.trim() !== '') ? '' : 'none';
-        countEl.textContent = input.value.trim() !== '' ? totalFiltered + ' dari ' + total + ' data' : total + ' data';
+        countEl.textContent = input.value.trim() !== '' ? totalFiltered + ' of ' + total + ' records' : total + ' records';
 
         if (totalFiltered > 0) {
             paginationInfo.textContent = 'Showing ' + (start + 1) + '–' + Math.min(end, totalFiltered) + ' of ' + totalFiltered + ' entries';

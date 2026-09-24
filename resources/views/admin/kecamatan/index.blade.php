@@ -110,11 +110,11 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="mb-1 text-dark fw-bold">Kecamatan Area Management</h4>
+            <h4 class="mb-1 text-dark fw-bold">Sub District Area Management</h4>
             <p class="text-muted small mb-0">ROI (Region of Interest) boundary of each kecamatan and the number of schools automatically detected within its reach.</p>
         </div>
         <a href="{{ route('kecamatan.create') }}" class="btn btn-action-outline px-4 py-2 rounded-pill shadow-sm">
-            Add Kecamatan Area
+            Add Sub District Area
         </a>
     </div>
 
@@ -130,7 +130,7 @@
     <div class="row g-3 mb-4">
         <div class="col-md-4">
             <div class="card modern-card shadow-sm p-3">
-                <div class="text-muted small fw-semibold text-uppercase mb-1">Total Kecamatan</div>
+                <div class="text-muted small fw-semibold text-uppercase mb-1">Total Sub Districts</div>
                 <div class="fs-3 fw-bold text-dark">{{ $kecamatans->count() }}</div>
             </div>
         </div>
@@ -142,7 +142,7 @@
         </div>
         <div class="col-md-4">
             <div class="card modern-card shadow-sm p-3">
-                <div class="text-muted small fw-semibold text-uppercase mb-1">Widest Kecamatan</div>
+                <div class="text-muted small fw-semibold text-uppercase mb-1">Widest Sub district</div>
                 <div class="fs-5 fw-bold text-dark">{{ optional($kecamatans->sortByDesc('luas_wilayah')->first())->nama_kecamatan ?? '-' }}</div>
             </div>
         </div>
@@ -151,14 +151,14 @@
     <div class="card modern-card shadow-sm">
         <div class="card-header bg-white py-3 border-0 rounded-top-4">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <h5 class="table-header-title fw-bold mb-0">List of Kecamatan ROI Polygons</h5>
+                <h5 class="table-header-title fw-bold mb-0">List of Sub District ROI Polygons</h5>
                 <div class="d-flex align-items-center gap-3">
                     <span class="search-count" id="searchCount"></span>
                     <div class="search-wrapper">
                         <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                         </svg>
-                        <input type="text" class="search-input" id="tableSearch" placeholder="Search kecamatan..." autocomplete="off">
+                        <input type="text" class="search-input" id="tableSearch" placeholder="Search sub district..." autocomplete="off">
                     </div>
                 </div>
             </div>
@@ -170,8 +170,8 @@
                     <thead class="table-light text-secondary">
                         <tr>
                             <th width="5%" class="ps-4 text-center">No.</th>
-                            <th width="20%">Kecamatan</th>
-                            <th width="18%">Kabupaten / Provinsi</th>
+                            <th width="20%">Sub District</th>
+                            <th width="18%">Regency / Province</th>
                             <th width="14%">Land Area</th>
                             <th width="20%">Schools within Reach (ROI)</th>
                             <th width="8%" class="text-center">Color</th>
@@ -196,14 +196,14 @@
                             </td>
                             <td>
                                 <span class="school-count-badge">
-                                    <i class="bi bi-building-fill"></i> {{ $k->jumlah_sekolah }} Sekolah
+                                    <i class="bi bi-building-fill"></i> {{ $k->jumlah_sekolah }} Schools
                                 </span>
                             </td>
                             <td class="text-center">
                                 <span class="roi-color-dot" style="background:{{ $k->warna ?? '#ea580c' }};" title="{{ $k->warna ?? '#ea580c' }}"></span>
                             </td>
                             <td class="text-center pe-4">
-                                <form action="{{ route('kecamatan.destroy', $k->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kecamatan ini?')" class="d-inline-flex gap-2 justify-content-center w-100">
+                                <form action="{{ route('kecamatan.destroy', $k->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this sub district?')" class="d-inline-flex gap-2 justify-content-center w-100">
                                     <a href="{{ route('kecamatan.edit', $k->id) }}" class="btn btn-sm btn-action-outline btn-icon" title="Edit / View ROI Analysis">
                                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                     </a>
@@ -218,7 +218,7 @@
                         @empty
                         <tr>
                             <td colspan="7" class="text-center py-5 text-muted small">
-                                No kecamatan area data yet. Click "Add Kecamatan Area" to input the first ROI boundary
+                                No sub district area data yet. Click "Add Sub District Area" to input the first ROI boundary
                                 (e.g. Tinanggea, Wawonii Barat, or Soropia).
                             </td>
                         </tr>
@@ -254,7 +254,7 @@
             if (match) visible++;
         });
         noResults.style.display = (visible === 0 && q !== '') ? '' : 'none';
-        countEl.textContent = q !== '' ? visible + ' dari ' + total + ' data' : total + ' data';
+        countEl.textContent = q !== '' ? visible + ' of ' + total + ' records' : total + ' records';
     }
 
     applyFilter();

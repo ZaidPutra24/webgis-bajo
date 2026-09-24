@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Sekolah')
-@section('page-title', 'Edit Schools')
+@section('title', 'Edit School')
+@section('page-title', 'Edit School')
 
 @section('content')
 <style>
@@ -97,8 +97,8 @@
             
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h4 class="mb-1 text-dark fw-bold">Registrasi Instansi</h4>
-                    <p class="text-muted small mb-0">Ubah identitas pokok, status akreditasi nasional, dan penyesuaian titik spasial wilayah sekolah.</p>
+                    <h4 class="mb-1 text-dark fw-bold">School Management</h4>
+                    <p class="text-muted small mb-0">Update core identity, national accreditation status, and spatial coordinate adjustments for the school.</p>
                 </div>
                 <a href="{{ route('sekolah.index') }}" class="btn btn-action-cancel px-4 py-2 rounded-pill shadow-sm">
                     Back
@@ -107,7 +107,7 @@
 
             <div class="card modern-card shadow-sm">
                 <div class="card-header bg-white py-4 border-0 rounded-top-4">
-                    <h5 class="form-header-title fw-bold mb-0">Edit Schools</h5>
+                    <h5 class="form-header-title fw-bold mb-0">Edit School</h5>
                 </div>
                 
                 <div class="card-body p-4 pt-2">
@@ -122,9 +122,9 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="jenjang_id" class="form-label form-label-custom mb-2">Level Sekolah</label>
+                            <label for="jenjang_id" class="form-label form-label-custom mb-2">School Level</label>
                             <select class="form-select form-select-custom @error('jenjang_id') is-invalid @enderror" id="jenjang_id" name="jenjang_id" required>
-                                <option value="">-- Pilih Level --</option>
+                                <option value="">-- Choose School Level --</option>
                                 @foreach($jenjangs as $j)
                                     <option value="{{ $j->id }}" {{ old('jenjang_id', $sekolah->jenjang_id) == $j->id ? 'selected' : '' }}>
                                         {{ $j->kode }} - {{ $j->nama_jenjang }}
@@ -142,7 +142,7 @@
                             karena di sisi UI tidak ada indikator field wajib.
                         --}}
                         <div class="mb-4">
-                            <label class="form-label form-label-custom mb-2 d-block">Status Sekolah <span class="text-danger">*</span></label>
+                            <label class="form-label form-label-custom mb-2 d-block">School Status <span class="text-danger">*</span></label>
                             <div class="radio-container-custom d-inline-flex gap-4 @error('status') is-invalid @enderror">
                                 <div class="form-check mb-0">
                                     <input class="form-check-input" type="radio" name="status" id="status_negeri" value="Negeri"
@@ -176,48 +176,48 @@
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
                                 <label for="latitude" class="form-label form-label-custom mb-2">Latitude</label>
-                                <input type="number" step="any" class="form-control form-control-custom @error('latitude') is-invalid @enderror" id="latitude" name="latitude" value="{{ old('latitude', $sekolah->latitude) }}" placeholder="Opsional — contoh: -5.44321">
+                                <input type="number" step="any" class="form-control form-control-custom @error('latitude') is-invalid @enderror" id="latitude" name="latitude" value="{{ old('latitude', $sekolah->latitude) }}" placeholder="Optional — example: -5.44321">
                                 @error('latitude') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="longitude" class="form-label form-label-custom mb-2">Longitude</label>
-                                <input type="number" step="any" class="form-control form-control-custom @error('longitude') is-invalid @enderror" id="longitude" name="longitude" value="{{ old('longitude', $sekolah->longitude) }}" placeholder="Opsional — contoh: 122.5112">
+                                <input type="number" step="any" class="form-control form-control-custom @error('longitude') is-invalid @enderror" id="longitude" name="longitude" value="{{ old('longitude', $sekolah->longitude) }}" placeholder="Optional — example: 122.5112">
                                 @error('longitude') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <label for="alamat" class="form-label form-label-custom mb-2">Address Sekolah</label>
+                            <label for="alamat" class="form-label form-label-custom mb-2">School Address</label>
                             <textarea class="form-control form-control-custom @error('alamat') is-invalid @enderror" id="alamat" name="alamat" rows="3">{{ old('alamat', $sekolah->alamat) }}</textarea>
                             @error('alamat') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="mb-4">
-                            <label for="img" class="form-label form-label-custom mb-2">Foto Sekolah</label>
+                            <label for="img" class="form-label form-label-custom mb-2">School Photo</label>
                             @if($sekolah->img)
                                 <div class="mb-3 p-3 rounded-3 border border-2" style="border-color:#e2e8f0;background:#f8fafc;" id="fotoPreviewBox">
                                     <div class="d-flex align-items-center gap-3">
                                         <img src="{{ asset('img/sekolah/' . $sekolah->img) }}"
-                                             alt="Foto saat ini" class="rounded-2" id="fotoPreviewImg"
+                                             alt="Current photo" class="rounded-2" id="fotoPreviewImg"
                                              style="width:80px;height:80px;object-fit:cover;flex-shrink:0;"
                                              onerror="this.style.display='none'">
                                         <div class="flex-grow-1">
-                                            <div class="small text-muted mb-1">Foto saat ini:</div>
+                                            <div class="small text-muted mb-1">Current photo:</div>
                                             <code class="small">{{ $sekolah->img }}</code>
                                         </div>
                                         <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3" id="btnHapusFoto">
                                             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="me-1">
                                                 <polyline points="3 6 5 6 21 6"/><path d="m19 6-.867 12.142A2 2 0 0 1 16.138 20H7.862a2 2 0 0 1-1.995-1.858L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"/>
                                             </svg>
-                                            Hapus Foto
+                                            Delete Photo
                                         </button>
                                     </div>
                                     <div class="mt-2 p-2 rounded-2 bg-danger bg-opacity-10 border border-danger border-opacity-25 d-none" id="konfirmasiHapusFoto">
                                         <div class="d-flex align-items-center justify-content-between">
-                                            <span class="small text-danger fw-semibold">Yakin ingin menghapus foto ini?</span>
+                                            <span class="small text-danger fw-semibold">Are you sure you want to delete this photo?</span>
                                             <div class="d-flex gap-2">
-                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="btnBatalHapus">Batal</button>
-                                                <button type="button" class="btn btn-sm btn-danger rounded-pill px-3" id="btnKonfirmasiHapus">Ya, Hapus</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="btnBatalHapus">Cancel</button>
+                                                <button type="button" class="btn btn-sm btn-danger rounded-pill px-3" id="btnKonfirmasiHapus">Yes, Delete</button>
                                             </div>
                                         </div>
                                     </div>
@@ -225,8 +225,8 @@
                                 <div class="p-3 rounded-3 border border-2 border-success bg-opacity-10 d-none" style="background:#f0fdf4;border-color:#86efac!important;" id="fotoTerhapusBox">
                                     <div class="d-flex align-items-center gap-2">
                                         <svg width="18" height="18" fill="none" stroke="#16a34a" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                        <span class="small text-success fw-semibold">Foto akan dihapus saat menyimpan.</span>
-                                        <button type="button" class="btn btn-sm btn-link text-muted p-0 ms-auto" id="btnUndoHapus">Urungkan</button>
+                                        <span class="small text-success fw-semibold">Photo will be deleted upon saving.</span>
+                                        <button type="button" class="btn btn-sm btn-link text-muted p-0 ms-auto" id="btnUndoHapus">Undo</button>
                                     </div>
                                 </div>
                             @endif
@@ -235,7 +235,7 @@
                                 <input type="file" class="form-control form-control-custom @error('img') is-invalid @enderror"
                                        id="img" name="img" accept="image/jpg,image/jpeg,image/png,image/webp">
                                 <div class="form-text text-muted mt-1">
-                                    {{ $sekolah->img ? 'Upload foto baru untuk mengganti yang ada.' : 'Format: JPG, PNG, WEBP. Maks 2MB.' }}
+                                    {{ $sekolah->img ? 'Upload new photo to replace existing.' : 'Format: JPG, PNG, WEBP. Max 2MB.' }}
                                 </div>
                             </div>
                             @error('img') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
@@ -291,7 +291,7 @@
                                 Cancel
                             </a>
                             <button type="submit" class="btn btn-action-save px-4 py-2 rounded-pill">
-                                Perbarui Data
+                                Update Data
                             </button>
                         </div>
                     </form>

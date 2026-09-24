@@ -9,9 +9,19 @@ use Illuminate\Support\Facades\DB;
 class SekolahSeeder extends Seeder
 {
     /**
-     * Data sekolah bersumber dari file sekolah (1).csv
+     * Data sekolah bersumber dari file sekolah (1).csv, dimutakhirkan dengan
+     * titik hasil digitasi pada HASIL_REVISI.zip (SEKOLAH WAWONII.shp,
+     * SEKOLAH SOROPIA SAJA.shp, SEKOLAH SAPONDA SAJA.shp).
      * Latitude & longitude dikonversi dari format string ke decimal.
-     * Sekolah tanpa koordinat dibiarkan null.
+     * Sekolah tanpa koordinat dibiarkan null (kolom latitude/longitude
+     * dibuat nullable, lihat migration 2026_08_23_090000_make_sekolah_lat_long_nullable).
+     *
+     * REVISI (HASIL_REVISI.zip):
+     * - Koordinat 6 sekolah yang sebelumnya null kini terisi: TK Dharma Wanita,
+     *   TK Mekar Jaya, TK PGRI Lambeso, TKS Atowatu, TK Negeri Pembina Wawonii
+     *   Barat, dan koreksi titik PAUD Ceria Handayani.
+     * - 3 sekolah baru ditambahkan: SDN 1 Wawolaa, MA Bahrul Mubarak Toronipa,
+     *   MTS Bahrul Mubarak Toronipa (id 90-92).
      */
     public function run(): void
     {
@@ -77,14 +87,14 @@ class SekolahSeeder extends Seeder
             ['id' => 56, 'jenjang_id' => 12, 'nama_sekolah' => 'PKBM HANDAYANI', 'npsn' => 'P2964350', 'status' => 'Swasta', 'alamat' => 'JL. Langara', 'akreditasi' => 'B', 'latitude' => null, 'longitude' => null, 'img' => 'pkbmhandayani.jpg'], // [cite: 36]
             ['id' => 57, 'jenjang_id' => 13, 'nama_sekolah' => 'SKB WAWONII', 'npsn' => 'P9962961', 'status' => 'Negeri', 'alamat' => 'Jl. Poros Desa Pasir Putih', 'akreditasi' => 'C', 'latitude' => null, 'longitude' => null, 'img' => 'skbwawonii.jpg'], // [cite: 36]
             ['id' => 58, 'jenjang_id' => 1, 'nama_sekolah' => 'TK ANGIN MAMIRI', 'npsn' => '69761564', 'status' => 'Swasta', 'alamat' => 'MBATOI, SOROPIA', 'akreditasi' => 'B', 'latitude' => -3.90072300, 'longitude' => 122.58098900, 'img' => 'tkanginmamiri.jpg'], // [cite: 36]
-            ['id' => 59, 'jenjang_id' => 1, 'nama_sekolah' => 'TK DHARMA WANITA', 'npsn' => '69761562', 'status' => 'Swasta', 'alamat' => 'DESA TORONIPA', 'akreditasi' => 'B', 'latitude' => null, 'longitude' => null, 'img' => 'tkdharmawanita.jpg'], // [cite: 36]
-            ['id' => 60, 'jenjang_id' => 1, 'nama_sekolah' => 'TK MEKAR JAYA', 'npsn' => '69762354', 'status' => 'Swasta', 'alamat' => 'Desa Mekar', 'akreditasi' => 'B', 'latitude' => null, 'longitude' => null, 'img' => 'tkmekarjaya.jpg'], // [cite: 36]
+            ['id' => 59, 'jenjang_id' => 1, 'nama_sekolah' => 'TK DHARMA WANITA', 'npsn' => '69761562', 'status' => 'Swasta', 'alamat' => 'DESA TORONIPA', 'akreditasi' => 'B', 'latitude' => -3.91102858, 'longitude' => 122.66072519, 'img' => 'tkdharmawanita.jpg'], // [cite: 36] // UPDATE: koordinat dari SEKOLAH SOROPIA SAJA.shp (HASIL REVISI)
+            ['id' => 60, 'jenjang_id' => 1, 'nama_sekolah' => 'TK MEKAR JAYA', 'npsn' => '69762354', 'status' => 'Swasta', 'alamat' => 'Desa Mekar', 'akreditasi' => 'B', 'latitude' => -3.92472193, 'longitude' => 122.65238652, 'img' => 'tkmekarjaya.jpg'], // [cite: 36] // UPDATE: koordinat dari SEKOLAH SOROPIA SAJA.shp (HASIL REVISI)
             ['id' => 61, 'jenjang_id' => 1, 'nama_sekolah' => 'TK MUTIARA SAPONDA', 'npsn' => '70056365', 'status' => 'Swasta', 'alamat' => 'Desa Saponda', 'akreditasi' => null, 'latitude' => null, 'longitude' => null, 'img' => 'tkmutiarasaponda.jpg'], // [cite: 36]
             ['id' => 62, 'jenjang_id' => 1, 'nama_sekolah' => 'TK NEGERI SORUE JAYA', 'npsn' => '70037057', 'status' => 'Negeri', 'alamat' => 'Desa Sorue Jaya', 'akreditasi' => 'B', 'latitude' => null, 'longitude' => null, 'img' => 'tknegerisoruejaya.jpg'], // [cite: 36]
-            ['id' => 63, 'jenjang_id' => 1, 'nama_sekolah' => 'TK PGRI LAMBESO', 'npsn' => '69771530', 'status' => 'Swasta', 'alamat' => 'DUSUN II BOKORI', 'akreditasi' => 'C', 'latitude' => null, 'longitude' => null, 'img' => 'tkpgrilambeso.jpg'], // [cite: 36]
+            ['id' => 63, 'jenjang_id' => 1, 'nama_sekolah' => 'TK PGRI LAMBESO', 'npsn' => '69771530', 'status' => 'Swasta', 'alamat' => 'DUSUN II BOKORI', 'akreditasi' => 'C', 'latitude' => -3.92435680, 'longitude' => 122.66384072, 'img' => 'tkpgrilambeso.jpg'], // [cite: 36] // UPDATE: koordinat dari SEKOLAH SOROPIA SAJA.shp (HASIL REVISI)
             ['id' => 64, 'jenjang_id' => 1, 'nama_sekolah' => 'TK SINAR TELAGA', 'npsn' => '69902532', 'status' => 'Swasta', 'alamat' => 'Jl. Poros Toronipa-Soropia', 'akreditasi' => 'C', 'latitude' => null, 'longitude' => null, 'img' => 'tksinartelaga.jpg'], // [cite: 37]
             ['id' => 65, 'jenjang_id' => 1, 'nama_sekolah' => 'TK WONUA MANDARA', 'npsn' => '69762334', 'status' => 'Swasta', 'alamat' => 'SAWAPUDO', 'akreditasi' => 'B', 'latitude' => -3.89700100, 'longitude' => 122.60309200, 'img' => 'tkwonuamandara.jpg'], // [cite: 37]
-            ['id' => 66, 'jenjang_id' => 1, 'nama_sekolah' => 'TKS ATOWATU', 'npsn' => '69761563', 'status' => 'Swasta', 'alamat' => 'POROS ATOWATU-SOROPIA', 'akreditasi' => 'C', 'latitude' => null, 'longitude' => null, 'img' => 'tksatowatu.jpg'], // [cite: 37]
+            ['id' => 66, 'jenjang_id' => 1, 'nama_sekolah' => 'TKS ATOWATU', 'npsn' => '69761563', 'status' => 'Swasta', 'alamat' => 'POROS ATOWATU-SOROPIA', 'akreditasi' => 'C', 'latitude' => -3.90134984, 'longitude' => 122.64333306, 'img' => 'tksatowatu.jpg'], // [cite: 37] // UPDATE: koordinat dari SEKOLAH SOROPIA SAJA.shp (HASIL REVISI)
             ['id' => 67, 'jenjang_id' => 1, 'nama_sekolah' => 'DHARMA WANITA', 'npsn' => '69797229', 'status' => 'Negeri', 'alamat' => 'JL. DRS. H. ABD SILONDAEA', 'akreditasi' => 'B', 'latitude' => -4.44040000, 'longitude' => 122.19560000, 'img' => 'dharmawanita.jpg'], // [cite: 37]
             ['id' => 68, 'jenjang_id' => 1, 'nama_sekolah' => 'ISLAM AL-KAUTZAR', 'npsn' => '69797194', 'status' => 'Swasta', 'alamat' => 'JL. H.ABD.SILONDAE', 'akreditasi' => 'B', 'latitude' => -4.46197598, 'longitude' => 122.22643182, 'img' => 'islamalkautzar.jpg'], // [cite: 38]
             ['id' => 69, 'jenjang_id' => 11, 'nama_sekolah' => 'KB Tunas Mekar Lapoa', 'npsn' => '69952610', 'status' => 'Swasta', 'alamat' => 'Blok B, Desa Lapoa', 'akreditasi' => 'B', 'latitude' => -4.44003900, 'longitude' => 122.17945100, 'img' => 'kbtunasmekarlapoa.jpg'], // [cite: 38]
@@ -98,16 +108,23 @@ class SekolahSeeder extends Seeder
             ['id' => 77, 'jenjang_id' => 11, 'nama_sekolah' => 'KB Bunga Karang', 'npsn' => '69976993', 'status' => 'Swasta', 'alamat' => 'Desa Langara Tangung Batu Kecamatan Wawonii Barat', 'akreditasi' => 'B', 'latitude' => null, 'longitude' => null, 'img' => 'kbbungakarang.jpg'], // [cite: 41]
             ['id' => 78, 'jenjang_id' => 11, 'nama_sekolah' => 'KB MATABAHO', 'npsn' => '69978313', 'status' => 'Swasta', 'alamat' => 'Desa Matabaho Kec. Wawonii Barat Kab. Konawe Kepulauan', 'akreditasi' => 'C', 'latitude' => -4.03679640, 'longitude' => 123.01948320, 'img' => 'kbmatabaho.jpg'], // [cite: 42]
             ['id' => 79, 'jenjang_id' => 10, 'nama_sekolah' => 'PAUD Cendekia', 'npsn' => '69935135', 'status' => 'Swasta', 'alamat' => 'Jl. Poros Langara Wawolaa', 'akreditasi' => 'B', 'latitude' => null, 'longitude' => null, 'img' => 'paudcendekia.jpg'], // [cite: 42]
-            ['id' => 80, 'jenjang_id' => 10, 'nama_sekolah' => 'PAUD Ceria Handayani', 'npsn' => '69919599', 'status' => 'Swasta', 'alamat' => 'Jl. Poros Wawobili', 'akreditasi' => 'C', 'latitude' => -4.01054900, 'longitude' => 123.03276600, 'img' => 'paudceriahandayani.jpg'], // [cite: 43]
+            ['id' => 80, 'jenjang_id' => 10, 'nama_sekolah' => 'PAUD Ceria Handayani', 'npsn' => '69919599', 'status' => 'Swasta', 'alamat' => 'Jl. Poros Wawobili', 'akreditasi' => 'C', 'latitude' => -4.01088663, 'longitude' => 123.03951648, 'img' => 'paudceriahandayani.jpg'], // [cite: 43] // UPDATE: koordinat dikoreksi dari SEKOLAH WAWONII.shp (HASIL REVISI)
             ['id' => 81, 'jenjang_id' => 10, 'nama_sekolah' => 'PAUD Ika Putri Madani', 'npsn' => '69919346', 'status' => 'Swasta', 'alamat' => 'Jl. Poros Langara-Lampeapi', 'akreditasi' => 'A', 'latitude' => -4.03233171, 'longitude' => 122.99115979, 'img' => 'paudikaputrimadani.jpg'], // [cite: 43]
             ['id' => 82, 'jenjang_id' => 2, 'nama_sekolah' => 'RA Ummu Salamah', 'npsn' => '70050506', 'status' => 'Swasta', 'alamat' => 'Jl. Abdullah RT.004/RW.002', 'akreditasi' => 'C', 'latitude' => null, 'longitude' => null, 'img' => 'raummusalamah.jpg'], // [cite: 44]
             ['id' => 83, 'jenjang_id' => 1, 'nama_sekolah' => 'TK AL FADILAH', 'npsn' => '69979190', 'status' => 'Swasta', 'alamat' => 'Desa Bukit Permai Kecamatan Wawonii Barat', 'akreditasi' => 'C', 'latitude' => null, 'longitude' => null, 'img' => 'tkalfadilah.jpg'], // [cite: 44]
             ['id' => 84, 'jenjang_id' => 1, 'nama_sekolah' => 'TK AFI', 'npsn' => '69918544', 'status' => 'Swasta', 'alamat' => 'Jl. Langara Wawolaa', 'akreditasi' => 'B', 'latitude' => -4.02367700, 'longitude' => 122.99615830, 'img' => 'tkafi.jpg'], // [cite: 44]
             ['id' => 85, 'jenjang_id' => 1, 'nama_sekolah' => 'TK BAHARI', 'npsn' => '69761631', 'status' => 'Swasta', 'alamat' => 'JL. H. Abdullah', 'akreditasi' => 'C', 'latitude' => -4.02034630, 'longitude' => 122.99327780, 'img' => 'tkbahari.jpg'], // [cite: 45]
             ['id' => 86, 'jenjang_id' => 1, 'nama_sekolah' => 'TK HARAPAN BANGSA', 'npsn' => '69917973', 'status' => 'Swasta', 'alamat' => 'Jl. Poros Langara Iwawo', 'akreditasi' => 'C', 'latitude' => -4.02974310, 'longitude' => 122.98993300, 'img' => 'tkharapanbangsa.jpg'], // [cite: 45]
-            ['id' => 87, 'jenjang_id' => 1, 'nama_sekolah' => 'TK NEGERI PEMBINA WAWONII BARAT', 'npsn' => '69932594', 'status' => 'Negeri', 'alamat' => 'Jl. Poros Langara', 'akreditasi' => 'B', 'latitude' => null, 'longitude' => null, 'img' => 'tknegeripembinawawoniibarat.jpg'], // [cite: 46]
+            ['id' => 87, 'jenjang_id' => 1, 'nama_sekolah' => 'TK NEGERI PEMBINA WAWONII BARAT', 'npsn' => '69932594', 'status' => 'Negeri', 'alamat' => 'Jl. Poros Langara', 'akreditasi' => 'B', 'latitude' => -4.02336679, 'longitude' => 123.00260278, 'img' => 'tknegeripembinawawoniibarat.jpg'], // [cite: 46] // UPDATE: koordinat dari SEKOLAH WAWONII.shp (HASIL REVISI)
             ['id' => 88, 'jenjang_id' => 1, 'nama_sekolah' => 'TK Waly Mekar', 'npsn' => '69967181', 'status' => 'Swasta', 'alamat' => 'Desa Kawa-Kawali Kec Wawonii Barat', 'akreditasi' => 'C', 'latitude' => -4.01007530, 'longitude' => 123.02975750, 'img' => 'tkwalymekar.jpg'], // [cite: 46]
             ['id' => 89, 'jenjang_id' => 7, 'nama_sekolah' => 'SMA NEGERI 3 KENDARI', 'npsn' => '40402617', 'status' => 'Negeri', 'alamat' => 'Jl. Ra. Kartini No.127, Kessilampe, Kec. Kendari, Kota Kendari, Sulawesi Tenggara 93126, Indonesia', 'akreditasi' => 'A', 'latitude' => -3.97615011, 'longitude' => 122.59930901, 'img' => '1783041989_sman3kendari.jpg'], // [cite: 47]
+
+            // ================= SEKOLAH BARU (HASIL REVISI - DATA BARU TAMBAHAN) =================
+            // Ditemukan dari digitasi titik sekolah di SEKOLAH WAWONII.shp & SEKOLAH SOROPIA SAJA.shp,
+            // belum pernah ada di data sebelumnya. NPSN & akreditasi belum tersedia di sumber data.
+            ['id' => 90, 'jenjang_id' => 3, 'nama_sekolah' => 'SDN 1 WAWOLAA', 'npsn' => null, 'status' => 'Negeri', 'alamat' => 'Ds. Wawolaa, Kec. Wawonii Barat, Kab. Konawe Kepulauan', 'akreditasi' => null, 'latitude' => -4.01442112, 'longitude' => 123.04443957, 'img' => 'sdn1wawolaa.jpg'],
+            ['id' => 91, 'jenjang_id' => 8, 'nama_sekolah' => 'MA BAHRUL MUBARAK TORONIPA', 'npsn' => null, 'status' => 'Swasta', 'alamat' => 'Ds. Toronipa, Kec. Soropia, Kab. Konawe', 'akreditasi' => null, 'latitude' => -3.91632529, 'longitude' => 122.66304653, 'img' => 'mabahrulmubaraktoronipa.jpg'],
+            ['id' => 92, 'jenjang_id' => 6, 'nama_sekolah' => 'MTS BAHRUL MUBARAK TORONIPA', 'npsn' => null, 'status' => 'Swasta', 'alamat' => 'Ds. Toronipa, Kec. Soropia, Kab. Konawe', 'akreditasi' => null, 'latitude' => -3.91244401, 'longitude' => 122.66121911, 'img' => 'mtsbahrulmubaraktoronipa.jpg'],
         ];
 
         foreach ($dataSekolah as $item) {

@@ -154,9 +154,29 @@
 
         <div class="sidebar-section mt-2">Analysis & Statistics</div>
         <nav>
+            <a href="{{ route('penduduk-jenjang.index') }}"
+               class="nav-link {{ Request::is('penduduk-jenjang*') ? 'active' : '' }}">
+                <i class="bi bi-clipboard-data"></i> Population & ATS per Level
+            </a>
+            <a href="{{ route('kepadatan.index') }}"
+               class="nav-link {{ Request::is('kepadatan*') ? 'active' : '' }}">
+                <i class="bi bi-people-fill"></i> School-Age Density
+            </a>
+            <a href="{{ route('clustering.index') }}"
+               class="nav-link {{ Request::is('clustering*') ? 'active' : '' }}">
+                <i class="bi bi-diagram-3-fill"></i> K-Means Clustering
+            </a>
             <a href="{{ route('jarak.index') }}"
-               class="nav-link {{ Request::is('jarak*') ? 'active' : '' }}">
+               class="nav-link {{ Request::is('jarak', 'jarak/*') ? 'active' : '' }}">
                 <i class="bi bi-arrows-expand"></i> Distance Analysis
+            </a>
+            <a href="{{ route('aksesibilitas.index') }}"
+                class="nav-link {{ Request::is('aksesibilitas*') ? 'active' : '' }}">
+                <i class="bi bi-signpost-split-fill"></i> Accessibility Dashboard
+            </a>
+            <a href="{{ route('jarak-kondisi.index') }}"
+                class="nav-link {{ Request::is('jarak-kondisi*') ? 'active' : '' }}">
+                <i class="bi bi-clipboard2-pulse-fill"></i> Distance vs Condition
             </a>
             <a href="{{ route('statistik.index') }}"
                class="nav-link {{ Request::is('statistik*') ? 'active' : '' }}">

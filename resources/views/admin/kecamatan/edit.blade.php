@@ -125,13 +125,13 @@
                 </a>
             </div>
 
-            <!-- ── ROI ANALYSIS: Jumlah sekolah dalam jangkauan kecamatan ini ── -->
+            <!-- ── ROI ANALYSIS: Number of schools within reach of this sub district ── -->
             <div class="roi-summary-card mb-4 shadow">
                 <div class="roi-summary-icon">
                     <i class="bi bi-buildings-fill"></i>
                 </div>
                 <div>
-                    <div class="roi-summary-value">{{ $sekolahDalamRoi->count() }} Sekolah</div>
+                    <div class="roi-summary-value">{{ $sekolahDalamRoi->count() }} Schools</div>
                     <div class="roi-summary-label">
                         Number of schools within the reach of Kecamatan {{ $kecamatan->nama_kecamatan }}
                         (calculated automatically from the school coordinates vs. this ROI boundary)

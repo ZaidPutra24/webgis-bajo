@@ -32,26 +32,18 @@ class JarakSekolahLokasiController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'sekolah_id'     => 'required|exists:sekolah,id',
-            'wilayah_id'     => 'required|exists:wilayah_desa,id',
-            'jarak'          => 'required|numeric|min:0',
-            'walk_mnt'       => 'nullable|numeric|min:0',
-            'drive_mnt'      => 'nullable|numeric|min:0',
-            'boat_mnt'       => 'nullable|numeric|min:0',
-            'jarak_laut'     => 'nullable|numeric|min:0',
-            'mode_transport' => 'nullable|in:darat,multimoda',
-            'route_geojson'  => 'nullable|string',
-        ]);
+        $validated = $this->validateJarak($request);
 
-        $exists = JarakSekolahLokasi::where('sekolah_id', $validated['sekolah_id'])
+        $exists = JarakSekolahLokasi::where('sekolah_id', $validated['sekolah_id'] ?? null)
                                     ->where('wilayah_id', $validated['wilayah_id'])
+                                    ->where('moda', $validated['moda'])
+                                    ->where('segmen', $validated['segmen'] ?? 'langsung')
                                     ->exists();
 
         if ($exists) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Data jarak untuk sekolah ke desa ini sudah ada!');
+                ->with('error', 'Data jarak untuk kombinasi sekolah/desa, moda, dan segmen ini sudah ada!');
         }
 
         // Auto-hitung waktu tempuh jika tidak diisi manual
@@ -78,30 +70,22 @@ class JarakSekolahLokasiController extends Controller
 
     public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'sekolah_id'     => 'required|exists:sekolah,id',
-            'wilayah_id'     => 'required|exists:wilayah_desa,id',
-            'jarak'          => 'required|numeric|min:0',
-            'walk_mnt'       => 'nullable|numeric|min:0',
-            'drive_mnt'      => 'nullable|numeric|min:0',
-            'boat_mnt'       => 'nullable|numeric|min:0',
-            'jarak_laut'     => 'nullable|numeric|min:0',
-            'mode_transport' => 'nullable|in:darat,multimoda',
-            'route_geojson'  => 'nullable|string',
-        ]);
+        $validated = $this->validateJarak($request);
 
         $jarak = JarakSekolahLokasi::findOrFail($id);
 
-        // BUG FIX: Cek duplikat pasangan sekolah+wilayah saat UPDATE — exclude id saat ini
-        $duplicate = JarakSekolahLokasi::where('sekolah_id', $validated['sekolah_id'])
+        // Cek duplikat kombinasi sekolah+wilayah+moda+segmen saat UPDATE — exclude id saat ini
+        $duplicate = JarakSekolahLokasi::where('sekolah_id', $validated['sekolah_id'] ?? null)
                                         ->where('wilayah_id', $validated['wilayah_id'])
+                                        ->where('moda', $validated['moda'])
+                                        ->where('segmen', $validated['segmen'] ?? 'langsung')
                                         ->where('id', '!=', $id)
                                         ->exists();
 
         if ($duplicate) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Kombinasi Sekolah dan Wilayah tersebut sudah ada pada data lain!');
+                ->with('error', 'Kombinasi Sekolah/Wilayah, Moda, dan Segmen tersebut sudah ada pada data lain!');
         }
 
         // Auto-hitung waktu tempuh jika tidak diisi manual
@@ -130,7 +114,7 @@ class JarakSekolahLokasiController extends Controller
      * GET /api/jarak/routes
      *
      * Kembalikan semua rute GeoJSON yang tersedia untuk ditampilkan di peta Leaflet.
-     * Filter opsional: ?wilayah_id=1 atau ?sekolah_id=2 atau ?mode=darat
+     * Filter opsional: ?wilayah_id=1 atau ?sekolah_id=2 atau ?moda=jalan_kaki
      *
      * Contoh pemakaian di Leaflet:
      *   fetch('/api/jarak/routes?wilayah_id=1')
@@ -155,29 +139,26 @@ class JarakSekolahLokasiController extends Controller
             $query->where('sekolah_id', $request->integer('sekolah_id'));
         }
 
-        if ($request->filled('mode')) {
-            $query->where('mode_transport', $request->string('mode'));
+        if ($request->filled('moda')) {
+            $query->where('moda', $request->string('moda'));
         }
 
         $rows = $query->get()->map(function ($row) {
             return [
-                'id'             => $row->id,
-                'sekolah_id'     => $row->sekolah_id,
-                'nama_sekolah'   => $row->sekolah?->nama_sekolah,
-                'wilayah_id'     => $row->wilayah_id,
-                'nama_wilayah'   => $row->wilayahDesa?->nama_wilayah,
-                'jarak'          => (float) $row->jarak,
-                'walk_mnt'       => $row->walk_mnt !== null ? (float) $row->walk_mnt : null,
-                'drive_mnt'      => $row->drive_mnt !== null ? (float) $row->drive_mnt : null,
-                'boat_mnt'       => $row->boat_mnt !== null ? (float) $row->boat_mnt : null,
-                'jarak_laut'     => $row->jarak_laut !== null ? (float) $row->jarak_laut : null,
-                'mode_transport' => $row->mode_transport,
-                'mode_label'     => $row->mode_label,
-                'walk_label'     => $row->walk_label,
-                'drive_label'    => $row->drive_label,
-                'boat_label'     => $row->boat_label,
+                'id'               => $row->id,
+                'sekolah_id'       => $row->sekolah_id,
+                'nama_sekolah'     => $row->sekolah?->nama_sekolah,
+                'wilayah_id'       => $row->wilayah_id,
+                'nama_wilayah'     => $row->wilayahDesa?->nama_wilayah,
+                'jarak'            => (float) $row->jarak,
+                'moda'             => $row->moda,
+                'moda_label'       => $row->moda_label,
+                'segmen'           => $row->segmen,
+                'waktu_tempuh_mnt' => $row->waktu_tempuh_mnt !== null ? (float) $row->waktu_tempuh_mnt : null,
+                'waktu_label'      => $row->waktu_label,
+                'tujuan'           => $row->tujuan,
                 // route_geojson dikirim sebagai string — client tinggal JSON.parse()
-                'route_geojson'  => $row->route_geojson,
+                'route_geojson'    => $row->route_geojson,
             ];
         });
 
@@ -209,24 +190,21 @@ class JarakSekolahLokasiController extends Controller
         $rows = $query->orderBy('wilayah_id')->orderBy('jarak')->get()
             ->map(function ($row) {
                 return [
-                    'id'             => $row->id,
-                    'sekolah_id'     => $row->sekolah_id,
-                    'nama_sekolah'   => $row->sekolah?->nama_sekolah,
-                    'lat_sekolah'    => $row->sekolah?->latitude,
-                    'lon_sekolah'    => $row->sekolah?->longitude,
-                    'wilayah_id'     => $row->wilayah_id,
-                    'nama_wilayah'   => $row->wilayahDesa?->nama_wilayah,
-                    'jarak'          => (float) $row->jarak,
-                    'walk_mnt'       => $row->walk_mnt !== null ? (float) $row->walk_mnt : null,
-                    'drive_mnt'      => $row->drive_mnt !== null ? (float) $row->drive_mnt : null,
-                    'boat_mnt'       => $row->boat_mnt !== null ? (float) $row->boat_mnt : null,
-                    'jarak_laut'     => $row->jarak_laut !== null ? (float) $row->jarak_laut : null,
-                    'mode_transport' => $row->mode_transport,
-                    'mode_label'     => $row->mode_label,
-                    'walk_label'     => $row->walk_label,
-                    'drive_label'    => $row->drive_label,
-                    'boat_label'     => $row->boat_label,
-                    'has_route'      => $row->route_geojson !== null,
+                    'id'               => $row->id,
+                    'sekolah_id'       => $row->sekolah_id,
+                    'nama_sekolah'     => $row->sekolah?->nama_sekolah,
+                    'lat_sekolah'      => $row->sekolah?->latitude,
+                    'lon_sekolah'      => $row->sekolah?->longitude,
+                    'wilayah_id'       => $row->wilayah_id,
+                    'nama_wilayah'     => $row->wilayahDesa?->nama_wilayah,
+                    'jarak'            => (float) $row->jarak,
+                    'moda'             => $row->moda,
+                    'moda_label'       => $row->moda_label,
+                    'segmen'           => $row->segmen,
+                    'waktu_tempuh_mnt' => $row->waktu_tempuh_mnt !== null ? (float) $row->waktu_tempuh_mnt : null,
+                    'waktu_label'      => $row->waktu_label,
+                    'tujuan'           => $row->tujuan,
+                    'has_route'        => $row->route_geojson !== null,
                 ];
             });
 
@@ -254,29 +232,27 @@ class JarakSekolahLokasiController extends Controller
                 'wilayahDesa:id,nama_wilayah',
             ])
             ->where('wilayah_id', $request->integer('wilayah_id'))
+            ->whereNotNull('sekolah_id')
+            ->segmen('langsung')
             ->orderBy('jarak')
             ->limit($limit)
             ->get()
             ->map(function ($row) {
                 return [
-                    'id'             => $row->id,
-                    'sekolah_id'     => $row->sekolah_id,
-                    'nama_sekolah'   => $row->sekolah?->nama_sekolah,
-                    'jenjang'        => $row->sekolah?->jenjang?->nama_jenjang,
-                    'akreditasi'     => $row->sekolah?->akreditasi,
-                    'lat_sekolah'    => $row->sekolah?->latitude,
-                    'lon_sekolah'    => $row->sekolah?->longitude,
-                    'nama_wilayah'   => $row->wilayahDesa?->nama_wilayah,
-                    'jarak'          => (float) $row->jarak,
-                    'walk_mnt'       => $row->walk_mnt !== null ? (float) $row->walk_mnt : null,
-                    'drive_mnt'      => $row->drive_mnt !== null ? (float) $row->drive_mnt : null,
-                    'boat_mnt'       => $row->boat_mnt !== null ? (float) $row->boat_mnt : null,
-                    'mode_transport' => $row->mode_transport,
-                    'mode_label'     => $row->mode_label,
-                    'walk_label'     => $row->walk_label,
-                    'drive_label'    => $row->drive_label,
-                    'boat_label'     => $row->boat_label,
-                    'has_route'      => $row->route_geojson !== null,
+                    'id'               => $row->id,
+                    'sekolah_id'       => $row->sekolah_id,
+                    'nama_sekolah'     => $row->sekolah?->nama_sekolah,
+                    'jenjang'          => $row->sekolah?->jenjang?->nama_jenjang,
+                    'akreditasi'       => $row->sekolah?->akreditasi,
+                    'lat_sekolah'      => $row->sekolah?->latitude,
+                    'lon_sekolah'      => $row->sekolah?->longitude,
+                    'nama_wilayah'     => $row->wilayahDesa?->nama_wilayah,
+                    'jarak'            => (float) $row->jarak,
+                    'moda'             => $row->moda,
+                    'moda_label'       => $row->moda_label,
+                    'waktu_tempuh_mnt' => $row->waktu_tempuh_mnt !== null ? (float) $row->waktu_tempuh_mnt : null,
+                    'waktu_label'      => $row->waktu_label,
+                    'has_route'        => $row->route_geojson !== null,
                 ];
             });
 
@@ -288,31 +264,63 @@ class JarakSekolahLokasiController extends Controller
     // =========================================================================
 
     /**
+     * Validasi payload create/update terhadap skema BARU (satu baris = satu moda).
+     * sekolah_id boleh kosong untuk leg antara (mis. desa -> dermaga, atau
+     * penyeberangan perahu dermaga -> dermaga) — dalam hal ini tujuan_label wajib diisi.
+     */
+    private function validateJarak(Request $request): array
+    {
+        $validated = $request->validate([
+            'sekolah_id'       => 'nullable|exists:sekolah,id',
+            'wilayah_id'       => 'required|exists:wilayah_desa,id',
+            'jarak'            => 'required|numeric|min:0',
+            'moda'             => 'required|in:jalan_kaki,kendaraan,perahu',
+            'segmen'           => 'nullable|in:langsung,ke_dermaga,penyeberangan,dermaga_ke_sekolah',
+            'waktu_tempuh_mnt' => 'nullable|numeric|min:0',
+            'tujuan_label'     => 'nullable|string|max:255',
+            'route_geojson'    => 'nullable|string',
+        ]);
+
+        $validated['segmen'] = $validated['segmen'] ?? 'langsung';
+
+        $request->validate([
+            'sekolah_id' => $validated['segmen'] === 'langsung' || $validated['segmen'] === 'dermaga_ke_sekolah'
+                ? 'required|exists:sekolah,id'
+                : 'nullable',
+        ]);
+
+        if (empty($validated['sekolah_id']) && empty($validated['tujuan_label'])) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'tujuan_label' => 'Label tujuan wajib diisi jika baris ini bukan tujuan akhir ke sekolah (mis. "Dermaga Pulau Bungin").',
+            ]);
+        }
+
+        return $validated;
+    }
+
+    /**
      * Auto-hitung waktu tempuh dari jarak jika kolom tidak diisi secara manual.
-     * walk_mnt  = jarak / 5 km/jam * 60
-     * drive_mnt = jarak / 30 km/jam * 60
-     * boat_mnt  = jarak_laut / 25 km/jam * 60 (hanya jika ada jarak_laut)
+     * jalan_kaki = jarak / 5  km/jam * 60
+     * kendaraan  = jarak / 30 km/jam * 60
+     * perahu     = jarak / 25 km/jam * 60
      */
     private function autoHitungWaktu(array $data): array
     {
+        if (!empty($data['waktu_tempuh_mnt'])) {
+            return $data;
+        }
+
         $jarak = (float) ($data['jarak'] ?? 0);
-
-        if (empty($data['walk_mnt']) && $jarak > 0) {
-            $data['walk_mnt'] = JarakSekolahLokasi::hitungWalkMnt($jarak);
+        if ($jarak <= 0) {
+            return $data;
         }
 
-        if (empty($data['drive_mnt']) && $jarak > 0) {
-            $data['drive_mnt'] = JarakSekolahLokasi::hitungDriveMnt($jarak);
-        }
-
-        if (!empty($data['jarak_laut']) && empty($data['boat_mnt'])) {
-            $data['boat_mnt'] = JarakSekolahLokasi::hitungBoatMnt((float) $data['jarak_laut']);
-        }
-
-        // Set mode_transport berdasarkan ada tidaknya jarak_laut
-        if (empty($data['mode_transport'])) {
-            $data['mode_transport'] = !empty($data['jarak_laut']) ? 'multimoda' : 'darat';
-        }
+        $data['waktu_tempuh_mnt'] = match ($data['moda']) {
+            'jalan_kaki' => JarakSekolahLokasi::hitungWalkMnt($jarak),
+            'kendaraan'  => JarakSekolahLokasi::hitungDriveMnt($jarak),
+            'perahu'     => JarakSekolahLokasi::hitungBoatMnt($jarak),
+            default      => null,
+        };
 
         return $data;
     }

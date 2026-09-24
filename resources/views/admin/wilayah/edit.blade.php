@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Wilayah Desa')
+@section('title', 'Edit Village Area')
 @section('page-title', 'Edit Village Area Data')
 
 @section('content')
@@ -117,7 +117,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="luas_wilayah" class="form-label form-label-custom mb-2">Land Area (Hektar)</label>
+                            <label for="luas_wilayah" class="form-label form-label-custom mb-2">Land Area (km²)</label>
                             <input type="number" step="0.01" class="form-control form-control-custom @error('luas_wilayah') is-invalid @enderror" id="luas_wilayah" name="luas_wilayah" value="{{ old('luas_wilayah', $wilayah->luas_wilayah) }}">
                             @error('luas_wilayah') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
                         </div>
@@ -217,27 +217,27 @@
 
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
-                                <label for="penduduk_usia_sekolah_l" class="form-label form-label-custom mb-2">Penduduk Usia Sekolah (L)</label>
+                                <label for="penduduk_usia_sekolah_l" class="form-label form-label-custom mb-2">Male School-Age Population (M)</label>
                                 <input type="number" min="0"
                                        class="form-control form-control-custom @error('penduduk_usia_sekolah_l') is-invalid @enderror"
                                        id="penduduk_usia_sekolah_l" name="penduduk_usia_sekolah_l"
                                        value="{{ old('penduduk_usia_sekolah_l', $wilayah->penduduk_usia_sekolah_l ?? '') }}"
-                                       placeholder="Jumlah laki-laki">
-                                @error('penduduk_usia_sekolah_l') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                       placeholder="Number of males">
+                                 @error('penduduk_usia_sekolah_l') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="penduduk_usia_sekolah_p" class="form-label form-label-custom mb-2">Penduduk Usia Sekolah (P)</label>
+                                <label for="penduduk_usia_sekolah_p" class="form-label form-label-custom mb-2">Female School-Age Population (F)</label>
                                 <input type="number" min="0"
                                        class="form-control form-control-custom @error('penduduk_usia_sekolah_p') is-invalid @enderror"
                                        id="penduduk_usia_sekolah_p" name="penduduk_usia_sekolah_p"
                                        value="{{ old('penduduk_usia_sekolah_p', $wilayah->penduduk_usia_sekolah_p ?? '') }}"
-                                       placeholder="Jumlah perempuan">
-                                @error('penduduk_usia_sekolah_p') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                       placeholder="Number of females">
+                                 @error('penduduk_usia_sekolah_p') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <label for="geojson" class="form-label form-label-custom mb-2">Raw GeoJSON Teks</label>
+                            <label for="geojson" class="form-label form-label-custom mb-2">Raw GeoJSON Text</label>
                             <textarea class="form-control form-control-custom geojson-textarea @error('geojson') is-invalid @enderror" id="geojson" name="geojson" rows="8" required>{{ old('geojson', $wilayah->geojson) }}</textarea>
                             @error('geojson') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
                         </div>
@@ -247,7 +247,7 @@
                                 Cancel
                             </a>
                             <button type="submit" class="btn btn-action-save px-4 py-2 rounded-pill">
-                                Save Change
+                                Save Changes
                             </button>
                         </div>
                     </form>

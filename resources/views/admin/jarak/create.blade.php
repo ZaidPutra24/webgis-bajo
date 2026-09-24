@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Tambah Data Jarak')
-@section('page-title', 'Tambah Data Matriks Jarak & Rute')
+@section('title', 'Add Distance Data')
+@section('page-title', 'Add Distance & Route Data')
 
 @push('styles')
 <style>
@@ -24,12 +24,13 @@
         letter-spacing:.1em; margin-bottom:1rem; display:flex; align-items:center; gap:.5rem; }
     .section-label::after { content:''; flex:1; height:1px; background:#e8ecf2; }
     .calc-hint { font-size:.72rem; color:#94a3b8; margin-top:.3rem; }
-    .mode-toggle-wrap { display:flex; gap:.75rem; }
-    .mode-toggle-btn { flex:1; padding:.6rem 1rem; border:2px solid #e2e8f0; border-radius:.75rem;
+    .moda-toggle-wrap { display:flex; gap:.75rem; }
+    .moda-toggle-btn { flex:1; padding:.6rem 1rem; border:2px solid #e2e8f0; border-radius:.75rem;
         background:#f8fafc; color:#64748b; font-weight:600; font-size:.88rem;
         cursor:pointer; transition:all .2s; text-align:center; }
-    .mode-toggle-btn.selected-darat     { border-color:#16a34a; background:#dcfce7; color:#166534; }
-    .mode-toggle-btn.selected-multimoda { border-color:#ca8a04; background:#fef9c3; color:#92400e; }
+    .moda-toggle-btn.selected-jalan_kaki { border-color:#16a34a; background:#dcfce7; color:#166534; }
+    .moda-toggle-btn.selected-kendaraan  { border-color:#2563eb; background:#dbeafe; color:#1d4ed8; }
+    .moda-toggle-btn.selected-perahu     { border-color:#ea580c; background:#ffedd5; color:#9a3412; }
     .btn-action-save { background:#4F46E5; border:2px solid #4F46E5; color:#fff; font-weight:600;
         font-size:.9rem; transition:all .2s; box-shadow:0 4px 12px rgba(79,70,229,.15); }
     .btn-action-save:hover { background:#4338ca; border-color:#4338ca; color:#fff; transform:translateY(-1px); }
@@ -44,8 +45,8 @@
         color: #475569;
         background-color: #f8fafc;
     }
-    #panel-multimoda { display:none; }
-    #panel-jarak-laut { display:none; }
+    #panel-sekolah { display: block; }
+    #panel-tujuan-label { display: none; }
 </style>
 @endpush
 
@@ -53,14 +54,13 @@
 <div class="container-fluid px-0 mb-5">
 <div class="row justify-content-center">
 <div class="col-lg-10">
-
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
-            <h4 class="mb-1 text-dark fw-bold">Tambah Data Jarak & Rute</h4>
-            <p class="text-muted small mb-0">Input jarak, waktu tempuh, dan data GeoJSON rute (opsional).</p>
+            <h4 class="mb-1 text-dark fw-bold">Add Distance & Route Data</h4>
+            <p class="text-muted small mb-0">Input distance, travel mode, travel time, and GeoJSON route data (optional). One row = one travel mode.</p>
         </div>
         <a href="{{ route('jarak.index') }}" class="btn btn-action-cancel px-4 py-2 rounded-pill shadow-sm">
-            <i class="bi bi-arrow-left me-1"></i> Kembali
+            <i class="bi bi-arrow-left me-1"></i> Back
         </a>
     </div>
 
@@ -75,20 +75,66 @@
 
     <div class="card modern-card shadow-sm">
         <div class="card-header bg-white py-4 border-0 rounded-top-4">
-            <h5 class="form-header-title fw-bold mb-0">Input Matriks Jarak Baru</h5>
+            <h5 class="form-header-title fw-bold mb-0">Input New Distance & Route Data</h5>
         </div>
         <div class="card-body p-4 pt-2">
         <form action="{{ route('jarak.store') }}" method="POST" id="form-jarak">
             @csrf
 
-            {{-- ══ SEKSI 1: Relasi ══ --}}
-            <p class="section-label mt-2"><i class="bi bi-link-45deg"></i> Data Relasi</p>
+            {{-- ══ SEKSI 1: Moda ══ --}}
+            <p class="section-label mt-2"><i class="bi bi-signpost-split"></i> Travel Mode</p>
+            <input type="hidden" name="moda" id="moda" value="{{ old('moda','jalan_kaki') }}">
+            <div class="moda-toggle-wrap mb-1">
+                <button type="button" class="moda-toggle-btn {{ old('moda','jalan_kaki')==='jalan_kaki'?'selected-jalan_kaki':'' }}"
+                        data-moda="jalan_kaki" onclick="setModa('jalan_kaki')">
+                    <i class="bi bi-person-walking me-1"></i> Jalan Kaki
+                </button>
+                <button type="button" class="moda-toggle-btn {{ old('moda')==='kendaraan'?'selected-kendaraan':'' }}"
+                        data-moda="kendaraan" onclick="setModa('kendaraan')">
+                    <i class="bi bi-car-front me-1"></i> Kendaraan
+                </button>
+                <button type="button" class="moda-toggle-btn {{ old('moda')==='perahu'?'selected-perahu':'' }}"
+                        data-moda="perahu" onclick="setModa('perahu')">
+                    <i class="bi bi-water me-1"></i> Perahu
+                </button>
+            </div>
+            @error('moda') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+
+            {{-- ══ SEKSI 2: Segmen ══ --}}
+            <div class="section-sep"></div>
+            <p class="section-label"><i class="bi bi-signpost"></i> Journey Segment</p>
+            <select class="form-select form-select-custom @error('segmen') is-invalid @enderror"
+                    name="segmen" id="segmen" onchange="onSegmenChange()">
+                <option value="langsung" {{ old('segmen','langsung')==='langsung'?'selected':'' }}>Langsung (desa &rarr; sekolah, satu leg utuh)</option>
+                <option value="ke_dermaga" {{ old('segmen')==='ke_dermaga'?'selected':'' }}>Ke Dermaga (desa &rarr; dermaga)</option>
+                <option value="penyeberangan" {{ old('segmen')==='penyeberangan'?'selected':'' }}>Penyeberangan (dermaga &rarr; dermaga, perahu)</option>
+                <option value="dermaga_ke_sekolah" {{ old('segmen')==='dermaga_ke_sekolah'?'selected':'' }}>Dermaga &rarr; Sekolah (setelah menyeberang)</option>
+            </select>
+            @error('segmen') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            <p class="calc-hint">Pilih "Langsung" untuk kasus umum. Pilih segmen lain hanya untuk rute pulau bertahap (mis. Bungin/Saponda).</p>
+
+            {{-- ══ SEKSI 3: Relasi ══ --}}
+            <div class="section-sep"></div>
+            <p class="section-label"><i class="bi bi-link-45deg"></i> Relation Data</p>
             <div class="row g-3 mb-2">
                 <div class="col-md-6">
-                    <label class="form-label form-label-custom mb-2">Pilih Sekolah</label>
+                    <label class="form-label form-label-custom mb-2">Select Village / Region</label>
+                    <select class="form-select form-select-custom @error('wilayah_id') is-invalid @enderror"
+                            name="wilayah_id" id="wilayah_id" required>
+                        <option value="">-- Select Village --</option>
+                        @foreach($wilayahs as $w)
+                            <option value="{{ $w->id }}" {{ old('wilayah_id') == $w->id ? 'selected' : '' }}>
+                                {{ $w->nama_wilayah }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('wilayah_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                </div>
+                <div class="col-md-6" id="panel-sekolah">
+                    <label class="form-label form-label-custom mb-2">Select School</label>
                     <select class="form-select form-select-custom @error('sekolah_id') is-invalid @enderror"
-                            name="sekolah_id" id="sekolah_id" required>
-                        <option value="">-- Pilih Sekolah --</option>
+                            name="sekolah_id" id="sekolah_id">
+                        <option value="">-- Select School --</option>
                         @foreach($sekolahs as $s)
                             <option value="{{ $s->id }}"
                                 {{ old('sekolah_id') == $s->id ? 'selected' : '' }}>
@@ -98,126 +144,70 @@
                     </select>
                     @error('sekolah_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label form-label-custom mb-2">Pilih Desa / Wilayah</label>
-                    <select class="form-select form-select-custom @error('wilayah_id') is-invalid @enderror"
-                            name="wilayah_id" id="wilayah_id" required>
-                        <option value="">-- Pilih Desa --</option>
-                        @foreach($wilayahs as $w)
-                            <option value="{{ $w->id }}" {{ old('wilayah_id') == $w->id ? 'selected' : '' }}>
-                                {{ $w->nama_wilayah }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('wilayah_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                <div class="col-md-6" id="panel-tujuan-label">
+                    <label class="form-label form-label-custom mb-2">Destination Label</label>
+                    <input type="text" class="form-control form-control-custom @error('tujuan_label') is-invalid @enderror"
+                           name="tujuan_label" id="tujuan_label" value="{{ old('tujuan_label') }}"
+                           placeholder='Example: "Dermaga Pulau Bungin"'>
+                    @error('tujuan_label') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    <p class="calc-hint">Dipakai saat leg ini bukan tujuan akhir ke sekolah (mis. leg antara ke dermaga).</p>
                 </div>
             </div>
 
-            {{-- ══ SEKSI 2: Mode ══ --}}
+            {{-- ══ SEKSI 4: Jarak & Waktu ══ --}}
             <div class="section-sep"></div>
-            <p class="section-label"><i class="bi bi-signpost-split"></i> Mode Transportasi</p>
-            <input type="hidden" name="mode_transport" id="mode_transport" value="{{ old('mode_transport','darat') }}">
-            <div class="mode-toggle-wrap mb-1">
-                <button type="button" class="mode-toggle-btn {{ old('mode_transport','darat')==='darat'?'selected-darat':'' }}"
-                        data-mode="darat" onclick="setMode('darat')">
-                    <i class="bi bi-truck me-1"></i> Darat
-                </button>
-                <button type="button" class="mode-toggle-btn {{ old('mode_transport')==='multimoda'?'selected-multimoda':'' }}"
-                        data-mode="multimoda" onclick="setMode('multimoda')">
-                    <i class="bi bi-water me-1"></i> Multimoda (Darat + Perahu)
-                </button>
-            </div>
-
-            {{-- ══ SEKSI 3: Jarak ══ --}}
-            <div class="section-sep"></div>
-            <p class="section-label"><i class="bi bi-rulers"></i> Data Jarak</p>
+            <p class="section-label"><i class="bi bi-rulers"></i> Distance & Travel Time</p>
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label class="form-label form-label-custom mb-2">Jarak Total</label>
+                    <label class="form-label form-label-custom mb-2">Distance for this mode</label>
                     <div class="input-group">
                         <input type="number" step="0.001" min="0" id="jarak" name="jarak"
                                class="form-control form-control-custom @error('jarak') is-invalid @enderror"
-                               value="{{ old('jarak') }}" placeholder="Contoh: 17.58"
+                               value="{{ old('jarak') }}" placeholder="Example: 17.58"
                                style="border-top-right-radius:0;border-bottom-right-radius:0;"
                                required oninput="autoCalc()">
                         <span class="input-group-text input-group-text-custom">km</span>
                         @error('jarak') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
                 </div>
-                <div class="col-md-6" id="panel-jarak-laut">
-                    <label class="form-label form-label-custom mb-2">Jarak Segmen Laut</label>
+                <div class="col-md-6">
+                    <label class="form-label form-label-custom mb-2">Estimated Travel Time
+                        <span style="font-size:.68rem;font-weight:500;text-transform:none;letter-spacing:0;">(auto — can be overridden)</span>
+                    </label>
                     <div class="input-group">
-                        <input type="number" step="0.001" min="0" id="jarak_laut" name="jarak_laut"
-                               class="form-control form-control-custom"
-                               value="{{ old('jarak_laut') }}" placeholder="Contoh: 17.44"
-                               style="border-top-right-radius:0;border-bottom-right-radius:0;"
-                               oninput="autoCalc()">
-                        <span class="input-group-text input-group-text-custom">km</span>
-                    </div>
-                    <p class="calc-hint">Segmen yang ditempuh dengan perahu saja.</p>
-                </div>
-            </div>
-
-            {{-- ══ SEKSI 4: Waktu Tempuh ══ --}}
-            <div class="section-sep"></div>
-            <p class="section-label"><i class="bi bi-stopwatch"></i> Estimasi Waktu Tempuh
-                <span style="font-size:.68rem;font-weight:500;text-transform:none;letter-spacing:0;">(otomatis — bisa override)</span>
-            </p>
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label form-label-custom mb-2"><i class="bi bi-person-walking me-1"></i>Jalan Kaki</label>
-                    <div class="input-group">
-                        <input type="number" step="0.01" min="0" id="walk_mnt" name="walk_mnt"
-                               class="form-control form-control-custom" value="{{ old('walk_mnt') }}" placeholder="auto"
+                        <input type="number" step="0.01" min="0" id="waktu_tempuh_mnt" name="waktu_tempuh_mnt"
+                               class="form-control form-control-custom @error('waktu_tempuh_mnt') is-invalid @enderror"
+                               value="{{ old('waktu_tempuh_mnt') }}" placeholder="auto"
                                style="border-top-right-radius:0;border-bottom-right-radius:0;">
-                        <span class="input-group-text input-group-text-custom">mnt</span>
+                        <span class="input-group-text input-group-text-custom">minute</span>
+                        @error('waktu_tempuh_mnt') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
-                    <p class="calc-hint">÷ 5 km/jam × 60</p>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label form-label-custom mb-2"><i class="bi bi-car-front me-1"></i>Berkendara</label>
-                    <div class="input-group">
-                        <input type="number" step="0.01" min="0" id="drive_mnt" name="drive_mnt"
-                               class="form-control form-control-custom" value="{{ old('drive_mnt') }}" placeholder="auto"
-                               style="border-top-right-radius:0;border-bottom-right-radius:0;">
-                        <span class="input-group-text input-group-text-custom">mnt</span>
-                    </div>
-                    <p class="calc-hint">÷ 30 km/jam × 60</p>
-                </div>
-                <div class="col-md-4" id="panel-multimoda">
-                    <label class="form-label form-label-custom mb-2"><i class="bi bi-water me-1"></i>Perahu</label>
-                    <div class="input-group">
-                        <input type="number" step="0.01" min="0" id="boat_mnt" name="boat_mnt"
-                               class="form-control form-control-custom" value="{{ old('boat_mnt') }}" placeholder="auto"
-                               style="border-top-right-radius:0;border-bottom-right-radius:0;">
-                        <span class="input-group-text input-group-text-custom">mnt</span>
-                    </div>
-                    <p class="calc-hint">÷ 25 km/jam × 60</p>
+                    <p class="calc-hint" id="calc-hint-text">÷ 5 km/h × 60 (jalan kaki)</p>
                 </div>
             </div>
 
             {{-- ══ SEKSI 5: Rute GeoJSON ══ --}}
             <div class="section-sep"></div>
-            <p class="section-label"><i class="bi bi-map"></i> Rute GeoJSON
+            <p class="section-label"><i class="bi bi-map"></i> GeoJSON Route
                 <span style="font-size:.68rem;font-weight:500;text-transform:none;letter-spacing:0;">
-                    (opsional — tempel teks GeoJSON jalur rute, misalnya hasil export dari QGIS)
+                    (optional — paste the route path GeoJSON text, e.g., an export from QGIS)
                 </span>
             </p>
 
             <textarea class="form-control form-control-custom geojson-textarea @error('route_geojson') is-invalid @enderror"
                       id="route_geojson" name="route_geojson" rows="8"
-                      placeholder='Contoh: {"type": "LineString", "coordinates": [[122.65, -3.93], [122.66, -3.94]]}'>{{ old('route_geojson') }}</textarea>
+                      placeholder='Example: {"type": "LineString", "coordinates": [[122.65, -3.93], [122.66, -3.94]]}'>{{ old('route_geojson') }}</textarea>
             @error('route_geojson') <div class="invalid-feedback">{{ $message }}</div> @enderror
             <p class="calc-hint mt-2">
                 <i class="bi bi-lightbulb me-1"></i>
-                Format geometry GeoJSON standar (LineString/MultiLineString). Kosongkan jika belum ada data rute.
+                Format geometry GeoJSON standar (LineString/MultiLineString), khusus untuk moda &amp; segmen di atas. Leave blank if there is no route data yet.
             </p>
 
             {{-- ══ Footer ══ --}}
             <div class="d-flex gap-2 justify-content-end pt-4 mt-2 border-top border-light">
-                <a href="{{ route('jarak.index') }}" class="btn btn-action-cancel px-4 py-2 rounded-pill">Batal</a>
+                <a href="{{ route('jarak.index') }}" class="btn btn-action-cancel px-4 py-2 rounded-pill">Cancel</a>
                 <button type="submit" class="btn btn-action-save px-4 py-2 rounded-pill">
-                    <i class="bi bi-check-lg me-1"></i> Simpan Data
+                    <i class="bi bi-check-lg me-1"></i> Save Data
                 </button>
             </div>
 
@@ -232,47 +222,51 @@
 
 @push('scripts')
 <script>
-// ─── Mode Toggle ─────────────────────────────────────────────────────────────
-function setMode(mode) {
-    document.getElementById('mode_transport').value = mode;
-    document.querySelectorAll('.mode-toggle-btn').forEach(function(b) {
-        b.classList.remove('selected-darat','selected-multimoda');
+// ─── Kecepatan rata-rata per moda (km/jam), harus konsisten dengan Model::hitungXxxMnt() ───
+var MODA_SPEED = { jalan_kaki: 5, kendaraan: 30, perahu: 25 };
+var MODA_HINT  = {
+    jalan_kaki: '÷ 5 km/h × 60 (jalan kaki)',
+    kendaraan:  '÷ 30 km/h × 60 (kendaraan)',
+    perahu:     '÷ 25 km/h × 60 (perahu)'
+};
+
+// ─── Moda Toggle ─────────────────────────────────────────────────────────────
+function setModa(moda) {
+    document.getElementById('moda').value = moda;
+    document.querySelectorAll('.moda-toggle-btn').forEach(function(b) {
+        b.classList.remove('selected-jalan_kaki', 'selected-kendaraan', 'selected-perahu');
     });
-    var sel = document.querySelector('.mode-toggle-btn[data-mode="'+mode+'"]');
-    if (sel) sel.classList.add('selected-'+mode);
-    var isMulti = mode === 'multimoda';
-    document.getElementById('panel-multimoda').style.display    = isMulti ? '' : 'none';
-    document.getElementById('panel-jarak-laut').style.display   = isMulti ? '' : 'none';
-    if (!isMulti) {
-        document.getElementById('boat_mnt').value   = '';
-        document.getElementById('jarak_laut').value = '';
-    }
+    var sel = document.querySelector('.moda-toggle-btn[data-moda="' + moda + '"]');
+    if (sel) sel.classList.add('selected-' + moda);
+    document.getElementById('calc-hint-text').textContent = MODA_HINT[moda] || '';
     autoCalc();
+}
+
+// ─── Segmen: sekolah wajib untuk 'langsung'/'dermaga_ke_sekolah', tujuan_label untuk sisanya ───
+function onSegmenChange() {
+    var segmen = document.getElementById('segmen').value;
+    var needsSekolah = (segmen === 'langsung' || segmen === 'dermaga_ke_sekolah');
+    document.getElementById('panel-sekolah').style.display = needsSekolah ? '' : 'none';
+    document.getElementById('panel-tujuan-label').style.display = needsSekolah ? 'none' : '';
+    document.getElementById('sekolah_id').required = needsSekolah;
 }
 
 // ─── Auto-calc Waktu Tempuh ───────────────────────────────────────────────────
 function autoCalc() {
-    var jarak     = parseFloat(document.getElementById('jarak').value)      || 0;
-    var jarakLaut = parseFloat(document.getElementById('jarak_laut').value) || 0;
-    var mode      = document.getElementById('mode_transport').value;
-    var wF = document.getElementById('walk_mnt');
-    var dF = document.getElementById('drive_mnt');
-    var bF = document.getElementById('boat_mnt');
-    if (!wF.dataset.manual && jarak > 0)
-        wF.value = Math.round((jarak / 5) * 60 * 100) / 100;
-    if (!dF.dataset.manual && jarak > 0)
-        dF.value = Math.round((jarak / 30) * 60 * 100) / 100;
-    if (mode === 'multimoda' && !bF.dataset.manual && jarakLaut > 0)
-        bF.value = Math.round((jarakLaut / 25) * 60 * 100) / 100;
+    var jarak = parseFloat(document.getElementById('jarak').value) || 0;
+    var moda  = document.getElementById('moda').value;
+    var wF    = document.getElementById('waktu_tempuh_mnt');
+    var speed = MODA_SPEED[moda] || 5;
+    if (!wF.dataset.manual && jarak > 0) {
+        wF.value = Math.round((jarak / speed) * 60 * 100) / 100;
+    }
 }
+document.getElementById('waktu_tempuh_mnt').addEventListener('input', function() { this.dataset.manual = '1'; });
 
-['walk_mnt','drive_mnt','boat_mnt'].forEach(function(id) {
-    document.getElementById(id).addEventListener('input', function() { this.dataset.manual = '1'; });
-});
-
-// Init mode
+// Init
 (function() {
-    setMode(document.getElementById('mode_transport').value || 'darat');
+    setModa(document.getElementById('moda').value || 'jalan_kaki');
+    onSegmenChange();
     if (document.getElementById('jarak').value) autoCalc();
 })();
 </script>

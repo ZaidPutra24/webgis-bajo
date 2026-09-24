@@ -9,6 +9,12 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JarakSekolahLokasiController;
 use App\Http\Controllers\StatistikSekolahController;
 use App\Http\Controllers\KurikulumUtilitasController;
+use App\Http\Controllers\KepadatanUsiaSekolahController;
+use App\Http\Controllers\PendudukJenjangController;
+use App\Http\Controllers\KebutuhanPkbmController;
+use App\Http\Controllers\KMeansClusteringController;
+use App\Http\Controllers\AksesibilitasController;
+use App\Http\Controllers\JarakKondisiController;
 
 // Halaman utama WebGIS (publik)
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -52,6 +58,31 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/utilitas', [KurikulumUtilitasController::class, 'index'])->name('utilitas.index');
     Route::get('/utilitas/{sekolah}/edit', [KurikulumUtilitasController::class, 'edit'])->name('utilitas.edit');
     Route::put('/utilitas/{sekolah}', [KurikulumUtilitasController::class, 'update'])->name('utilitas.update');
+
+    // Analisis Kepadatan Usia Sekolah per Desa (poin 1)
+    Route::get('/kepadatan', [KepadatanUsiaSekolahController::class, 'index'])->name('kepadatan.index');
+
+    // Pengelompokan Wilayah dengan K-Means Clustering (poin 2) — dasar
+    // usulan lokasi sekolah baru berdasarkan kedekatan geografis desa-sekolah
+    // dan beban jumlah siswa.
+    Route::get('/clustering', [KMeansClusteringController::class, 'index'])->name('clustering.index');
+    Route::get('/aksesibilitas', [AksesibilitasController::class, 'index'])->name('aksesibilitas.index');
+
+    // Analisis Hubungan Jarak/Keterpencilan dengan Kondisi Sekolah (poin 4).
+    Route::get('/jarak-kondisi', [JarakKondisiController::class, 'index'])->name('jarak-kondisi.index');
+
+    // Data SUMBER (bukan hasil hitung): Penduduk Usia Jenjang & ATS/Putus
+    // Sekolah per desa. Kepadatan SENGAJA tidak punya form — selalu dihitung
+    // otomatis dari data ini + luas_wilayah (lihat KepadatanUsiaSekolahController).
+    Route::get('/penduduk-jenjang', [PendudukJenjangController::class, 'index'])->name('penduduk-jenjang.index');
+    Route::get('/penduduk-jenjang/{wilayah_id}/edit', [PendudukJenjangController::class, 'edit'])->name('penduduk-jenjang.edit');
+    Route::put('/penduduk-jenjang/{wilayah_id}', [PendudukJenjangController::class, 'update'])->name('penduduk-jenjang.update');
+
+    // Kebutuhan PKBM (BPB usia 19-24 & 25+) per desa — SENGAJA terpisah dari
+    // penduduk-jenjang, lihat KebutuhanPkbmController.
+    Route::get('/kebutuhan-pkbm', [KebutuhanPkbmController::class, 'index'])->name('kebutuhan-pkbm.index');
+    Route::get('/kebutuhan-pkbm/{wilayah_id}/edit', [KebutuhanPkbmController::class, 'edit'])->name('kebutuhan-pkbm.edit');
+    Route::put('/kebutuhan-pkbm/{wilayah_id}', [KebutuhanPkbmController::class, 'update'])->name('kebutuhan-pkbm.update');
 });
 
 require __DIR__.'/auth.php';

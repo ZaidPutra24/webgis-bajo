@@ -9,6 +9,9 @@ class Sekolah extends Model
     protected $table = 'sekolah';
 
     protected $fillable = [
+        'id', // FIX: wajib ada agar Sekolah::create() dengan id eksplisit (lihat SekolahSeeder)
+              // tidak diabaikan oleh mass assignment. Tanpa ini, id auto-increment akan
+              // bergeser dan merusak relasi sekolah_id di jaraksekolahlokasi.
         'jenjang_id',
         'nama_sekolah',
         'npsn',
@@ -42,6 +45,6 @@ class Sekolah extends Model
     public function semuaJarakLokasi()
     {
         return $this->belongsToMany(WilayahDesa::class, 'jaraksekolahlokasi', 'sekolah_id', 'wilayah_id')
-                    ->withPivot('jarak', 'walk_mnt', 'drive_mnt', 'boat_mnt', 'jarak_laut', 'mode_transport', 'route_geojson');
+                    ->withPivot('jarak', 'moda', 'segmen', 'waktu_tempuh_mnt', 'tujuan_label', 'route_geojson');
     }
 }

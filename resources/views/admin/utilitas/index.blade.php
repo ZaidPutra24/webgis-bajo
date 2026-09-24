@@ -86,7 +86,7 @@
 <div class="container-fluid px-0 mb-5">
 
     <div class="mb-4">
-        <h4 class="mb-1 text-dark fw-bold">Curriculum & Utilities Sekolah</h4>
+        <h4 class="mb-1 text-dark fw-bold">School Curriculum & Utilities</h4>
         <p class="text-muted small mb-0">Monitoring list of academic systems, electricity, internet facilities, and land of all agencies.</p>
     </div>
 
@@ -114,7 +114,7 @@
                 </div>
             </div>
             <div class="filter-pills ps-1">
-                <button class="filter-pill active" data-filter-jenis="all">Semua</button>
+                <button class="filter-pill active" data-filter-jenis="all">All</button>
                 <button class="filter-pill" data-filter-jenis="Formal">Formal</button>
                 <button class="filter-pill" data-filter-jenis="Non-Formal">Non-Formal</button>
                 <button class="filter-pill" data-filter-jenis="Anak Usia Dini">PAUD</button>
@@ -143,6 +143,16 @@
                             <td>
                                 <div class="small">
                                     <div class="text-muted mb-1">Curriculum: <strong class="text-dark">{{ $item->utilitas->kurikulum ?? '-' }}</strong></div>
+                                    @if($item->jenjang_id == 12)
+                                        <div class="text-muted mb-1">
+                                            Paket:
+                                            @if($item->utilitas->paket ?? null)
+                                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-2 py-1 rounded-pill fw-semibold">{{ $item->utilitas->paket_label }}</span>
+                                            @else
+                                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning px-2 py-1 rounded-pill fw-semibold">Not determined</span>
+                                            @endif
+                                        </div>
+                                    @endif
                                     <div class="text-muted">Operator: <strong class="text-dark">{{ $item->utilitas->penyelenggara ?? '-' }}</strong></div>
                                 </div>
                             </td>
@@ -228,7 +238,7 @@
         });
 
         noResults.style.display = (totalFiltered === 0 && input.value.trim() !== '') ? '' : 'none';
-        countEl.textContent = input.value.trim() !== '' ? totalFiltered + ' dari ' + total + ' data' : total + ' data';
+        countEl.textContent = input.value.trim() !== '' ? totalFiltered + ' of ' + total + ' records' : total + ' records';
 
         if (totalFiltered > 0) {
             paginationInfo.textContent = 'Showing ' + (start + 1) + '–' + Math.min(end, totalFiltered) + ' of ' + totalFiltered + ' entries';

@@ -41,6 +41,7 @@ class KurikulumUtilitasController extends Controller
 
         $validated = $request->validate([
             'kurikulum'      => 'nullable|string|max:100',
+            'paket'          => 'nullable|in:A,B,C',
             'penyelenggara'  => 'nullable|string|max:150',
             'akses_internet' => 'nullable|string|max:150',
             'sumber_listrik' => 'nullable|string|max:150',
@@ -50,8 +51,16 @@ class KurikulumUtilitasController extends Controller
 
         $sekolahModel = Sekolah::findOrFail($sekolah_id);
 
+        // FIX: 'paket' hanya relevan untuk jenjang PKBM (id 12) — field ini
+        // memang disembunyikan di form untuk sekolah lain, tapi tetap dijaga
+        // di sisi server juga supaya tidak ada nilai nyasar kalau request
+        // dikirim manual di luar form (mis. lewat Postman).
+        if ($sekolahModel->jenjang_id != 12) {
+            $validated['paket'] = null;
+        }
+
         // Field string: kosong jika null atau string kosong setelah trim
-        $stringFields  = ['kurikulum', 'penyelenggara', 'akses_internet', 'sumber_listrik'];
+        $stringFields  = ['kurikulum', 'paket', 'penyelenggara', 'akses_internet', 'sumber_listrik'];
         // Field numerik: kosong jika null atau 0
         $numericFields = ['daya_listrik', 'luas_tanah'];
 

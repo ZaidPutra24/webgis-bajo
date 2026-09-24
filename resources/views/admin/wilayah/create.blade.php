@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Add Village Area Desa')
-@section('page-title', 'Add Village Area Desa Baru')
+@section('title', 'Add Village Area')
+@section('page-title', 'Add New Village Area')
 
 @section('content')
 <style>
@@ -102,7 +102,7 @@
 
             <div class="card modern-card shadow-sm">
                 <div class="card-header bg-white py-4 border-0 rounded-top-4">
-                    <h5 class="form-header-title fw-bold mb-0">Add Village Area Desa Baru</h5>
+                    <h5 class="form-header-title fw-bold mb-0">Add New Village Area</h5>
                 </div>
                 
                 <div class="card-body p-4 pt-2">
@@ -116,7 +116,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="luas_wilayah" class="form-label form-label-custom mb-2">Land Area (Hektar / Optional)</label>
+                            <label for="luas_wilayah" class="form-label form-label-custom mb-2">Land Area (km² / Optional)</label>
                             <input type="number" step="0.01" class="form-control form-control-custom @error('luas_wilayah') is-invalid @enderror" id="luas_wilayah" name="luas_wilayah" value="{{ old('luas_wilayah') }}" placeholder="Example: 12.5">
                             @error('luas_wilayah') <div class="invalid-feedback mt-2">{{ $message }}</div> @enderror
                         </div>
@@ -135,9 +135,9 @@
                                 <input type="number" min="0"
                                        class="form-control form-control-custom @error('penduduk_usia_sekolah_l') is-invalid @enderror"
                                        id="penduduk_usia_sekolah_l" name="penduduk_usia_sekolah_l"
-                                       value="{{ old('penduduk_usia_sekolah_l') }}"
-                                       placeholder="Jumlah laki-laki">
-                                @error('penduduk_usia_sekolah_l') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                 value="{{ old('penduduk_usia_sekolah_l') }}"
+                                 placeholder="Number of males">
+                                 @error('penduduk_usia_sekolah_l') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="penduduk_usia_sekolah_p" class="form-label form-label-custom mb-2">Female School-Age Population (F)</label>
@@ -145,7 +145,7 @@
                                        class="form-control form-control-custom @error('penduduk_usia_sekolah_p') is-invalid @enderror"
                                        id="penduduk_usia_sekolah_p" name="penduduk_usia_sekolah_p"
                                        value="{{ old('penduduk_usia_sekolah_p') }}"
-                                       placeholder="Jumlah perempuan">
+                                       placeholder="Number of females">
                                 @error('penduduk_usia_sekolah_p') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>

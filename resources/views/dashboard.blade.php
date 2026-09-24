@@ -222,49 +222,49 @@ $cntTanpaKoordinat = $total - $cntBerKoordinat;
                 {{-- PAUD / TK / RA --}}
                 <div>
                     <div class="d-flex justify-content-between small mb-1">
-                        <span class="text-muted">PAUD / TK / RA <span class="text-muted fw-normal" style="font-size:10px;">(Anak Usia Dini)</span></span>
+                        <span class="text-muted">PAUD / TK / RA <span class="text-muted fw-normal" style="font-size:10px;">(Early Childhood)</span></span>
                         <span class="fw-bold text-dark">{{ $pctPaud }}%</span>
                     </div>
                     <div class="progress" style="height:8px;">
                         <div class="progress-bar bg-pink" style="width:{{ $pctPaud }}%;background:#ec4899;"></div>
                     </div>
-                    <div class="text-muted" style="font-size:11px;margin-top:3px;">{{ $cntPaud }} sekolah</div>
+                    <div class="text-muted" style="font-size:11px;margin-top:3px;">{{ $cntPaud }} schools</div>
                 </div>
 
                 {{-- SD / MI --}}
                 <div>
                     <div class="d-flex justify-content-between small mb-1">
-                        <span class="text-muted">SD / MI <span class="text-muted fw-normal" style="font-size:10px;">(Pendidikan Dasar)</span></span>
+                        <span class="text-muted">SD / MI <span class="text-muted fw-normal" style="font-size:10px;">(Primary Education)</span></span>
                         <span class="fw-bold text-dark">{{ $pctDasar }}%</span>
                     </div>
                     <div class="progress" style="height:8px;">
                         <div class="progress-bar bg-primary" style="width:{{ $pctDasar }}%;"></div>
                     </div>
-                    <div class="text-muted" style="font-size:11px;margin-top:3px;">{{ $cntDasar }} sekolah</div>
+                    <div class="text-muted" style="font-size:11px;margin-top:3px;">{{ $cntDasar }} schools</div>
                 </div>
 
                 {{-- SMP / MTS --}}
                 <div>
                     <div class="d-flex justify-content-between small mb-1">
-                        <span class="text-muted">SMP / MTS <span class="text-muted fw-normal" style="font-size:10px;">(Menengah Pertama)</span></span>
+                        <span class="text-muted">SMP / MTS <span class="text-muted fw-normal" style="font-size:10px;">(Lower Secondary)</span></span>
                         <span class="fw-bold text-dark">{{ $pctMenPert }}%</span>
                     </div>
                     <div class="progress" style="height:8px;">
                         <div class="progress-bar bg-success" style="width:{{ $pctMenPert }}%;"></div>
                     </div>
-                    <div class="text-muted" style="font-size:11px;margin-top:3px;">{{ $cntMenPert }} sekolah</div>
+                    <div class="text-muted" style="font-size:11px;margin-top:3px;">{{ $cntMenPert }} schools</div>
                 </div>
 
                 {{-- SMA / MA / SMK --}}
                 <div>
                     <div class="d-flex justify-content-between small mb-1">
-                        <span class="text-muted">SMA / MA / SMK <span class="text-muted fw-normal" style="font-size:10px;">(Menengah Atas)</span></span>
+                        <span class="text-muted">SMA / MA / SMK <span class="text-muted fw-normal" style="font-size:10px;">(Upper Secondary)</span></span>
                         <span class="fw-bold text-dark">{{ $pctMenAtas }}%</span>
                     </div>
                     <div class="progress" style="height:8px;">
                         <div class="progress-bar bg-warning" style="width:{{ $pctMenAtas }}%;"></div>
                     </div>
-                    <div class="text-muted" style="font-size:11px;margin-top:3px;">{{ $cntMenAtas }} sekolah</div>
+                    <div class="text-muted" style="font-size:11px;margin-top:3px;">{{ $cntMenAtas }} schools</div>
                 </div>
 
                 {{-- Non-Formal --}}
@@ -276,7 +276,7 @@ $cntTanpaKoordinat = $total - $cntBerKoordinat;
                     <div class="progress" style="height:8px;">
                         <div class="progress-bar" style="width:{{ $pctNonFormal }}%;background:#8b5cf6;"></div>
                     </div>
-                    <div class="text-muted" style="font-size:11px;margin-top:3px;">{{ $cntNonFormal }} sekolah</div>
+                    <div class="text-muted" style="font-size:11px;margin-top:3px;">{{ $cntNonFormal }} schools</div>
                 </div>
             </div>
 
@@ -377,7 +377,7 @@ $cntTanpaKoordinat = $total - $cntBerKoordinat;
 
             {{-- Breakdown per jenjang (tabel ringkas) --}}
             <div class="pt-3 mt-3 border-top">
-                <h6 class="fw-bold mb-2 text-dark" style="font-size:13px;">Jumlah Sekolah per Jenjang</h6>
+                <h6 class="fw-bold mb-2 text-dark" style="font-size:13px;">Number of Schools per Level</h6>
                 <div class="row g-1">
                     @php
                         $jenjangStats = [

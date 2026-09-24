@@ -486,6 +486,55 @@
             flex-shrink: 0;
             border: 2px solid rgba(255,255,255,0.8);
         }
+        .map-legend { max-width: 210px; }
+        .legend-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            color: #001e40;
+            font-size: 11px;
+            user-select: none;
+        }
+        .legend-toggle-icon {
+            font-size: 16px !important;
+            transition: transform .2s ease;
+            color: #737780;
+        }
+        .map-legend.collapsed .legend-toggle-icon { transform: rotate(-90deg); }
+        .legend-body {
+            margin-top: 8px;
+            max-height: 55vh;
+            overflow-y: auto;
+        }
+        .map-legend.collapsed .legend-body { display: none; }
+        /* Beberapa jenjang berbagi satu kategori tapi punya shade warna berbeda —
+           ditampilkan sebagai kelompok dot kecil, bukan satu dot tunggal, supaya
+           legenda mencerminkan variasi warna marker yang sebenarnya di peta. */
+        .legend-dot-group {
+            display: flex;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+        .legend-dot-sm {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        .legend-line {
+            width: 22px;
+            height: 0;
+            flex-shrink: 0;
+        }
+        .legend-note {
+            font-size: 9px;
+            color: #9aa0a6;
+            font-style: italic;
+            margin: -2px 0 6px 21px;
+        }
 
         /* ── TOAST ── */
         #toast-ukur {
@@ -757,6 +806,10 @@
                 height: 10px !important;
                 flex-shrink: 0;
             }
+            .map-legend { max-width: 165px; }
+            .legend-body { max-height: 40vh; }
+            .legend-dot-sm { width: 7px !important; height: 7px !important; }
+            .legend-line { width: 16px !important; height: 0 !important; }
             #toast-ukur {
                 white-space: normal;
                 max-width: 88vw;
@@ -1072,51 +1125,86 @@
                 <button class="route-bar-close" onclick="sembunyikanSatuRute()" title="Hapus rute">✕</button>
             </div>
 
-            {{-- LEGENDA MARKER PER JENJANG --}}
-            <div class="map-legend">
-                <div class="legend-title">School Level</div>
-                <div class="legend-item">
-                    <div class="legend-dot" style="background:#ec4899;"></div>
-                    <span>PAUD / TK / RA</span>
+            {{--
+                ── SUMBER TUNGGAL WARNA/PEMETAAN ──
+                Array di bawah ini adalah satu-satunya tempat warna jenjang & moda rute
+                didefinisikan. Legenda, marker sekolah, dan garis rute SEMUA membaca dari
+                sini (lihat penggunaan $jenjangWarnaShared / $modaMetaShared di bawah),
+                jadi legenda tidak akan lagi tidak sinkron dengan isi peta.
+            --}}
+            @php
+                $jenjangWarnaShared = [
+                    1  => '#ec4899', 2  => '#f43f5e', 3  => '#3b82f6', 4  => '#6366f1',
+                    5  => '#22c55e', 6  => '#10b981', 7  => '#eab308', 8  => '#f59e0b',
+                    9  => '#f97316', 10 => '#e879f9', 11 => '#8b5cf6', 12 => '#7c3aed',
+                    13 => '#6d28d9', 14 => '#5b21b6', 15 => '#4c1d95',
+                ];
+                // key = kunci filter (dipakai tombol filter Level), value = [label, [jenjang_id,...]]
+                $jenjangLevelGroups = [
+                    'paud'      => ['PAUD / TK / RA', [1, 2, 10]],
+                    'sd'        => ['SD / MI', [3, 4]],
+                    'smp'       => ['SMP / MTs', [5, 6]],
+                    'sma'       => ['SMA / MA / SMK', [7, 8, 9]],
+                    'nonformal' => ['Non-Formal', [11, 12, 13, 14, 15]],
+                ];
+                $modaMetaShared = [
+                    'jalan_kaki' => ['label' => 'Jalan Kaki',        'color' => '#16a34a', 'dash' => null],
+                    'kendaraan'  => ['label' => 'Kendaraan',         'color' => '#2563eb', 'dash' => null],
+                    'perahu'     => ['label' => 'Perahu / Speedboat','color' => '#ea580c', 'dash' => '8, 6'],
+                ];
+                $kecamatanDefaultColor = '#ea580c';
+                $adaWarnaKecamatanKustom = $kecamatans->contains(fn($k) => !empty($k->warna) && strtolower($k->warna) !== strtolower($kecamatanDefaultColor));
+            @endphp
+
+            {{-- LEGENDA PETA (dibangun otomatis dari data di atas agar selalu sesuai isi peta) --}}
+            <div class="map-legend" id="mapLegend">
+                <div class="legend-header" onclick="toggleMapLegend()">
+                    <span>Map Legend</span>
+                    <span class="material-symbols-outlined legend-toggle-icon" id="legendToggleIcon">expand_more</span>
                 </div>
-                <div class="legend-item">
-                    <div class="legend-dot" style="background:#3b82f6;"></div>
-                    <span>SD / MI</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-dot" style="background:#22c55e;"></div>
-                    <span>SMP / MTS</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-dot" style="background:#eab308;"></div>
-                    <span>SMA / MA / SMK</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-dot" style="background:#8b5cf6;"></div>
-                    <span>Non-Formal</span>
-                </div>
-                <div class="legend-title mt-2">Kecamatan Boundary (ROI)</div>
-                <div class="legend-item">
-                    <div style="width:22px;height:3px;background:#ea580c;border-radius:2px;flex-shrink:0;border-top:2px dashed #ea580c;"></div>
-                    <span>Kecamatan Border</span>
-                </div>
-                <div class="legend-title mt-2">Route Lines</div>
-                <div class="legend-item">
-                    <div style="width:22px;height:3px;background:#00696b;border-radius:2px;flex-shrink:0;"></div>
-                    <span>Land Route</span>
-                </div>
-                <div class="legend-item">
-                    <div style="width:22px;height:3px;background:#0ea5e9;border-radius:2px;flex-shrink:0;"></div>
-                    <span>Multimode (Land+Sea)</span>
-                </div>
-                <div class="legend-title mt-2">School Type</div>
-                <div class="legend-item">
-                    <div style="width:14px;height:14px;border-radius:50%;background:#43474f;border:2px solid rgba(255,255,255,0.8);flex-shrink:0;"></div>
-                    <span>Public School (Circle)</span>
-                </div>
-                <div class="legend-item">
-                    <div style="width:14px;height:14px;border-radius:3px;background:#43474f;border:2px dashed rgba(255,255,255,0.8);flex-shrink:0;"></div>
-                    <span>Private School (Square)</span>
+                <div class="legend-body" id="legendBody">
+                    <div class="legend-title">School Level</div>
+                    @foreach($jenjangLevelGroups as $groupKey => [$groupLabel, $jenjangIds])
+                    <div class="legend-item">
+                        <div class="legend-dot-group">
+                            @foreach($jenjangIds as $jid)
+                            <div class="legend-dot legend-dot-sm" style="background:{{ $jenjangWarnaShared[$jid] ?? '#6b7280' }};"></div>
+                            @endforeach
+                        </div>
+                        <span>{{ $groupLabel }}</span>
+                    </div>
+                    @endforeach
+
+                    <div class="legend-title mt-2">Boundary (ROI)</div>
+                    <div class="legend-item">
+                        <div class="legend-line" style="border-top:3px dashed {{ $kecamatanDefaultColor }};"></div>
+                        <span>Kecamatan Border{{ $adaWarnaKecamatanKustom ? ' *' : '' }}</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line" style="border-top:3px dashed #00696b;"></div>
+                        <span>Desa / Wilayah Border</span>
+                    </div>
+                    @if($adaWarnaKecamatanKustom)
+                    <div class="legend-note">* warna dapat berbeda per kecamatan</div>
+                    @endif
+
+                    <div class="legend-title mt-2">Route Lines</div>
+                    @foreach($modaMetaShared as $moda => $meta)
+                    <div class="legend-item">
+                        <div class="legend-line" style="border-top:3px {{ $meta['dash'] ? 'dashed' : 'solid' }} {{ $meta['color'] }};"></div>
+                        <span>{{ $meta['label'] }}</span>
+                    </div>
+                    @endforeach
+
+                    <div class="legend-title mt-2">School Type</div>
+                    <div class="legend-item">
+                        <div style="width:14px;height:14px;border-radius:50%;background:#43474f;border:2px solid rgba(255,255,255,0.8);flex-shrink:0;"></div>
+                        <span>Public School (Circle)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div style="width:14px;height:14px;border-radius:3px;background:#43474f;border:2px dashed rgba(255,255,255,0.8);flex-shrink:0;"></div>
+                        <span>Private School (Square)</span>
+                    </div>
                 </div>
             </div>
 
@@ -1325,8 +1413,63 @@ L.control.zoom({ position: 'topright' }).addTo(map);
 
 var boundsArray = [];
 
+// ── ROUTE DATA (dikumpulkan dari matriks jarak sekolah & leg dermaga/laut wilayah) ──
+// allRouteData berkey unik; leg milik sekolah pakai format "route_{sekolah_id}_{wilayah_id}_{moda}_{segmen}",
+// leg tanpa sekolah_id (ke_dermaga / penyeberangan perahu, mis. jalur laut) pakai format "route_orphan_{id}".
+// SENGAJA dideklarasikan di sini, SEBELUM loop wilayah di bawah — loop wilayah juga mengisi
+// allRouteData dengan leg jalur laut/dermaga miliknya. Kalau dideklarasikan ulang setelahnya
+// (seperti sebelumnya, di dekat loop sekolah), isian dari loop wilayah akan tertimpa objek kosong.
+var allRouteData = {};
+
 // ── WILAYAH LAYERS ──
 @foreach($wilayahs as $wilayah)
+    @php
+        // Leg tanpa sekolah_id (ke_dermaga / penyeberangan perahu) milik wilayah ini.
+        // Baris seperti ini TIDAK PERNAH muncul di query per-sekolah di bawah (yang
+        // mensyaratkan sekolah_id = id sekolah tertentu), sehingga jalur laut/dermaga
+        // sebelumnya tidak pernah terdaftar ke allRouteData dan tidak pernah tergambar
+        // di peta. Di sini leg tersebut dikumpulkan per wilayah supaya tetap tampil.
+        $modaMetaWilayah = [
+            'jalan_kaki' => ['label' => 'Jalan Kaki',       'color' => '#16a34a', 'bg' => '#dcfce7', 'icon' => '&#x1F6B6;'],
+            'kendaraan'  => ['label' => 'Kendaraan',        'color' => '#2563eb', 'bg' => '#dbeafe', 'icon' => '&#x1F697;'],
+            'perahu'     => ['label' => 'Perahu/Speedboat', 'color' => '#ea580c', 'bg' => '#ffedd5', 'icon' => '&#x26F5;'],
+        ];
+        $segmenLabelWilayah = [
+            'ke_dermaga'    => 'ke dermaga',
+            'penyeberangan' => 'penyeberangan laut',
+        ];
+
+        $legOrphanWilayah = \App\Models\JarakSekolahLokasi::whereNull('sekolah_id')
+            ->where('wilayah_id', $wilayah->id)
+            ->whereNotNull('route_geojson')
+            ->get();
+
+        $orphanRoutesHtml = '';
+        foreach ($legOrphanWilayah as $dj) {
+            $metaW       = $modaMetaWilayah[$dj->moda] ?? ['label' => ucfirst($dj->moda), 'color' => '#6b7280', 'bg' => '#f1f5f9', 'icon' => ''];
+            $segLabelW   = $segmenLabelWilayah[$dj->segmen] ?? null;
+            $tujuanW     = htmlspecialchars($dj->tujuan_label ?? 'Dermaga', ENT_QUOTES, 'UTF-8');
+            $nilaiJarakW = number_format((float) $dj->jarak, 2);
+            $routeKeyOrphan = 'route_orphan_' . $dj->id;
+
+            $orphanRoutesHtml .= '<div style="background:#fff;border:1px solid #e2e2e7;border-radius:8px;padding:6px 8px;margin-top:5px;">' .
+                '<div style="display:flex;justify-content:space-between;align-items:center;">' .
+                  '<span style="background:' . $metaW['bg'] . ';color:' . $metaW['color'] . ';padding:1px 7px;border-radius:999px;font-size:9px;font-weight:700;">' .
+                    $metaW['icon'] . ' ' . $metaW['label'] . ($segLabelW ? ' &middot; ' . $segLabelW : '') .
+                  '</span>' .
+                  '<span style="font-size:11px;font-weight:800;color:#ba1a1a;">' . $nilaiJarakW . ' km</span>' .
+                '</div>' .
+                '<div style="font-size:10px;color:#737780;font-weight:600;margin-top:3px;">' . $tujuanW . '</div>' .
+                '<button onclick="tampilkanSatuRute(\'' . $routeKeyOrphan . '\')" id="btn_' . $routeKeyOrphan . '" ' .
+                  'style="margin-top:4px;width:100%;padding:4px 0;border-radius:8px;border:1.5px solid ' . $metaW['color'] . ';' .
+                  'background:transparent;color:' . $metaW['color'] . ';font-size:10px;font-weight:700;cursor:pointer;' .
+                  'display:flex;align-items:center;justify-content:center;gap:5px;transition:all .2s;"' .
+                  ' onmouseover="this.style.background=\'' . $metaW['color'] . '\';this.style.color=\'#fff\'"' .
+                  ' onmouseout="if(!this.classList.contains(\'rute-aktif\')){this.style.background=\'transparent\';this.style.color=\'' . $metaW['color'] . '\'}">' .
+                  '<span style="font-size:11px;">&#x2192;</span> Tampilkan Rute</button>' .
+                '</div>';
+        }
+    @endphp
     try {
         var geojsonData_{{ $wilayah->id }} = {!! $wilayah->geojson !!};
         var wilayahLayer_{{ $wilayah->id }} = L.geoJSON(geojsonData_{{ $wilayah->id }}, {
@@ -1335,6 +1478,21 @@ var boundsArray = [];
                 fillColor: "#00696b", fillOpacity: 0.15, dashArray: '5, 10'
             }
         }).addTo(map);
+
+        // Daftarkan leg tanpa sekolah_id (ke_dermaga / penyeberangan perahu) milik wilayah
+        // ini ke allRouteData, supaya jalur laut & jalur ke dermaga ikut tergambar baik
+        // lewat tombol "Tampilkan Rute" di popup desa maupun tombol "Tampilkan Semua Rute".
+        @foreach($legOrphanWilayah as $dj)
+        allRouteData['route_orphan_{{ $dj->id }}'] = {
+            geojson:    {!! $dj->route_geojson !!},
+            wilayah:    {!! json_encode($wilayah->nama_wilayah) !!},
+            sekolah:    {!! json_encode($dj->tujuan_label ?? 'Dermaga') !!},
+            jarak:      {!! json_encode(number_format((float) $dj->jarak, 2)) !!},
+            moda:       {!! json_encode($dj->moda) !!},
+            moda_label: {!! json_encode($modaMetaWilayah[$dj->moda]['label'] ?? ucfirst($dj->moda)) !!},
+            waktu:      {!! json_encode($dj->waktu_label) !!},
+        };
+        @endforeach
 
         var wilayahPopupContent = `
             <div style="min-width:200px;font-family:'Source Sans 3',sans-serif;padding:12px;">
@@ -1359,7 +1517,7 @@ var boundsArray = [];
                 <div style="background:#f4f3f8;border-radius:12px;padding:10px;font-size:13px;color:#43474f;">
                     <div style="display:flex;justify-content:space-between;padding-bottom:6px;">
                         <span>Region Area</span>
-                        <span style="font-weight:700;color:#001e40;">{{ $wilayah->luas_wilayah ?? "-" }} Ha</span>
+                        <span style="font-weight:700;color:#001e40;">{{ $wilayah->luas_wilayah !== null ? number_format((float) $wilayah->luas_wilayah, 2) : '-' }} km²</span>
                     </div>
                     <div style="display:flex;justify-content:space-between;padding-bottom:6px;border-top:1px solid #e2e8f0;padding-top:6px;">
                         <span>School-Age Males</span>
@@ -1378,6 +1536,12 @@ var boundsArray = [];
                     </div>
                     @endif
                 </div>
+                @if($orphanRoutesHtml)
+                <div style="margin-top:10px;padding-top:8px;border-top:1px dashed #e2e2e7;">
+                    <p style="font-size:10px;color:#43474f;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin:0 0 6px;">Jalur Darat/Laut ke Dermaga</p>
+                    {!! $orphanRoutesHtml !!}
+                </div>
+                @endif
             </div>
         `;
 
@@ -1456,6 +1620,16 @@ var kecamatanLayerVisible = true;
     }
 @endforeach
 
+// Legenda kini menampung lebih banyak kategori (level, boundary, rute, tipe sekolah),
+// jadi diberi toggle collapse supaya tidak menutupi peta di layar kecil.
+function toggleMapLegend() {
+    var legend = document.getElementById('mapLegend');
+    var icon = document.getElementById('legendToggleIcon');
+    if (!legend) return;
+    legend.classList.toggle('collapsed');
+    if (icon) icon.textContent = legend.classList.contains('collapsed') ? 'expand_less' : 'expand_more';
+}
+
 function toggleKecamatanLayer() {
     kecamatanLayerVisible = !kecamatanLayerVisible;
     var btn = document.getElementById('btn-kecamatan-toggle');
@@ -1471,9 +1645,9 @@ function toggleKecamatanLayer() {
 // ── SCHOOL MARKERS & FILTER ──
 var schoolMarkers = [];
 
-// ── ROUTE DATA (collected from school distance matrix) ──
-// allRouteData adalah object berkey unik "route_{sekolah_id}_{wilayah_id}"
-var allRouteData      = {};
+// ── ROUTE LAYER STATE ──
+// (allRouteData sekarang dideklarasikan lebih awal, sebelum loop wilayah —
+// lihat komentar di dekat 'var boundsArray')
 var routeLayerGroup   = L.layerGroup();   // untuk mode "tampilkan semua rute"
 var routeLayerVisible = false;
 var activeRouteLayer  = null;             // untuk mode "tampilkan satu rute dari panel"
@@ -1491,24 +1665,19 @@ var activeRouteKey    = null;             // key rute yang sedang aktif
         $kodeJenjang = $sekolah->jenjang->kode ?? '?';
         $isSwasta    = $sekolah->status === 'Swasta';
 
-        $jenjangWarna = [
-            1  => '#ec4899', 2  => '#f43f5e', 3  => '#3b82f6', 4  => '#6366f1',
-            5  => '#22c55e', 6  => '#10b981', 7  => '#eab308', 8  => '#f59e0b',
-            9  => '#f97316', 10 => '#e879f9', 11 => '#8b5cf6', 12 => '#7c3aed',
-            13 => '#6d28d9', 14 => '#5b21b6', 15 => '#4c1d95'
-        ];
-        $markerColor = $jenjangWarna[$jenjangId] ?? '#6b7280';
+        // Warna & pengelompokan level diambil dari $jenjangWarnaShared / $jenjangLevelGroups
+        // (didefinisikan sekali di dekat markup legenda) — bukan array terpisah lagi,
+        // supaya warna marker selalu identik dengan warna yang ditampilkan di legenda.
+        $markerColor = $jenjangWarnaShared[$jenjangId] ?? '#6b7280';
         $markerShadow = $markerColor . '66';
 
         $borderRadius = $isSwasta ? '6px'  : '50%';
         $borderStyle  = $isSwasta ? 'dashed': 'solid';
 
         $level = 'other';
-        if (in_array($jenjangId, [1,2,10])) $level = 'paud';
-        elseif (in_array($jenjangId, [3,4])) $level = 'sd';
-        elseif (in_array($jenjangId, [5,6])) $level = 'smp';
-        elseif (in_array($jenjangId, [7,8,9])) $level = 'sma';
-        elseif (in_array($jenjangId, [11,12,13,14,15])) $level = 'nonformal';
+        foreach ($jenjangLevelGroups as $groupKey => [$groupLabel, $groupIds]) {
+            if (in_array($jenjangId, $groupIds)) { $level = $groupKey; break; }
+        }
     @endphp
 
     var markerIcon = L.divIcon({
@@ -1531,80 +1700,98 @@ var activeRouteKey    = null;             // key rute yang sedang aktif
     });
 
     @php
-        // Ambil data jarak lengkap dengan semua kolom dari tabel pivot
+        // Skema BARU: satu baris = satu leg dalam SATU moda saja (jalan_kaki | kendaraan | perahu).
+        // Rute langsung/dermaga_ke_sekolah yang berujung di sekolah ini = sekolah_id sama.
         $jarakLengkap = \App\Models\JarakSekolahLokasi::with('wilayahDesa')
             ->where('sekolah_id', $sekolah->id)
-            ->get();
+            ->get()
+            ->groupBy('wilayah_id');
+
+        // Warna & label diambil dari $modaMetaShared (satu sumber, sama dengan legenda &
+        // garis rute) — di sini cuma ditambah 'bg' & 'icon' khusus tampilan chip popup.
+        $modaMetaIcons = [
+            'jalan_kaki' => ['bg' => '#dcfce7', 'icon' => '&#x1F6B6;'],
+            'kendaraan'  => ['bg' => '#dbeafe', 'icon' => '&#x1F697;'],
+            'perahu'     => ['bg' => '#ffedd5', 'icon' => '&#x26F5;'],
+        ];
+        $modaMeta = [];
+        foreach ($modaMetaShared as $modaKey => $modaVal) {
+            $modaMeta[$modaKey] = [
+                'label' => $modaVal['label'],
+                'color' => $modaVal['color'],
+                'bg'    => $modaMetaIcons[$modaKey]['bg'] ?? '#f1f5f9',
+                'icon'  => $modaMetaIcons[$modaKey]['icon'] ?? '',
+            ];
+        }
+        $segmenLabel = [
+            'langsung'           => null,
+            'ke_dermaga'         => 'ke dermaga',
+            'penyeberangan'      => 'penyeberangan',
+            'dermaga_ke_sekolah' => 'dari dermaga',
+        ];
+
         $jarakRows = '';
         $routeGeojsons = [];
-        foreach($jarakLengkap as $dj) {
-            $namaWilayah = htmlspecialchars($dj->wilayahDesa->nama_wilayah ?? 'Desa', ENT_QUOTES, 'UTF-8');
-            $nilaiJarak  = number_format((float)$dj->jarak, 2);
-            $modeTrans   = $dj->mode_transport === 'multimoda' ? 'Darat+Perahu' : 'Darat';
-            $modeColor   = $dj->mode_transport === 'multimoda' ? '#0ea5e9' : '#22c55e';
-            $modeBg      = $dj->mode_transport === 'multimoda' ? '#e0f2fe' : '#dcfce7';
 
-            $walkFmt  = $dj->walk_mnt  ? (intdiv((int)$dj->walk_mnt,60) > 0 ? intdiv((int)$dj->walk_mnt,60).'j '.((int)$dj->walk_mnt%60).'m' : (int)$dj->walk_mnt.'m') : '-';
-            $driveFmt = $dj->drive_mnt ? (intdiv((int)$dj->drive_mnt,60) > 0 ? intdiv((int)$dj->drive_mnt,60).'j '.((int)$dj->drive_mnt%60).'m' : (int)$dj->drive_mnt.'m') : '-';
-            $boatFmt  = $dj->boat_mnt  ? (intdiv((int)$dj->boat_mnt,60) > 0 ? intdiv((int)$dj->boat_mnt,60).'j '.((int)$dj->boat_mnt%60).'m' : (int)$dj->boat_mnt.'m') : '-';
-            $jarakLaut = $dj->jarak_laut ? number_format((float)$dj->jarak_laut, 2).' km' : '-';
+        foreach ($jarakLengkap as $wilayahId => $legs) {
+            $namaWilayah = htmlspecialchars($legs->first()->wilayahDesa->nama_wilayah ?? 'Desa', ENT_QUOTES, 'UTF-8');
 
-            $hasRoute    = !empty($dj->route_geojson);
-            $routeKey    = 'route_' . $sekolah->id . '_' . $dj->wilayah_id;
-            $btnRute     = $hasRoute
-                ? '<button onclick="tampilkanSatuRute(\''.$routeKey.'\')" id="btn_'.$routeKey.'" ' .
-                  'style="margin-top:6px;width:100%;padding:5px 0;border-radius:8px;border:1.5px solid #00696b;' .
-                  'background:transparent;color:#00696b;font-size:10px;font-weight:700;cursor:pointer;' .
-                  'display:flex;align-items:center;justify-content:center;gap:5px;transition:all .2s;"' .
-                  ' onmouseover="this.style.background=\'#00696b\';this.style.color=\'#fff\'"' .
-                  ' onmouseout="if(!this.classList.contains(\'rute-aktif\')){this.style.background=\'transparent\';this.style.color=\'#00696b\'}">' .
-                  '<span style="font-size:12px;">&#x2192;</span> Tampilkan Rute</button>'
-                : '';
+            $legRowsHtml = '';
+            foreach ($legs as $dj) {
+                $meta      = $modaMeta[$dj->moda] ?? ['label' => ucfirst($dj->moda), 'color' => '#6b7280', 'bg' => '#f1f5f9', 'icon' => ''];
+                $nilaiJarak = number_format((float) $dj->jarak, 2);
+                $waktuFmt   = $dj->waktu_tempuh_mnt !== null
+                    ? (intdiv((int) $dj->waktu_tempuh_mnt, 60) > 0
+                        ? intdiv((int) $dj->waktu_tempuh_mnt, 60) . 'j ' . ((int) $dj->waktu_tempuh_mnt % 60) . 'm'
+                        : (int) $dj->waktu_tempuh_mnt . 'm')
+                    : '-';
+                $segLabel = $segmenLabel[$dj->segmen] ?? null;
+
+                $hasRoute = !empty($dj->route_geojson);
+                // Kunci unik WAJIB menyertakan moda + segmen — inilah bug lama:
+                // tanpa ini, baris jalan_kaki & kendaraan untuk desa yang sama saling menimpa.
+                $routeKey = 'route_' . $sekolah->id . '_' . $dj->wilayah_id . '_' . $dj->moda . '_' . $dj->segmen;
+
+                $btnRute = $hasRoute
+                    ? '<button onclick="tampilkanSatuRute(\'' . $routeKey . '\')" id="btn_' . $routeKey . '" ' .
+                      'style="margin-top:4px;width:100%;padding:4px 0;border-radius:8px;border:1.5px solid ' . $meta['color'] . ';' .
+                      'background:transparent;color:' . $meta['color'] . ';font-size:10px;font-weight:700;cursor:pointer;' .
+                      'display:flex;align-items:center;justify-content:center;gap:5px;transition:all .2s;"' .
+                      ' onmouseover="this.style.background=\'' . $meta['color'] . '\';this.style.color=\'#fff\'"' .
+                      ' onmouseout="if(!this.classList.contains(\'rute-aktif\')){this.style.background=\'transparent\';this.style.color=\'' . $meta['color'] . '\'}">' .
+                      '<span style="font-size:11px;">&#x2192;</span> Tampilkan Rute</button>'
+                    : '';
+
+                $legRowsHtml .= '<div style="background:#fff;border:1px solid #e2e2e7;border-radius:8px;padding:6px 8px;margin-top:5px;">' .
+                    '<div style="display:flex;justify-content:space-between;align-items:center;">' .
+                      '<span style="background:' . $meta['bg'] . ';color:' . $meta['color'] . ';padding:1px 7px;border-radius:999px;font-size:9px;font-weight:700;">' .
+                        $meta['icon'] . ' ' . $meta['label'] . ($segLabel ? ' · ' . $segLabel : '') .
+                      '</span>' .
+                      '<span style="font-size:11px;font-weight:800;color:#ba1a1a;">' . $nilaiJarak . ' km</span>' .
+                    '</div>' .
+                    '<div style="font-size:10px;color:#737780;font-weight:600;margin-top:3px;">Waktu tempuh: <span style="color:#43474f;font-weight:700;">' . $waktuFmt . '</span></div>' .
+                    $btnRute .
+                    '</div>';
+
+                // Kumpulkan route GeoJSON untuk ditampilkan di peta
+                if ($hasRoute) {
+                    $routeGeojsons[] = [
+                        'key'        => $routeKey,
+                        'geojson'    => $dj->route_geojson,
+                        'wilayah'    => htmlspecialchars($dj->wilayahDesa->nama_wilayah ?? '', ENT_QUOTES, 'UTF-8'),
+                        'sekolah'    => htmlspecialchars($sekolah->nama_sekolah, ENT_QUOTES, 'UTF-8'),
+                        'jarak'      => number_format((float) $dj->jarak, 2),
+                        'moda'       => $dj->moda,
+                        'moda_label' => $meta['label'],
+                        'waktu'      => $waktuFmt,
+                    ];
+                }
+            }
 
             $jarakRows .= '<div style="border:1px solid #e2e2e7;border-radius:10px;padding:8px 10px;margin-bottom:6px;background:#fafafa;">' .
-                '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">' .
-                  '<span style="font-weight:700;color:#001e40;font-size:12px;">' . $namaWilayah . '</span>' .
-                  '<span style="background:'.$modeBg.';color:'.$modeColor.';padding:1px 7px;border-radius:999px;font-size:9px;font-weight:700;">'.$modeTrans.'</span>' .
-                '</div>' .
-                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">' .
-                  '<div style="background:#fff;border:1px solid #e2e2e7;border-radius:6px;padding:4px 6px;">' .
-                    '<div style="font-size:9px;color:#737780;font-weight:600;">Jarak Darat</div>' .
-                    '<div style="font-size:12px;font-weight:800;color:#ba1a1a;">'.$nilaiJarak.' km</div>' .
-                  '</div>' .
-                  ($dj->jarak_laut ? '<div style="background:#fff;border:1px solid #e2e2e7;border-radius:6px;padding:4px 6px;">' .
-                    '<div style="font-size:9px;color:#737780;font-weight:600;">Jarak Laut</div>' .
-                    '<div style="font-size:12px;font-weight:800;color:#0ea5e9;">'.$jarakLaut.'</div>' .
-                  '</div>' : '') .
-                  '<div style="background:#fff;border:1px solid #e2e2e7;border-radius:6px;padding:4px 6px;">' .
-                    '<div style="font-size:9px;color:#737780;font-weight:600;">Jalan Kaki</div>' .
-                    '<div style="font-size:11px;font-weight:700;color:#43474f;">'.$walkFmt.'</div>' .
-                  '</div>' .
-                  '<div style="background:#fff;border:1px solid #e2e2e7;border-radius:6px;padding:4px 6px;">' .
-                    '<div style="font-size:9px;color:#737780;font-weight:600;">Berkendara</div>' .
-                    '<div style="font-size:11px;font-weight:700;color:#43474f;">'.$driveFmt.'</div>' .
-                  '</div>' .
-                  ($dj->boat_mnt ? '<div style="background:#fff;border:1px solid #e2e2e7;border-radius:6px;padding:4px 6px;grid-column:span 2;">' .
-                    '<div style="font-size:9px;color:#737780;font-weight:600;">Perahu</div>' .
-                    '<div style="font-size:11px;font-weight:700;color:#0ea5e9;">'.$boatFmt.'</div>' .
-                  '</div>' : '') .
-                '</div>' .
-                $btnRute .
+                '<span style="font-weight:700;color:#001e40;font-size:12px;">' . $namaWilayah . '</span>' .
+                $legRowsHtml .
                 '</div>';
-
-            // Kumpulkan route GeoJSON untuk ditampilkan di peta
-            if (!empty($dj->route_geojson)) {
-                $routeGeojsons[] = [
-                    'key'        => 'route_' . $sekolah->id . '_' . $dj->wilayah_id,
-                    'geojson'    => $dj->route_geojson,
-                    'wilayah'    => htmlspecialchars($dj->wilayahDesa->nama_wilayah ?? '', ENT_QUOTES, 'UTF-8'),
-                    'sekolah'    => htmlspecialchars($sekolah->nama_sekolah, ENT_QUOTES, 'UTF-8'),
-                    'jarak'      => number_format((float)$dj->jarak, 2),
-                    'mode'       => $dj->mode_transport ?? 'darat',
-                    'drive_mnt'  => $driveFmt,
-                    'walk_mnt'   => $walkFmt,
-                    'boat_mnt'   => $boatFmt,
-                ];
-            }
         }
     @endphp
     @if($jarakLengkap->count() > 0)
@@ -1744,14 +1931,13 @@ var activeRouteKey    = null;             // key rute yang sedang aktif
     // Register route GeoJSONs untuk sekolah ini (keyed by unique id)
     @foreach($routeGeojsons as $rg)
     allRouteData[{!! json_encode($rg['key']) !!}] = {
-        geojson:   {!! $rg['geojson'] !!},
-        wilayah:   {!! json_encode($rg['wilayah']) !!},
-        sekolah:   {!! json_encode($rg['sekolah']) !!},
-        jarak:     {!! json_encode($rg['jarak']) !!},
-        mode:      {!! json_encode($rg['mode']) !!},
-        drive_mnt: {!! json_encode($rg['drive_mnt']) !!},
-        walk_mnt:  {!! json_encode($rg['walk_mnt']) !!},
-        boat_mnt:  {!! json_encode($rg['boat_mnt']) !!},
+        geojson:    {!! $rg['geojson'] !!},
+        wilayah:    {!! json_encode($rg['wilayah']) !!},
+        sekolah:    {!! json_encode($rg['sekolah']) !!},
+        jarak:      {!! json_encode($rg['jarak']) !!},
+        moda:       {!! json_encode($rg['moda']) !!},
+        moda_label: {!! json_encode($rg['moda_label']) !!},
+        waktu:      {!! json_encode($rg['waktu']) !!},
     };
     @endforeach
     @endif
@@ -1782,26 +1968,32 @@ if (boundsArray.length > 0) {
 
 // ── ROUTE LAYER TOGGLE ──
 // ── MODE 1: TAMPILKAN SEMUA RUTE (tombol "Routes" di switcher) ──
+// Digenerate langsung dari $modaMetaShared (PHP) — satu-satunya sumber warna moda,
+// sama persis dengan yang dipakai popup jarak & legenda. Tidak ada lagi nilai hardcode
+// terpisah yang bisa tidak sinkron.
+var MODA_COLORS = @json(collect($modaMetaShared)->map(fn($m) => $m['color']));
+var MODA_DASH   = @json(collect($modaMetaShared)->map(fn($m) => $m['dash']));
+function modaColor(moda) { return MODA_COLORS[moda] || '#6b7280'; }
+function modaDash(moda)  { return MODA_DASH[moda] || null; }
+
 function buildRouteLayers() {
     routeLayerGroup.clearLayers();
     Object.keys(allRouteData).forEach(function(key) {
         var rd = allRouteData[key];
-        var color = rd.mode === 'multimoda' ? '#0ea5e9' : '#00696b';
-        var dashArray = rd.mode === 'multimoda' ? '8, 6' : null;
+        var color = modaColor(rd.moda);
+        var dashArray = modaDash(rd.moda);
         try {
             var poly = L.geoJSON(rd.geojson, {
                 style: { color: color, weight: 4, opacity: 0.85, dashArray: dashArray }
             });
             var popHtml =
                 '<div style="font-family:\'Source Sans 3\',sans-serif;min-width:200px;padding:12px;">' +
-                '<p style="font-size:10px;font-weight:700;color:#43474f;text-transform:uppercase;letter-spacing:.05em;margin:0 0 4px;">Rute</p>' +
+                '<p style="font-size:10px;font-weight:700;color:#43474f;text-transform:uppercase;letter-spacing:.05em;margin:0 0 4px;">Rute · ' + rd.moda_label + '</p>' +
                 '<p style="font-size:14px;font-weight:800;color:#001e40;margin:0 0 4px;">' + rd.sekolah + '</p>' +
                 '<p style="font-size:12px;color:#43474f;margin:0 0 8px;">ke ' + rd.wilayah + '</p>' +
                 '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">' +
                 '<div style="background:#f4f3f8;border-radius:8px;padding:6px 8px;"><div style="font-size:9px;color:#737780;font-weight:600;">Jarak</div><div style="font-size:13px;font-weight:800;color:#ba1a1a;">' + rd.jarak + ' km</div></div>' +
-                '<div style="background:#f4f3f8;border-radius:8px;padding:6px 8px;"><div style="font-size:9px;color:#737780;font-weight:600;">Berkendara</div><div style="font-size:13px;font-weight:700;color:#001e40;">' + (rd.drive_mnt || '-') + '</div></div>' +
-                '<div style="background:#f4f3f8;border-radius:8px;padding:6px 8px;"><div style="font-size:9px;color:#737780;font-weight:600;">Jalan Kaki</div><div style="font-size:12px;font-weight:700;color:#43474f;">' + (rd.walk_mnt || '-') + '</div></div>' +
-                (rd.boat_mnt && rd.boat_mnt !== '-' ? '<div style="background:#e0f2fe;border-radius:8px;padding:6px 8px;"><div style="font-size:9px;color:#0369a1;font-weight:600;">Perahu</div><div style="font-size:12px;font-weight:700;color:#0ea5e9;">' + rd.boat_mnt + '</div></div>' : '') +
+                '<div style="background:#f4f3f8;border-radius:8px;padding:6px 8px;"><div style="font-size:9px;color:#737780;font-weight:600;">Waktu Tempuh</div><div style="font-size:13px;font-weight:700;color:#001e40;">' + (rd.waktu || '-') + '</div></div>' +
                 '</div></div>';
             poly.bindPopup(popHtml);
             routeLayerGroup.addLayer(poly);
@@ -1864,8 +2056,8 @@ function tampilkanSatuRute(key) {
         if (btnAll) btnAll.classList.remove('active');
     }
 
-    var color = rd.mode === 'multimoda' ? '#0ea5e9' : '#00696b';
-    var dashArray = rd.mode === 'multimoda' ? '8, 6' : null;
+    var color = modaColor(rd.moda);
+    var dashArray = modaDash(rd.moda);
 
     try {
         activeRouteLayer = L.geoJSON(rd.geojson, {

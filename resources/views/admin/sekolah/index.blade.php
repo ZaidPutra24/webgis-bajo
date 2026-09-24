@@ -263,7 +263,7 @@
                         <tr class="no-results-row" id="noResultsRow">
                             <td colspan="9" class="text-center py-5 text-muted small">
                                 <svg width="40" height="40" fill="none" stroke="#cbd5e1" viewBox="0 0 24 24" class="mb-2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                                <div>Tidak ada sekolah yang cocok dengan pencarian.</div>
+                                <div>No schools found matching your search.</div>
                             </td>
                         </tr>
                     </tbody>
@@ -332,9 +332,9 @@
         noResults.style.display = (totalFiltered === 0) ? '' : 'none';
 
         const q = searchInput.value.trim();
-        countEl.textContent = (q !== '' || activeFilter !== 'all')
-            ? totalFiltered + ' dari ' + total + ' data'
-            : total + ' data';
+        countEl.textContent = (q !== '' || activeFilter !== 'all' || activeJenis !== 'all')
+            ? totalFiltered + ' of ' + total + ' records'
+            : total + ' records';
 
         // Pagination info
         if (totalFiltered > 0) {

@@ -11,6 +11,7 @@ class KurikulumUtilitas extends Model
     protected $fillable = [
         'sekolah_id',
         'kurikulum',
+        'paket',
         'penyelenggara',
         'akses_internet',
         'sumber_listrik',
@@ -30,6 +31,18 @@ class KurikulumUtilitas extends Model
     public function sekolah()
     {
         return $this->belongsTo(Sekolah::class, 'sekolah_id');
+    }
+
+    /**
+     * Label Paket A/B/C yang mudah dibaca (mis. "Paket C (Setara SMA)").
+     * `kurikulum` tetap teks bebas untuk tampilan detail/histori — kolom
+     * `paket` ('A'/'B'/'C') adalah nilai terstruktur untuk query & logika
+     * (mis. fitur rekomendasi sekolah PKBM). Null jika belum diklasifikasi
+     * (mis. teks kurikulum tidak menyebut paket secara eksplisit).
+     */
+    public function getPaketLabelAttribute(): ?string
+    {
+        return $this->paket ? (StandarRombelPaket::LABEL[$this->paket] ?? $this->paket) : null;
     }
 
     /**

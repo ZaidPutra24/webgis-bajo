@@ -93,14 +93,31 @@
                     <div class="form-floating mb-3">
                         <input type="text" name="kurikulum" class="form-control modern-input" id="inpCurriculum" 
                                value="{{ old('kurikulum', $sekolah->utilitas->kurikulum ?? '') }}" 
-                               placeholder="Contoh: Curriculum Merdeka, K-13">
+                               placeholder="Example: Kurikulum Merdeka, K-13">
                         <label for="inpCurriculum" class="modern-label">Applied Curriculum</label>
                     </div>
+
+                    @if($sekolah->jenjang_id == 12)
+                    <div class="form-floating mb-3">
+                        <select name="paket" class="form-control modern-input" id="inpPaket">
+                            <option value="" {{ old('paket', $sekolah->utilitas->paket ?? '') === '' ? 'selected' : '' }}>— Not determined —</option>
+                            <option value="A" {{ old('paket', $sekolah->utilitas->paket ?? '') === 'A' ? 'selected' : '' }}>Package A (Primary Equivalent)</option>
+                            <option value="B" {{ old('paket', $sekolah->utilitas->paket ?? '') === 'B' ? 'selected' : '' }}>Package B (Lower Secondary Equivalent)</option>
+                            <option value="C" {{ old('paket', $sekolah->utilitas->paket ?? '') === 'C' ? 'selected' : '' }}>Package C (Upper Secondary Equivalent)</option>
+                        </select>
+                        <label for="inpPaket" class="modern-label">Equality Package (PKBM)</label>
+                    </div>
+                    <p class="text-muted small mb-3" style="margin-top: -0.75rem;">
+                        <i class="bi bi-info-circle"></i>
+                        PKBM specific. A single row of data can only store <strong>one</strong> package —
+                        if this school offers more than 1 package simultaneously, choose the most dominant/main package and record the rest in the Applied Curriculum field.
+                    </p>
+                    @endif
 
                     <div class="form-floating mb-3">
                         <input type="text" name="penyelenggara" class="form-control modern-input" id="inpOperator" 
                                value="{{ old('penyelenggara', $sekolah->utilitas->penyelenggara ?? '') }}" 
-                               placeholder="Contoh: Pagi / 5 Hari">
+                               placeholder="Example: Morning / 5 Days">
                         <label for="inpOperator" class="modern-label">Operational Hours</label>
                     </div>
                 </div>
@@ -116,7 +133,7 @@
                             <div class="form-floating">
                                 <input type="text" name="akses_internet" class="form-control modern-input" id="inpInternet" 
                                        value="{{ old('akses_internet', $sekolah->utilitas->akses_internet ?? '') }}" 
-                                       placeholder="Contoh: Telkomsel Flash, Indihome, Tidak Ada">
+                                       placeholder="Example: Telkomsel Flash, Indihome, None">
                                 <label for="inpInternet" class="modern-label">Main Internet Access</label>
                             </div>
                         </div>
@@ -124,7 +141,7 @@
                             <div class="form-floating">
                                 <input type="text" name="sumber_listrik" class="form-control modern-input" id="inpListrik" 
                                        value="{{ old('sumber_listrik', $sekolah->utilitas->sumber_listrik ?? '') }}" 
-                                       placeholder="Contoh: PLN, Diesel / Genset">
+                                       placeholder="Example: PLN, Diesel / Generator">
                                 <label for="inpListrik" class="modern-label">Main Power Source</label>
                             </div>
                         </div>
@@ -132,16 +149,16 @@
                             <div class="form-floating">
                                 <input type="number" name="daya_listrik" class="form-control modern-input" id="inpDaya" 
                                        value="{{ old('daya_listrik', $sekolah->utilitas->daya_listrik ?? '') }}" min="0" 
-                                       placeholder="Contoh: 1300, 2200, 3500">
-                                <label for="inpDaya" class="modern-label">Power (Watt) (VA)</label>
+                                       placeholder="Example: 1300, 2200, 3500">
+                                <label for="inpDaya" class="modern-label">Power (VA)</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="number" step="0.01" name="luas_tanah" class="form-control modern-input" id="inpLuas" 
                                        value="{{ old('luas_tanah', $sekolah->utilitas->luas_tanah ?? '') }}" min="0" 
-                                       placeholder="Contoh: 1500.50, 2400.00">
-                                <label for="inpLuas" class="modern-label">Land Area (m²) (m²)</label>
+                                       placeholder="Example: 1500.50, 2400.00">
+                                <label for="inpLuas" class="modern-label">Land Area (m²)</label>
                             </div>
                         </div>
                     </div>

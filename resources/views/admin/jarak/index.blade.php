@@ -24,13 +24,28 @@
     .btn-act-edit   { border:1.5px solid #e2e8f0; color:#4F46E5; background:transparent; }
     .btn-act-edit:hover   { background:#4F46E5; border-color:#4F46E5; color:#fff; }
     .btn-act-del    { border:1.5px solid #e2e8f0; color:#ef4444; background:transparent; }
-    .btn-act-del:hover    { background:#ef4444; border-color:#ef4444; color:#fff; }
+    /* .btn-act-del:hover    { background:#ef4444; border-color:#ef4444; color:#fff; } */
+    .btn-action-outline {
+    border: 2px solid #e2e8f0;
+    color: #4F46E5;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    background: transparent;
+    }
+    .btn-action-outline:hover {
+    background-color: #4F46E5;
+    border-color: #4F46E5;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+    }
 
     /* Badge moda */
-    .badge-darat    { background:#dcfce7; color:#16a34a; }
-    .badge-multimoda{ background:#fef9c3; color:#ca8a04; }
-    .badge-rute     { background:#ede9fe; color:#7c3aed; }
-    .badge-norute   { background:#f1f5f9; color:#94a3b8; }
+    .badge-jalan_kaki { background:#dcfce7; color:#16a34a; }
+    .badge-kendaraan  { background:#dbeafe; color:#2563eb; }
+    .badge-perahu     { background:#ffedd5; color:#ea580c; }
+    .badge-rute       { background:#ede9fe; color:#7c3aed; }
+    .badge-norute     { background:#f1f5f9; color:#94a3b8; }
 
     /* Search */
     .search-wrapper { position:relative; }
@@ -70,22 +85,22 @@
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
         <div>
-            <h4 class="mb-1 text-dark fw-bold">Matriks Jarak & Rute</h4>
-            <p class="text-muted small mb-0">Data jarak, estimasi waktu tempuh, dan rute GeoJSON setiap sekolah ke wilayah desa Bajo.</p>
+            <h4 class="mb-1 text-dark fw-bold">Distance & Route Matrix</h4>
+            <p class="text-muted small mb-0">Data on distance, estimated travel time, and GeoJSON routes from each school to the Bajo village area.</p>
         </div>
-        <a href="{{ route('jarak.create') }}" class="btn btn-primary px-4 py-2 rounded-pill fw-semibold shadow-sm">
-            <i class="bi bi-plus-lg me-1"></i> Tambah Data
+        <a href="{{ route('jarak.create') }}" class="btn btn-action-outline px-4 py-2 rounded-pill shadow-sm">
+            Add Distance
         </a>
     </div>
 
     {{-- Stat mini cards --}}
     <div class="row g-3 mb-4">
         @php
-            $total       = $matriksJarak->count();
-            $totalDarat  = $matriksJarak->where('mode_transport','darat')->count();
-            $totalMulti  = $matriksJarak->where('mode_transport','multimoda')->count();
-            $totalRute   = $matriksJarak->whereNotNull('route_geojson')->count();
-            $avgJarak    = $total ? round($matriksJarak->avg('jarak'),2) : 0;
+            $total          = $matriksJarak->count();
+            $totalJalanKaki = $matriksJarak->where('moda','jalan_kaki')->count();
+            $totalKendaraan = $matriksJarak->where('moda','kendaraan')->count();
+            $totalPerahu    = $matriksJarak->where('moda','perahu')->count();
+            $totalRute      = $matriksJarak->whereNotNull('route_geojson')->count();
         @endphp
         <div class="col-6 col-md-3">
             <div class="stat-mini bg-white shadow-sm border">
@@ -101,33 +116,33 @@
         <div class="col-6 col-md-3">
             <div class="stat-mini bg-white shadow-sm border">
                 <div class="stat-icon" style="background:#dcfce7;">
-                    <i class="bi bi-car-front text-success" style="font-size:1.1rem;"></i>
+                    <i class="bi bi-person-walking text-success" style="font-size:1.1rem;"></i>
                 </div>
                 <div>
-                    <div class="stat-val" style="color:#16a34a;">{{ $totalDarat }}</div>
-                    <div class="stat-lbl">Rute Darat</div>
+                    <div class="stat-val" style="color:#16a34a;">{{ $totalJalanKaki }}</div>
+                    <div class="stat-lbl">Jalan Kaki</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="stat-mini bg-white shadow-sm border">
-                <div class="stat-icon" style="background:#fef9c3;">
-                    <i class="bi bi-water text-warning" style="font-size:1.1rem;"></i>
+                <div class="stat-icon" style="background:#dbeafe;">
+                    <i class="bi bi-car-front" style="color:#2563eb;font-size:1.1rem;"></i>
                 </div>
                 <div>
-                    <div class="stat-val" style="color:#ca8a04;">{{ $totalMulti }}</div>
-                    <div class="stat-lbl">Multimoda (Perahu)</div>
+                    <div class="stat-val" style="color:#2563eb;">{{ $totalKendaraan }}</div>
+                    <div class="stat-lbl">Kendaraan</div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="stat-mini bg-white shadow-sm border">
-                <div class="stat-icon" style="background:#ede9fe;">
-                    <i class="bi bi-geo-alt text-purple" style="color:#7c3aed;font-size:1.1rem;"></i>
+                <div class="stat-icon" style="background:#ffedd5;">
+                    <i class="bi bi-water" style="color:#ea580c;font-size:1.1rem;"></i>
                 </div>
                 <div>
-                    <div class="stat-val" style="color:#7c3aed;">{{ $totalRute }}</div>
-                    <div class="stat-lbl">Punya GeoJSON Rute</div>
+                    <div class="stat-val" style="color:#ea580c;">{{ $totalPerahu }}</div>
+                    <div class="stat-lbl">Perahu</div>
                 </div>
             </div>
         </div>
@@ -138,20 +153,21 @@
 
         <div class="card-header bg-white py-3 border-0 rounded-top-4">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <h5 class="table-header-title fw-bold mb-0">Daftar Matriks Jarak Spasial</h5>
+                <h5 class="table-header-title fw-bold mb-0">List of Spatial Distance Matrices</h5>
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     {{-- Filter chips --}}
-                    <button class="filter-chip active" data-filter="all">Semua</button>
-                    <button class="filter-chip" data-filter="darat">Darat</button>
-                    <button class="filter-chip" data-filter="multimoda">Multimoda</button>
-                    <button class="filter-chip" data-filter="has-route">Punya Rute</button>
+                    <button class="filter-chip active" data-filter="all">All</button>
+                    <button class="filter-chip" data-filter="jalan_kaki">Jalan Kaki</button>
+                    <button class="filter-chip" data-filter="kendaraan">Kendaraan</button>
+                    <button class="filter-chip" data-filter="perahu">Perahu</button>
+                    <button class="filter-chip" data-filter="has-route">Has a Route</button>
 
                     {{-- Search --}}
                     <div class="search-wrapper ms-1">
                         <svg class="search-icon" width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                         </svg>
-                        <input type="text" class="search-input" id="tableSearch" placeholder="Cari sekolah / desa…">
+                        <input type="text" class="search-input" id="tableSearch" placeholder="Search schools / villages…">
                     </div>
                     <span class="text-muted small" id="searchCount"></span>
                 </div>
@@ -164,27 +180,33 @@
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4 text-center" width="4%">No</th>
-                            <th width="22%">Nama Sekolah</th>
-                            <th width="16%">Wilayah / Desa</th>
-                            <th width="9%" class="text-end">Jarak (km)</th>
-                            <th width="11%" class="text-center">Jalan Kaki</th>
-                            <th width="11%" class="text-center">Berkendara</th>
-                            <th width="10%" class="text-center">Perahu</th>
-                            <th width="9%" class="text-center">Moda</th>
-                            <th width="8%" class="text-center">Rute</th>
-                            <th width="10%" class="text-center pe-4">Aksi</th>
+                            <th width="20%">School / Destination</th>
+                            <th width="14%">Region / Village</th>
+                            <th width="9%" class="text-end">Distance (km)</th>
+                            <th width="13%" class="text-center">Moda</th>
+                            <th width="13%" class="text-center">Segmen</th>
+                            <th width="10%" class="text-center">Travel Time</th>
+                            <th width="8%" class="text-center">Route</th>
+                            <th width="10%" class="text-center pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="jarakTableBody">
+                        @php
+                            $modaIcon = ['jalan_kaki' => 'bi-person-walking', 'kendaraan' => 'bi-car-front', 'perahu' => 'bi-water'];
+                            $segmenLabel = [
+                                'langsung' => 'Langsung', 'ke_dermaga' => 'Ke Dermaga',
+                                'penyeberangan' => 'Penyeberangan', 'dermaga_ke_sekolah' => 'Dermaga → Sekolah',
+                            ];
+                        @endphp
                         @forelse($matriksJarak as $idx => $j)
                         <tr class="searchable-row"
-                            data-mode="{{ $j->mode_transport ?? 'darat' }}"
+                            data-moda="{{ $j->moda }}"
                             data-has-route="{{ $j->route_geojson ? '1' : '0' }}">
                             <td class="ps-4 text-center fw-semibold text-muted row-number">{{ $idx + 1 }}</td>
 
-                            {{-- Sekolah --}}
+                            {{-- Sekolah / Tujuan --}}
                             <td>
-                                <span class="fw-semibold text-dark small">{{ $j->sekolah->nama_sekolah ?? '-' }}</span>
+                                <span class="fw-semibold text-dark small">{{ $j->sekolah->nama_sekolah ?? $j->tujuan_label ?? '-' }}</span>
                             </td>
 
                             {{-- Wilayah --}}
@@ -200,61 +222,24 @@
                                 <span class="text-muted small"> km</span>
                             </td>
 
-                            {{-- Jalan Kaki --}}
-                            <td class="text-center">
-                                @if($j->walk_mnt !== null)
-                                    @php
-                                        $jam = intdiv((int)$j->walk_mnt, 60);
-                                        $mnt = (int)$j->walk_mnt % 60;
-                                    @endphp
-                                    <span class="small text-secondary fw-semibold">
-                                        {{ $jam > 0 ? $jam.'j ' : '' }}{{ $mnt }}m
-                                    </span>
-                                @else
-                                    <span class="text-muted small">—</span>
-                                @endif
-                            </td>
-
-                            {{-- Berkendara --}}
-                            <td class="text-center">
-                                @if($j->drive_mnt !== null)
-                                    @php
-                                        $jam = intdiv((int)$j->drive_mnt, 60);
-                                        $mnt = (int)$j->drive_mnt % 60;
-                                    @endphp
-                                    <span class="small fw-semibold" style="color:#4F46E5;">
-                                        {{ $jam > 0 ? $jam.'j ' : '' }}{{ $mnt }}m
-                                    </span>
-                                @else
-                                    <span class="text-muted small">—</span>
-                                @endif
-                            </td>
-
-                            {{-- Perahu --}}
-                            <td class="text-center">
-                                @if($j->boat_mnt !== null)
-                                    @php
-                                        $jam = intdiv((int)$j->boat_mnt, 60);
-                                        $mnt = (int)$j->boat_mnt % 60;
-                                    @endphp
-                                    <span class="small fw-semibold" style="color:#0891b2;">
-                                        {{ $jam > 0 ? $jam.'j ' : '' }}{{ $mnt }}m
-                                    </span>
-                                @else
-                                    <span class="text-muted small">—</span>
-                                @endif
-                            </td>
-
                             {{-- Moda --}}
                             <td class="text-center">
-                                @if(($j->mode_transport ?? 'darat') === 'multimoda')
-                                    <span class="badge badge-multimoda px-2 py-1 rounded-pill small fw-semibold">
-                                        <i class="bi bi-water me-1"></i>Multimoda
-                                    </span>
+                                <span class="badge badge-{{ $j->moda }} px-2 py-1 rounded-pill small fw-semibold">
+                                    <i class="bi {{ $modaIcon[$j->moda] ?? 'bi-signpost' }} me-1"></i>{{ $j->moda_label }}
+                                </span>
+                            </td>
+
+                            {{-- Segmen --}}
+                            <td class="text-center">
+                                <span class="text-muted small">{{ $segmenLabel[$j->segmen] ?? $j->segmen }}</span>
+                            </td>
+
+                            {{-- Waktu Tempuh --}}
+                            <td class="text-center">
+                                @if($j->waktu_tempuh_mnt !== null)
+                                    <span class="small fw-semibold" style="color:#334155;">{{ $j->waktu_label }}</span>
                                 @else
-                                    <span class="badge badge-darat px-2 py-1 rounded-pill small fw-semibold">
-                                        <i class="bi bi-car-front me-1"></i>Darat
-                                    </span>
+                                    <span class="text-muted small">—</span>
                                 @endif
                             </td>
 
@@ -302,14 +287,14 @@
                         </tr>
                         @empty
                         <tr id="emptyRow">
-                            <td colspan="10" class="text-center py-5 text-muted small">
+                            <td colspan="9" class="text-center py-5 text-muted small">
                                 <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary opacity-50"></i>
                                 Belum ada data jarak. Klik <b>Tambah Data</b> untuk mulai mengisi.
                             </td>
                         </tr>
                         @endforelse
                         <tr class="d-none" id="noResultsRow">
-                            <td colspan="10" class="text-center py-5 text-muted small">
+                            <td colspan="9" class="text-center py-5 text-muted small">
                                 <i class="bi bi-search fs-2 d-block mb-2 text-secondary opacity-50"></i>
                                 Tidak ada data yang cocok dengan pencarian / filter.
                             </td>
@@ -346,12 +331,12 @@
     function getVisible() {
         const q = input.value.toLowerCase().trim();
         return allRows.filter(row => {
-            const mode     = row.dataset.mode;
+            const moda     = row.dataset.moda;
             const hasRoute = row.dataset.hasRoute === '1';
             const matchFilter =
                 activeFilter === 'all'       ? true :
                 activeFilter === 'has-route' ? hasRoute :
-                                               mode === activeFilter;
+                                               moda === activeFilter;
             const matchSearch = q === '' || row.textContent.toLowerCase().includes(q);
             return matchFilter && matchSearch;
         });
