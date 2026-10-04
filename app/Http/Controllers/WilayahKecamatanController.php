@@ -44,7 +44,7 @@ class WilayahKecamatanController extends Controller
         ]));
 
         return redirect()->route('kecamatan.index')
-            ->with('success', 'Data Wilayah Kecamatan berhasil ditambahkan!');
+            ->with('success', 'Kecamatan Area Data successfully added!');
     }
 
     public function show($id)
@@ -83,7 +83,7 @@ class WilayahKecamatanController extends Controller
         ]));
 
         return redirect()->route('kecamatan.index')
-            ->with('success', 'Data Wilayah Kecamatan berhasil diperbarui!');
+            ->with('success', 'Kecamatan Area Data successfully updated!');
     }
 
     public function destroy($id)
@@ -92,6 +92,6 @@ class WilayahKecamatanController extends Controller
         $kecamatan->delete();
 
         return redirect()->route('kecamatan.index')
-            ->with('success', 'Data Wilayah Kecamatan berhasil dihapus!');
+            ->with('success', 'Kecamatan Area Data successfully deleted!');
     }
 }

@@ -87,15 +87,15 @@
             <div class="moda-toggle-wrap mb-1">
                 <button type="button" class="moda-toggle-btn {{ old('moda','jalan_kaki')==='jalan_kaki'?'selected-jalan_kaki':'' }}"
                         data-moda="jalan_kaki" onclick="setModa('jalan_kaki')">
-                    <i class="bi bi-person-walking me-1"></i> Jalan Kaki
+                    <i class="bi bi-person-walking me-1"></i> Walking
                 </button>
                 <button type="button" class="moda-toggle-btn {{ old('moda')==='kendaraan'?'selected-kendaraan':'' }}"
                         data-moda="kendaraan" onclick="setModa('kendaraan')">
-                    <i class="bi bi-car-front me-1"></i> Kendaraan
+                    <i class="bi bi-car-front me-1"></i> Vehicle
                 </button>
                 <button type="button" class="moda-toggle-btn {{ old('moda')==='perahu'?'selected-perahu':'' }}"
                         data-moda="perahu" onclick="setModa('perahu')">
-                    <i class="bi bi-water me-1"></i> Perahu
+                    <i class="bi bi-water me-1"></i> Boat
                 </button>
             </div>
             @error('moda') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
@@ -105,13 +105,13 @@
             <p class="section-label"><i class="bi bi-signpost"></i> Journey Segment</p>
             <select class="form-select form-select-custom @error('segmen') is-invalid @enderror"
                     name="segmen" id="segmen" onchange="onSegmenChange()">
-                <option value="langsung" {{ old('segmen','langsung')==='langsung'?'selected':'' }}>Langsung (desa &rarr; sekolah, satu leg utuh)</option>
-                <option value="ke_dermaga" {{ old('segmen')==='ke_dermaga'?'selected':'' }}>Ke Dermaga (desa &rarr; dermaga)</option>
-                <option value="penyeberangan" {{ old('segmen')==='penyeberangan'?'selected':'' }}>Penyeberangan (dermaga &rarr; dermaga, perahu)</option>
-                <option value="dermaga_ke_sekolah" {{ old('segmen')==='dermaga_ke_sekolah'?'selected':'' }}>Dermaga &rarr; Sekolah (setelah menyeberang)</option>
+                <option value="langsung" {{ old('segmen','langsung')==='langsung'?'selected':'' }}>Direct (village &rarr; school, full leg)</option>
+                <option value="ke_dermaga" {{ old('segmen')==='ke_dermaga'?'selected':'' }}>To Harbor (village &rarr; harbor)</option>
+                <option value="penyeberangan" {{ old('segmen')==='penyeberangan'?'selected':'' }}>Sea Crossing (harbor &rarr; harbor, boat)</option>
+                <option value="dermaga_ke_sekolah" {{ old('segmen')==='dermaga_ke_sekolah'?'selected':'' }}>Harbor &rarr; School (after crossing)</option>
             </select>
             @error('segmen') <div class="invalid-feedback">{{ $message }}</div> @enderror
-            <p class="calc-hint">Pilih "Langsung" untuk kasus umum. Pilih segmen lain hanya untuk rute pulau bertahap (mis. Bungin/Saponda).</p>
+            <p class="calc-hint">Select "Direct" for standard routes. Select other segments for multi-leg island routes (e.g., Bungin/Saponda).</p>
 
             {{-- ══ SEKSI 3: Relasi ══ --}}
             <div class="section-sep"></div>
@@ -150,7 +150,7 @@
                            name="tujuan_label" id="tujuan_label" value="{{ old('tujuan_label') }}"
                            placeholder='Example: "Dermaga Pulau Bungin"'>
                     @error('tujuan_label') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    <p class="calc-hint">Dipakai saat leg ini bukan tujuan akhir ke sekolah (mis. leg antara ke dermaga).</p>
+                    <p class="calc-hint">Used when this leg is not the final destination school (e.g. intermediate leg to harbor).</p>
                 </div>
             </div>
 
@@ -179,10 +179,10 @@
                                class="form-control form-control-custom @error('waktu_tempuh_mnt') is-invalid @enderror"
                                value="{{ old('waktu_tempuh_mnt') }}" placeholder="auto"
                                style="border-top-right-radius:0;border-bottom-right-radius:0;">
-                        <span class="input-group-text input-group-text-custom">minute</span>
+                        <span class="input-group-text input-group-text-custom">min</span>
                         @error('waktu_tempuh_mnt') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
-                    <p class="calc-hint" id="calc-hint-text">÷ 5 km/h × 60 (jalan kaki)</p>
+                    <p class="calc-hint" id="calc-hint-text">÷ 5 km/h × 60 (walking)</p>
                 </div>
             </div>
 
@@ -200,7 +200,7 @@
             @error('route_geojson') <div class="invalid-feedback">{{ $message }}</div> @enderror
             <p class="calc-hint mt-2">
                 <i class="bi bi-lightbulb me-1"></i>
-                Format geometry GeoJSON standar (LineString/MultiLineString), khusus untuk moda &amp; segmen di atas. Leave blank if there is no route data yet.
+                Standard GeoJSON geometry format (LineString/MultiLineString) specifically for the selected mode &amp; segment. Leave blank if there is no route data yet.
             </p>
 
             {{-- ══ Footer ══ --}}
@@ -225,9 +225,9 @@
 // ─── Kecepatan rata-rata per moda (km/jam), harus konsisten dengan Model::hitungXxxMnt() ───
 var MODA_SPEED = { jalan_kaki: 5, kendaraan: 30, perahu: 25 };
 var MODA_HINT  = {
-    jalan_kaki: '÷ 5 km/h × 60 (jalan kaki)',
-    kendaraan:  '÷ 30 km/h × 60 (kendaraan)',
-    perahu:     '÷ 25 km/h × 60 (perahu)'
+    jalan_kaki: '÷ 5 km/h × 60 (walking)',
+    kendaraan:  '÷ 30 km/h × 60 (vehicle)',
+    perahu:     '÷ 25 km/h × 60 (boat)'
 };
 
 // ─── Moda Toggle ─────────────────────────────────────────────────────────────

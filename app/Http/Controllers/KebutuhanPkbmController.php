@@ -58,6 +58,6 @@ class KebutuhanPkbmController extends Controller
         );
 
         return redirect()->route('kebutuhan-pkbm.index')
-            ->with('success', "Data kebutuhan PKBM untuk desa {$desa->nama_wilayah} berhasil disimpan!");
+            ->with('success', "PKBM needs data for village {$desa->nama_wilayah} successfully saved!");
     }
 }

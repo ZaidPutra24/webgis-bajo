@@ -112,6 +112,6 @@ class PendudukJenjangController extends Controller
         }
 
         return redirect()->route('penduduk-jenjang.index')
-            ->with('success', "Data penduduk usia jenjang & ATS/putus sekolah untuk desa {$desa->nama_wilayah} berhasil disimpan!");
+            ->with('success', "School-age population & dropout/ATS data for village {$desa->nama_wilayah} successfully saved!");
     }
 }

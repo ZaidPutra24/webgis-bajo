@@ -77,7 +77,7 @@ class StatistikSekolahController extends Controller
         if ($semuaNol) {
             StatistikSekolah::where('sekolah_id', $sekolah_id)->delete();
             return redirect()->route('statistik.index')
-                ->with('success', 'Semua nilai 0 — data statistik sekolah berhasil dihapus.');
+                ->with('success', 'All values 0 — school statistics data successfully deleted.');
         }
 
         StatistikSekolah::updateOrCreate(
@@ -86,6 +86,6 @@ class StatistikSekolahController extends Controller
         );
 
         return redirect()->route('statistik.index')
-            ->with('success', 'Data statistik fasilitas sekolah berhasil disimpan!');
+            ->with('success', 'School facility statistics data successfully saved!');
     }
 }

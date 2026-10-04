@@ -87,7 +87,7 @@ class KurikulumUtilitasController extends Controller
         if ($semuaKosong) {
             KurikulumUtilitas::where('sekolah_id', $sekolahModel->id)->delete();
             return redirect()->route('utilitas.index')
-                ->with('success', 'Semua field kosong — data kurikulum & utilitas ' . $sekolahModel->nama_sekolah . ' berhasil dihapus.');
+                ->with('success', 'All fields empty — curriculum & utility data for ' . $sekolahModel->nama_sekolah . ' successfully deleted.');
         }
 
         KurikulumUtilitas::updateOrCreate(
@@ -96,6 +96,6 @@ class KurikulumUtilitasController extends Controller
         );
 
         return redirect()->route('utilitas.index')
-            ->with('success', 'Data kurikulum & utilitas ' . $sekolahModel->nama_sekolah . ' berhasil diperbarui!');
+            ->with('success', 'Curriculum & utility data for ' . $sekolahModel->nama_sekolah . ' successfully updated!');
     }
 }

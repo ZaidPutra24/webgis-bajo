@@ -43,7 +43,7 @@ class JarakSekolahLokasiController extends Controller
         if ($exists) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Data jarak untuk kombinasi sekolah/desa, moda, dan segmen ini sudah ada!');
+                ->with('error', 'Distance data for this school/village, mode, and segment combination already exists!');
         }
 
         // Auto-hitung waktu tempuh jika tidak diisi manual
@@ -52,7 +52,7 @@ class JarakSekolahLokasiController extends Controller
         JarakSekolahLokasi::create($validated);
 
         return redirect()->route('jarak.index')
-            ->with('success', 'Data Matriks Jarak Berhasil Ditambahkan!');
+            ->with('success', 'Distance Matrix Data successfully added!');
     }
 
     public function show($id)
@@ -85,7 +85,7 @@ class JarakSekolahLokasiController extends Controller
         if ($duplicate) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Kombinasi Sekolah/Wilayah, Moda, dan Segmen tersebut sudah ada pada data lain!');
+                ->with('error', 'That combination of School/Village, Mode, and Segment already exists in another record!');
         }
 
         // Auto-hitung waktu tempuh jika tidak diisi manual
@@ -94,7 +94,7 @@ class JarakSekolahLokasiController extends Controller
         $jarak->update($validated);
 
         return redirect()->route('jarak.index')
-            ->with('success', 'Data Jarak berhasil diperbarui!');
+            ->with('success', 'Distance Data successfully updated!');
     }
 
     public function destroy($id)
@@ -103,7 +103,7 @@ class JarakSekolahLokasiController extends Controller
         $jarak->delete();
 
         return redirect()->route('jarak.index')
-            ->with('success', 'Data Jarak berhasil dihapus!');
+            ->with('success', 'Distance Data successfully deleted!');
     }
 
     // =========================================================================

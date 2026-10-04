@@ -459,14 +459,14 @@
             background: rgba(255,255,255,0.95);
             border-radius: 14px;
             padding: 10px 14px;
-            box-shadow: 0 4px 20px rgba(0,30,64,0.12);
+            box-shadow: 0 4px 20px rgba(0,30,64,0.14);
             font-family: 'Source Sans 3', sans-serif;
             font-size: 11px;
             border: 1px solid #e2e2e7;
         }
         .legend-title {
             font-weight: 700;
-            color: #001e40;
+            color: #43474f;
             margin-bottom: 6px;
             font-size: 10px;
             letter-spacing: .05em;
@@ -478,13 +478,15 @@
             gap: 7px;
             margin-bottom: 4px;
             color: #43474f;
+            font-weight: 600;
         }
         .legend-dot {
             width: 14px;
             height: 14px;
             border-radius: 50%;
             flex-shrink: 0;
-            border: 2px solid rgba(255,255,255,0.8);
+            border: 2px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,30,64,0.28);
         }
         .map-legend { max-width: 210px; }
         .legend-header {
@@ -522,12 +524,14 @@
             width: 9px;
             height: 9px;
             border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.8);
+            border: 1.5px solid #fff;
+            box-shadow: 0 1px 4px rgba(0,30,64,0.28);
         }
         .legend-line {
             width: 22px;
             height: 0;
             flex-shrink: 0;
+            border-radius: 999px;
         }
         .legend-note {
             font-size: 9px;
@@ -1122,7 +1126,7 @@
             <div id="active-route-bar">
                 <div class="route-bar-dot" id="route-bar-dot"></div>
                 <span class="route-bar-label" id="route-bar-label"></span>
-                <button class="route-bar-close" onclick="sembunyikanSatuRute()" title="Hapus rute">✕</button>
+                <button class="route-bar-close" onclick="sembunyikanSatuRute()" title="Delete this route">✕</button>
             </div>
 
             {{--
@@ -1148,9 +1152,9 @@
                     'nonformal' => ['Non-Formal', [11, 12, 13, 14, 15]],
                 ];
                 $modaMetaShared = [
-                    'jalan_kaki' => ['label' => 'Jalan Kaki',        'color' => '#16a34a', 'dash' => null],
-                    'kendaraan'  => ['label' => 'Kendaraan',         'color' => '#2563eb', 'dash' => null],
-                    'perahu'     => ['label' => 'Perahu / Speedboat','color' => '#ea580c', 'dash' => '8, 6'],
+                    'jalan_kaki' => ['label' => 'Walking',        'color' => '#16a34a', 'dash' => null],
+                    'kendaraan'  => ['label' => 'Vehicle',         'color' => '#2563eb', 'dash' => null],
+                    'perahu'     => ['label' => 'Boat / Speedboat','color' => '#ea580c', 'dash' => '8, 6'],
                 ];
                 $kecamatanDefaultColor = '#ea580c';
                 $adaWarnaKecamatanKustom = $kecamatans->contains(fn($k) => !empty($k->warna) && strtolower($k->warna) !== strtolower($kecamatanDefaultColor));
@@ -1178,14 +1182,14 @@
                     <div class="legend-title mt-2">Boundary (ROI)</div>
                     <div class="legend-item">
                         <div class="legend-line" style="border-top:3px dashed {{ $kecamatanDefaultColor }};"></div>
-                        <span>Kecamatan Border{{ $adaWarnaKecamatanKustom ? ' *' : '' }}</span>
+                        <span>Sub District Border{{ $adaWarnaKecamatanKustom ? ' *' : '' }}</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-line" style="border-top:3px dashed #00696b;"></div>
-                        <span>Desa / Wilayah Border</span>
+                        <span>Village Border</span>
                     </div>
                     @if($adaWarnaKecamatanKustom)
-                    <div class="legend-note">* warna dapat berbeda per kecamatan</div>
+                    <div class="legend-note">* Colors may vary by district.</div>
                     @endif
 
                     <div class="legend-title mt-2">Route Lines</div>
@@ -1198,11 +1202,11 @@
 
                     <div class="legend-title mt-2">School Type</div>
                     <div class="legend-item">
-                        <div style="width:14px;height:14px;border-radius:50%;background:#43474f;border:2px solid rgba(255,255,255,0.8);flex-shrink:0;"></div>
+                        <div style="width:14px;height:14px;border-radius:50%;background:#43474f;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,30,64,0.28);flex-shrink:0;"></div>
                         <span>Public School (Circle)</span>
                     </div>
                     <div class="legend-item">
-                        <div style="width:14px;height:14px;border-radius:3px;background:#43474f;border:2px dashed rgba(255,255,255,0.8);flex-shrink:0;"></div>
+                        <div style="width:14px;height:14px;border-radius:3px;background:#43474f;border:2px dashed #fff;box-shadow:0 2px 6px rgba(0,30,64,0.28);flex-shrink:0;"></div>
                         <span>Private School (Square)</span>
                     </div>
                 </div>
@@ -1239,8 +1243,8 @@
             <div class="filter-group">
                 <span class="filter-group-label">Type</span>
                 <button class="filter-btn active" data-filter="type" data-value="all">All</button>
-                <button class="filter-btn" data-filter="type" data-value="Negeri">Negeri</button>
-                <button class="filter-btn" data-filter="type" data-value="Swasta">Swasta</button>
+                <button class="filter-btn" data-filter="type" data-value="Negeri">Public School</button>
+                <button class="filter-btn" data-filter="type" data-value="Swasta">Private School</button>
             </div>
             <button class="filter-btn reset-btn" id="resetFilters" onclick="resetAllFilters()">
                 <span class="material-symbols-outlined" style="font-size:14px;">refresh</span> Reset
@@ -1466,7 +1470,7 @@ var allRouteData = {};
                   'display:flex;align-items:center;justify-content:center;gap:5px;transition:all .2s;"' .
                   ' onmouseover="this.style.background=\'' . $metaW['color'] . '\';this.style.color=\'#fff\'"' .
                   ' onmouseout="if(!this.classList.contains(\'rute-aktif\')){this.style.background=\'transparent\';this.style.color=\'' . $metaW['color'] . '\'}">' .
-                  '<span style="font-size:11px;">&#x2192;</span> Tampilkan Rute</button>' .
+                  '<span style="font-size:11px;">&#x2192;</span> Show Route</button>' .
                 '</div>';
         }
     @endphp
@@ -1725,16 +1729,16 @@ var activeRouteKey    = null;             // key rute yang sedang aktif
         }
         $segmenLabel = [
             'langsung'           => null,
-            'ke_dermaga'         => 'ke dermaga',
-            'penyeberangan'      => 'penyeberangan',
-            'dermaga_ke_sekolah' => 'dari dermaga',
+            'ke_dermaga'         => 'to dock',
+            'penyeberangan'      => 'crossing',
+            'dermaga_ke_sekolah' => 'from dock',
         ];
 
         $jarakRows = '';
         $routeGeojsons = [];
 
         foreach ($jarakLengkap as $wilayahId => $legs) {
-            $namaWilayah = htmlspecialchars($legs->first()->wilayahDesa->nama_wilayah ?? 'Desa', ENT_QUOTES, 'UTF-8');
+            $namaWilayah = htmlspecialchars($legs->first()->wilayahDesa->nama_wilayah ?? 'Village', ENT_QUOTES, 'UTF-8');
 
             $legRowsHtml = '';
             foreach ($legs as $dj) {
@@ -1742,7 +1746,7 @@ var activeRouteKey    = null;             // key rute yang sedang aktif
                 $nilaiJarak = number_format((float) $dj->jarak, 2);
                 $waktuFmt   = $dj->waktu_tempuh_mnt !== null
                     ? (intdiv((int) $dj->waktu_tempuh_mnt, 60) > 0
-                        ? intdiv((int) $dj->waktu_tempuh_mnt, 60) . 'j ' . ((int) $dj->waktu_tempuh_mnt % 60) . 'm'
+                        ? intdiv((int) $dj->waktu_tempuh_mnt, 60) . 'h ' . ((int) $dj->waktu_tempuh_mnt % 60) . 'm'
                         : (int) $dj->waktu_tempuh_mnt . 'm')
                     : '-';
                 $segLabel = $segmenLabel[$dj->segmen] ?? null;
@@ -1759,7 +1763,7 @@ var activeRouteKey    = null;             // key rute yang sedang aktif
                       'display:flex;align-items:center;justify-content:center;gap:5px;transition:all .2s;"' .
                       ' onmouseover="this.style.background=\'' . $meta['color'] . '\';this.style.color=\'#fff\'"' .
                       ' onmouseout="if(!this.classList.contains(\'rute-aktif\')){this.style.background=\'transparent\';this.style.color=\'' . $meta['color'] . '\'}">' .
-                      '<span style="font-size:11px;">&#x2192;</span> Tampilkan Rute</button>'
+                      '<span style="font-size:11px;">&#x2192;</span> Show Route</button>'
                     : '';
 
                 $legRowsHtml .= '<div style="background:#fff;border:1px solid #e2e2e7;border-radius:8px;padding:6px 8px;margin-top:5px;">' .
@@ -1769,7 +1773,7 @@ var activeRouteKey    = null;             // key rute yang sedang aktif
                       '</span>' .
                       '<span style="font-size:11px;font-weight:800;color:#ba1a1a;">' . $nilaiJarak . ' km</span>' .
                     '</div>' .
-                    '<div style="font-size:10px;color:#737780;font-weight:600;margin-top:3px;">Waktu tempuh: <span style="color:#43474f;font-weight:700;">' . $waktuFmt . '</span></div>' .
+                    '<div style="font-size:10px;color:#737780;font-weight:600;margin-top:3px;">Traveling Time: <span style="color:#43474f;font-weight:700;">' . $waktuFmt . '</span></div>' .
                     $btnRute .
                     '</div>';
 
@@ -1914,7 +1918,7 @@ var activeRouteKey    = null;             // key rute yang sedang aktif
         '<div class="detail-panel-title">{{ $namaSekolah }}</div>' +
         '<div class="detail-panel-sub">{{ $namaJenjang }}' +
         @if($wilayahNama) ' &nbsp;·&nbsp; {{ $wilayahNama }}' + @endif
-        '</div>' +
+        '</div>' +  
         '</div>' +
         '<button class="detail-panel-close" onclick="closeDetailPanel()">✕</button>' +
         '</div>' +
@@ -1988,12 +1992,12 @@ function buildRouteLayers() {
             });
             var popHtml =
                 '<div style="font-family:\'Source Sans 3\',sans-serif;min-width:200px;padding:12px;">' +
-                '<p style="font-size:10px;font-weight:700;color:#43474f;text-transform:uppercase;letter-spacing:.05em;margin:0 0 4px;">Rute · ' + rd.moda_label + '</p>' +
+                '<p style="font-size:10px;font-weight:700;color:#43474f;text-transform:uppercase;letter-spacing:.05em;margin:0 0 4px;">Route · ' + rd.moda_label + '</p>' +
                 '<p style="font-size:14px;font-weight:800;color:#001e40;margin:0 0 4px;">' + rd.sekolah + '</p>' +
-                '<p style="font-size:12px;color:#43474f;margin:0 0 8px;">ke ' + rd.wilayah + '</p>' +
+                '<p style="font-size:12px;color:#43474f;margin:0 0 8px;">to ' + rd.wilayah + '</p>' +
                 '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">' +
-                '<div style="background:#f4f3f8;border-radius:8px;padding:6px 8px;"><div style="font-size:9px;color:#737780;font-weight:600;">Jarak</div><div style="font-size:13px;font-weight:800;color:#ba1a1a;">' + rd.jarak + ' km</div></div>' +
-                '<div style="background:#f4f3f8;border-radius:8px;padding:6px 8px;"><div style="font-size:9px;color:#737780;font-weight:600;">Waktu Tempuh</div><div style="font-size:13px;font-weight:700;color:#001e40;">' + (rd.waktu || '-') + '</div></div>' +
+                '<div style="background:#f4f3f8;border-radius:8px;padding:6px 8px;"><div style="font-size:9px;color:#737780;font-weight:600;">Distance</div><div style="font-size:13px;font-weight:800;color:#ba1a1a;">' + rd.jarak + ' km</div></div>' +
+                '<div style="background:#f4f3f8;border-radius:8px;padding:6px 8px;"><div style="font-size:9px;color:#737780;font-weight:600;">Traveling Time</div><div style="font-size:13px;font-weight:700;color:#001e40;">' + (rd.waktu || '-') + '</div></div>' +
                 '</div></div>';
             poly.bindPopup(popHtml);
             routeLayerGroup.addLayer(poly);
@@ -2009,20 +2013,20 @@ function toggleRouteLayer() {
         map.removeLayer(routeLayerGroup);
         routeLayerVisible = false;
         if (btn) btn.classList.remove('active');
-        showToast('Semua rute disembunyikan', 1500);
+        showToast('All routes hidden', 1500);
     } else {
         // Sembunyikan dulu rute tunggal jika ada
         sembunyikanSatuRute();
         buildRouteLayers();
         var count = Object.keys(allRouteData).length;
         if (count === 0) {
-            showToast('Belum ada data rute tersedia', 2500);
+            showToast('No routes found', 2500);
             return;
         }
         routeLayerGroup.addTo(map);
         routeLayerVisible = true;
         if (btn) btn.classList.add('active');
-        showToast('Menampilkan ' + routeLayerGroup.getLayers().length + ' rute', 2000);
+        showToast('Showing ' + routeLayerGroup.getLayers().length + ' route', 2000);
     }
 }
 
@@ -2030,7 +2034,7 @@ function toggleRouteLayer() {
 function tampilkanSatuRute(key) {
     var rd = allRouteData[key];
     if (!rd) {
-        showToast('Data rute tidak ditemukan', 2000);
+        showToast('Route data not found', 2000);
         return;
     }
 
@@ -2078,10 +2082,10 @@ function tampilkanSatuRute(key) {
         // Tampilkan floating bar di peta
         _showRouteBar(rd.sekolah + ' → ' + rd.wilayah, color);
 
-        showToast('Rute ' + rd.sekolah + ' → ' + rd.wilayah + ' ditampilkan', 2000);
+        showToast('Route ' + rd.sekolah + ' → ' + rd.wilayah + ' displayed', 2000);
     } catch(e) {
-        console.warn('Gagal render rute:', e);
-        showToast('Gagal menampilkan rute (format GeoJSON tidak valid)', 3000);
+        console.warn('Failed to render route:', e);
+        showToast('Failed to display route (invalid GeoJSON format)', 3000);
     }
 }
 
@@ -2117,12 +2121,12 @@ function _updateRuteBtn(key, aktif) {
         btn.classList.add('rute-aktif');
         btn.style.background = '#00696b';
         btn.style.color = '#fff';
-        btn.innerHTML = '<span style="font-size:12px;">&#x2715;</span> Sembunyikan Rute';
+        btn.innerHTML = '<span style="font-size:12px;">&#x2715;</span> Hide Route';
     } else {
         btn.classList.remove('rute-aktif');
         btn.style.background = 'transparent';
         btn.style.color = '#00696b';
-        btn.innerHTML = '<span style="font-size:12px;">&#x2192;</span> Tampilkan Rute';
+        btn.innerHTML = '<span style="font-size:12px;">&#x2192;</span> Show Route';
     }
 }
 

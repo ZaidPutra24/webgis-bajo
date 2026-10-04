@@ -54,6 +54,15 @@
 
     .basis-note { font-size: .76rem; color: #64748b; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: .85rem; padding: .85rem 1rem; }
     .basis-note b { color: #334155; }
+
+    /* Pagination */
+    .pagination-wrapper { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 0.5rem; }
+    .pagination-info { font-size: 0.8rem; color: #94a3b8; }
+    .pagination-controls { display: flex; gap: 0.35rem; align-items: center; }
+    .page-btn { border: 1.5px solid #e2e8f0; background: #fff; color: #64748b; border-radius: 0.5rem; padding: 0.3rem 0.65rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.15s; line-height: 1.4; }
+    .page-btn:hover:not(:disabled) { border-color: #4F46E5; color: #4F46E5; }
+    .page-btn.active { background: #4F46E5; border-color: #4F46E5; color: #fff; }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>
 
 @php
@@ -187,7 +196,7 @@
                         <tr class="searchable-row"
                             data-status="{{ $s['kelompok_keterpencilan'] }}"
                             data-beban="{{ $s['beban_ganda'] ? '1' : '0' }}">
-                            <td class="ps-4 text-center fw-semibold text-muted">{{ $index + 1 }}</td>
+                            <td class="ps-4 text-center fw-semibold text-muted row-number">{{ $index + 1 }}</td>
                             <td><span class="fw-bold text-dark">{{ $s['nama_sekolah'] }}</span></td>
                             <td class="text-muted small">{{ $s['jenjang'] ?? '–' }}</td>
                             <td class="text-center">
@@ -222,9 +231,19 @@
                         @empty
                         <tr><td colspan="11" class="text-center text-muted py-4">No schools found.</td></tr>
                         @endforelse
+                        <tr class="no-results-row" id="noResultsRow" style="display:none;">
+                            <td colspan="11" class="text-center py-5 text-muted small">
+                                <svg width="40" height="40" fill="none" stroke="#cbd5e1" viewBox="0 0 24 24" class="mb-2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                                <div>No schools found matching your search/filter.</div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
+        </div>
+        <div class="pagination-wrapper" id="paginationWrapper">
+            <span class="pagination-info" id="paginationInfo"></span>
+            <div class="pagination-controls" id="paginationControls"></div>
         </div>
     </div>
 </div>
@@ -234,34 +253,100 @@
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('tableSearch');
     const rows = Array.from(document.querySelectorAll('#tableBody .searchable-row'));
+    const noResults = document.getElementById('noResultsRow');
     const searchCount = document.getElementById('searchCount');
+    const paginationInfo = document.getElementById('paginationInfo');
+    const paginationControls = document.getElementById('paginationControls');
     const pills = document.querySelectorAll('.filter-pill');
+    const PER_PAGE = 10;
+    const total = rows.length;
     let activeFilter = 'all';
+    let currentPage = 1;
 
-    function applyFilters() {
+    function getFilteredRows() {
         const term = (searchInput?.value ?? '').trim().toLowerCase();
-        let visible = 0;
-        rows.forEach(row => {
-            const matchesSearch = row.textContent.toLowerCase().includes(term);
+        return rows.filter(row => {
+            const matchesSearch = term === '' || row.textContent.toLowerCase().includes(term);
             const matchesFilter = activeFilter === 'all'
                 || (activeFilter === 'beban_ganda' ? row.dataset.beban === '1' : row.dataset.status === activeFilter);
-            const show = matchesSearch && matchesFilter;
-            row.style.display = show ? '' : 'none';
-            if (show) visible++;
+            return matchesSearch && matchesFilter;
         });
-        if (searchCount) searchCount.textContent = visible + ' of ' + rows.length + ' schools';
     }
 
-    searchInput?.addEventListener('input', applyFilters);
+    function renderPage() {
+        const filteredRows = getFilteredRows();
+        const totalFiltered = filteredRows.length;
+        const totalPages = Math.max(1, Math.ceil(totalFiltered / PER_PAGE));
+        if (currentPage > totalPages) currentPage = totalPages;
+        const start = (currentPage - 1) * PER_PAGE;
+        const end = start + PER_PAGE;
+
+        rows.forEach(r => r.style.display = 'none');
+        let displayNum = 1;
+        filteredRows.forEach((row, idx) => {
+            if (idx >= start && idx < end) {
+                row.style.display = '';
+                const numCell = row.querySelector('.row-number');
+                if (numCell) numCell.textContent = start + displayNum;
+                displayNum++;
+            }
+        });
+
+        if (noResults) {
+            noResults.style.display = (totalFiltered === 0 && (searchInput.value.trim() !== '' || activeFilter !== 'all')) ? '' : 'none';
+        }
+        if (searchCount) {
+            searchCount.textContent = (searchInput.value.trim() !== '' || activeFilter !== 'all')
+                ? totalFiltered + ' of ' + total + ' schools'
+                : total + ' schools';
+        }
+
+        if (totalFiltered > 0) {
+            paginationInfo.textContent = 'Showing ' + (start + 1) + '–' + Math.min(end, totalFiltered) + ' of ' + totalFiltered + ' entries';
+        } else {
+            paginationInfo.textContent = '';
+        }
+
+        paginationControls.innerHTML = '';
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'page-btn';
+        prevBtn.textContent = '‹';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.addEventListener('click', () => { currentPage--; renderPage(); });
+        paginationControls.appendChild(prevBtn);
+
+        const maxBtns = 5;
+        let pageStart = Math.max(1, currentPage - Math.floor(maxBtns / 2));
+        let pageEnd = Math.min(totalPages, pageStart + maxBtns - 1);
+        if (pageEnd - pageStart < maxBtns - 1) pageStart = Math.max(1, pageEnd - maxBtns + 1);
+        for (let i = pageStart; i <= pageEnd; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+            btn.textContent = i;
+            btn.addEventListener('click', ((p) => () => { currentPage = p; renderPage(); })(i));
+            paginationControls.appendChild(btn);
+        }
+
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'page-btn';
+        nextBtn.textContent = '›';
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.addEventListener('click', () => { currentPage++; renderPage(); });
+        paginationControls.appendChild(nextBtn);
+    }
+
+    renderPage();
+    searchInput?.addEventListener('input', () => { currentPage = 1; renderPage(); });
+
     pills.forEach(pill => {
         pill.addEventListener('click', () => {
             pills.forEach(p => p.classList.remove('active'));
             pill.classList.add('active');
             activeFilter = pill.dataset.filter ?? 'all';
-            applyFilters();
+            currentPage = 1;
+            renderPage();
         });
     });
-    applyFilters();
 });
 </script>
 @endpush

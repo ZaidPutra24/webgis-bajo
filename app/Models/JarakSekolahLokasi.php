@@ -106,9 +106,9 @@ class JarakSekolahLokasi extends Model
     public function getModaLabelAttribute(): string
     {
         return match ($this->moda) {
-            'jalan_kaki' => 'Jalan Kaki',
-            'kendaraan'  => 'Kendaraan',
-            'perahu'     => 'Perahu/Speedboat',
+            'jalan_kaki' => 'Walking',
+            'kendaraan'  => 'Vehicle',
+            'perahu'     => 'Boat / Speedboat',
             default      => ucfirst($this->moda),
         };
     }
@@ -125,7 +125,15 @@ class JarakSekolahLokasi extends Model
         if ($this->waktu_tempuh_mnt === null) return null;
         $jam = intdiv((int) $this->waktu_tempuh_mnt, 60);
         $mnt = (int) $this->waktu_tempuh_mnt % 60;
-        return $jam > 0 ? "{$jam} jam {$mnt} menit" : "{$mnt} menit";
+        
+        $parts = [];
+        if ($jam > 0) {
+            $parts[] = $jam . ' ' . ($jam > 1 ? 'hrs' : 'hr');
+        }
+        if ($mnt > 0 || $jam === 0) {
+            $parts[] = $mnt . ' ' . ($mnt > 1 ? 'mins' : 'min');
+        }
+        return implode(' ', $parts);
     }
 
     // -------------------------------------------------------------------------

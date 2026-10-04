@@ -178,7 +178,7 @@ class JarakKondisiAnalyzer
         $akreditasi = $akreditasi ? strtoupper(trim($akreditasi)) : null;
 
         if ($akreditasi === null || $akreditasi === '') {
-            return ['nilai' => null, 'label' => 'Belum ada data', 'status' => 'tidak_ada_data'];
+            return ['nilai' => null, 'label' => 'No data', 'status' => 'tidak_ada_data'];
         }
 
         $skor = match ($akreditasi) {
@@ -189,7 +189,7 @@ class JarakKondisiAnalyzer
         return [
             'nilai'  => $akreditasi,
             'skor'   => $skor,
-            'label'  => $akreditasi === 'A' || $akreditasi === 'B' || $akreditasi === 'C' ? "Terakreditasi {$akreditasi}" : 'Tidak Terakreditasi',
+            'label'  => $akreditasi === 'A' || $akreditasi === 'B' || $akreditasi === 'C' ? "Accredited {$akreditasi}" : 'Unaccredited',
             // C dan Tidak Terakreditasi sama-sama di bawah kriteria minimal
             // yang diharapkan (Permendikbudristek 38/2023 Ps. 6-7).
             'status' => in_array($akreditasi, ['A', 'B'], true) ? 'baik' : 'kurang',
@@ -201,7 +201,7 @@ class JarakKondisiAnalyzer
     {
         $statistik = $sekolah->statistik;
         if (!$statistik || !$statistik->jumlah_guru || !$statistik->jumlah_siswa) {
-            return ['nilai' => null, 'label' => 'Belum ada data', 'status' => 'tidak_ada_data'];
+            return ['nilai' => null, 'label' => 'No data', 'status' => 'tidak_ada_data'];
         }
 
         $rasio = round($statistik->jumlah_siswa / $statistik->jumlah_guru, 1);
@@ -211,7 +211,7 @@ class JarakKondisiAnalyzer
         return [
             'nilai'  => $rasio,
             'ambang' => $ambang,
-            'label'  => $rasio . ' siswa/guru',
+            'label'  => $rasio . ' students/teacher',
             'status' => $rasio > $ambang ? 'kurang' : 'baik',
         ];
     }
@@ -221,7 +221,7 @@ class JarakKondisiAnalyzer
     {
         $statistik = $sekolah->statistik;
         if (!$statistik || $statistik->ruang_kelas === null || !$statistik->jumlah_rombel) {
-            return ['nilai' => null, 'label' => 'Belum ada data', 'status' => 'tidak_ada_data'];
+            return ['nilai' => null, 'label' => 'No data', 'status' => 'tidak_ada_data'];
         }
 
         $selisih = $statistik->ruang_kelas - $statistik->jumlah_rombel;
@@ -229,7 +229,7 @@ class JarakKondisiAnalyzer
         return [
             'nilai'  => $statistik->ruang_kelas,
             'rombel' => $statistik->jumlah_rombel,
-            'label'  => "{$statistik->ruang_kelas} ruang / {$statistik->jumlah_rombel} rombel",
+            'label'  => "{$statistik->ruang_kelas} rooms / {$statistik->jumlah_rombel} classes",
             'status' => $selisih < 0 ? 'kurang' : 'baik',
         ];
     }
@@ -239,7 +239,7 @@ class JarakKondisiAnalyzer
     {
         $sumber = optional($sekolah->utilitas)->sumber_listrik;
         if (!$sumber || trim($sumber) === '') {
-            return ['nilai' => null, 'label' => 'Belum ada data', 'status' => 'tidak_ada_data'];
+            return ['nilai' => null, 'label' => 'No data', 'status' => 'tidak_ada_data'];
         }
 
         $adaPln = strcasecmp(trim($sumber), 'PLN') === 0;
@@ -247,10 +247,6 @@ class JarakKondisiAnalyzer
         return [
             'nilai'  => $sumber,
             'label'  => $sumber,
-            // Non-PLN (Diesel/Menumpang/Tidak Ada) ditandai 'kurang' karena
-            // pasokan tidak stabil dari jaringan resmi — konsisten dengan
-            // kriteria "keterbatasan fasilitas listrik" pada Permendikbud
-            // 34/2012, bukan hanya saat sumbernya benar-benar kosong.
             'status' => $adaPln ? 'baik' : 'kurang',
         ];
     }
@@ -260,7 +256,7 @@ class JarakKondisiAnalyzer
     {
         $akses = optional($sekolah->utilitas)->akses_internet;
         if (!$akses || trim($akses) === '') {
-            return ['nilai' => null, 'label' => 'Belum ada data', 'status' => 'tidak_ada_data'];
+            return ['nilai' => null, 'label' => 'No data', 'status' => 'tidak_ada_data'];
         }
 
         return [
@@ -278,10 +274,10 @@ class JarakKondisiAnalyzer
     protected function ringkasKelompok(string $kelompok, Collection $sekolahs): array
     {
         $labelKelompok = match ($kelompok) {
-            'mudah'          => 'Akses Mudah',
-            'jauh'           => 'Darat, Tapi Jauh (> ambang)',
-            'kepulauan'      => 'Kepulauan (Butuh Perahu)',
-            default          => 'Data Jarak Belum Ada',
+            'mudah'          => 'Accessible',
+            'jauh'           => 'Far (Land > threshold)',
+            'kepulauan'      => 'Islands (Boat Required)',
+            default          => 'No Distance Data',
         };
 
         $ringkasIndikator = function (string $key) use ($sekolahs) {
