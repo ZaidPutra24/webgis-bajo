@@ -120,7 +120,7 @@
                 </div>
                 <div>
                     <div class="stat-val" style="color:#16a34a;">{{ $totalJalanKaki }}</div>
-                    <div class="stat-lbl">Jalan Kaki</div>
+                    <div class="stat-lbl">Walking</div>
                 </div>
             </div>
         </div>
@@ -131,7 +131,7 @@
                 </div>
                 <div>
                     <div class="stat-val" style="color:#2563eb;">{{ $totalKendaraan }}</div>
-                    <div class="stat-lbl">Kendaraan</div>
+                    <div class="stat-lbl">Vehicle</div>
                 </div>
             </div>
         </div>
@@ -142,7 +142,7 @@
                 </div>
                 <div>
                     <div class="stat-val" style="color:#ea580c;">{{ $totalPerahu }}</div>
-                    <div class="stat-lbl">Perahu</div>
+                    <div class="stat-lbl">Boat</div>
                 </div>
             </div>
         </div>
@@ -157,9 +157,9 @@
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     {{-- Filter chips --}}
                     <button class="filter-chip active" data-filter="all">All</button>
-                    <button class="filter-chip" data-filter="jalan_kaki">Jalan Kaki</button>
-                    <button class="filter-chip" data-filter="kendaraan">Kendaraan</button>
-                    <button class="filter-chip" data-filter="perahu">Perahu</button>
+                    <button class="filter-chip" data-filter="jalan_kaki">Walking</button>
+                    <button class="filter-chip" data-filter="kendaraan">Vehicle</button>
+                    <button class="filter-chip" data-filter="perahu">Boat</button>
                     <button class="filter-chip" data-filter="has-route">Has a Route</button>
 
                     {{-- Search --}}
@@ -194,8 +194,8 @@
                         @php
                             $modaIcon = ['jalan_kaki' => 'bi-person-walking', 'kendaraan' => 'bi-car-front', 'perahu' => 'bi-water'];
                             $segmenLabel = [
-                                'langsung' => 'Langsung', 'ke_dermaga' => 'Ke Dermaga',
-                                'penyeberangan' => 'Penyeberangan', 'dermaga_ke_sekolah' => 'Dermaga → Sekolah',
+                                'langsung' => 'Direct', 'ke_dermaga' => 'To Harbor',
+                                'penyeberangan' => 'Sea Crossing', 'dermaga_ke_sekolah' => 'Harbor → School',
                             ];
                         @endphp
                         @forelse($matriksJarak as $idx => $j)
@@ -247,20 +247,20 @@
                             <td class="text-center">
                                 @if($j->route_geojson)
                                     <span class="badge badge-rute px-2 py-1 rounded-pill small fw-semibold">
-                                        <i class="bi bi-geo-alt-fill me-1"></i>Ada
+                                        <i class="bi bi-geo-alt-fill me-1"></i>Available
                                     </span>
                                 @else
-                                    <span class="badge badge-norute px-2 py-1 rounded-pill small">Belum</span>
+                                    <span class="badge badge-norute px-2 py-1 rounded-pill small">Not set</span>
                                 @endif
                             </td>
 
                             {{-- Aksi --}}
                             <td class="text-center pe-4">
                                 <form action="{{ route('jarak.destroy', $j->id) }}" method="POST"
-                                      onsubmit="return confirm('Hapus data jarak ini?')"
+                                      onsubmit="return confirm('Delete this distance data?')"
                                       class="d-inline-flex gap-1 justify-content-center">
                                     <a href="{{ route('jarak.show', $j->id) }}"
-                                       class="btn btn-sm btn-icon btn-act-view" title="Lihat">
+                                       class="btn btn-sm btn-icon btn-act-view" title="View">
                                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                   d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -276,7 +276,7 @@
                                         </svg>
                                     </a>
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-icon btn-act-del" title="Hapus">
+                                    <button type="submit" class="btn btn-sm btn-icon btn-act-del" title="Delete">
                                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                   d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -289,14 +289,14 @@
                         <tr id="emptyRow">
                             <td colspan="9" class="text-center py-5 text-muted small">
                                 <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary opacity-50"></i>
-                                Belum ada data jarak. Klik <b>Tambah Data</b> untuk mulai mengisi.
+                                No distance data available. Click <b>Add Data</b> to start adding records.
                             </td>
                         </tr>
                         @endforelse
                         <tr class="d-none" id="noResultsRow">
                             <td colspan="9" class="text-center py-5 text-muted small">
                                 <i class="bi bi-search fs-2 d-block mb-2 text-secondary opacity-50"></i>
-                                Tidak ada data yang cocok dengan pencarian / filter.
+                                No records matching search / filter.
                             </td>
                         </tr>
                     </tbody>
@@ -363,10 +363,10 @@
 
         noResults.classList.toggle('d-none', total > 0);
         countEl.textContent = allRows.length !== total
-            ? total + ' / ' + allRows.length + ' data' : allRows.length + ' data';
+            ? total + ' / ' + allRows.length + ' items' : allRows.length + ' items';
 
         pgInfo.textContent = total > 0
-            ? 'Menampilkan ' + (start + 1) + '–' + Math.min(end, total) + ' dari ' + total + ' entri'
+            ? 'Showing ' + (start + 1) + '–' + Math.min(end, total) + ' of ' + total + ' entries'
             : '';
 
         // Render pagination buttons

@@ -80,7 +80,7 @@ $cntTanpaKoordinat = $total - $cntBerKoordinat;
             <h4 class="fw-bold mb-1">Welcome, {{ Auth::user()->name }} 👋</h4>
             <p class="mb-3 opacity-75" style="font-size:14px;">
                 Manage spatial data, coastal area mapping, and educational statistics through this centralized admin panel.
-                There are <strong>{{ $total }} School</strong> from <strong>5 level</strong> that are registered.
+                There are <strong>{{ $total }} Schools</strong> from <strong>5 levels</strong> that are registered.
             </p>
             <div class="d-flex flex-wrap gap-2">
                 <a href="{{ route('utilitas.index') }}" class="btn btn-light btn-sm quick-btn">

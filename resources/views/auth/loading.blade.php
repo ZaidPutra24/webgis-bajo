@@ -349,8 +349,8 @@
                     <div class="spinner-dot"></div>
                 </div>
 
-                <p class="loading-title">Sedang masuk ke sistem…</p>
-                <p class="loading-sub">Memverifikasi kredensial dan menyiapkan sesi Anda</p>
+                <p class="loading-title">Signing into system…</p>
+                <p class="loading-sub">Verifying credentials and preparing your session</p>
 
                 <div class="progress-track">
                     <div class="progress-fill" id="progressFill"></div>
@@ -364,7 +364,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.955 11.955 0 003 12c0 6.627 5.373 12 12 12s12-5.373 12-12c0-2.929-1.05-5.61-2.783-7.68A11.955 11.955 0 0112 2.964z"/>
                             </svg>
                         </div>
-                        <span id="step1-text">Memverifikasi identitas</span>
+                        <span id="step1-text">Verifying identity</span>
                     </div>
                     <div class="step" id="step2">
                         <div class="step-icon" id="step2-icon">
@@ -372,7 +372,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
                             </svg>
                         </div>
-                        <span id="step2-text">Membuat sesi aman</span>
+                        <span id="step2-text">Creating secure session</span>
                     </div>
                     <div class="step" id="step3">
                         <div class="step-icon" id="step3-icon">
@@ -380,7 +380,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/>
                             </svg>
                         </div>
-                        <span id="step3-text">Memuat data dashboard</span>
+                        <span id="step3-text">Loading dashboard data</span>
                     </div>
                 </div>
             </div>
@@ -397,12 +397,12 @@
                     </div>
                 </div>
 
-                <p class="success-title">Login Berhasil!</p>
-                <p class="success-sub">Selamat datang kembali di Admin Dashboard</p>
+                <p class="success-title">Login Successful!</p>
+                <p class="success-sub">Welcome back to Admin Dashboard</p>
 
                 <div class="redirect-bar">
                     <div class="redirect-bar-left">
-                        <span class="redirect-bar-label">Mengalihkan ke</span>
+                        <span class="redirect-bar-label">Redirecting to</span>
                         <span class="redirect-bar-dest">Admin Dashboard</span>
                     </div>
                     <div class="redirect-countdown" id="countdown">3</div>

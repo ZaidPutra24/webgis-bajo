@@ -42,7 +42,7 @@ class WilayahDesaController extends Controller
 
         WilayahDesa::create($data);
 
-        return redirect()->route('wilayah.index')->with('success', 'Data Wilayah berhasil ditambahkan!');
+        return redirect()->route('wilayah.index')->with('success', 'Village Area Data successfully added!');
     }
 
     public function show($id)
@@ -92,7 +92,7 @@ class WilayahDesaController extends Controller
 
         $wilayah->update($data);
 
-        return redirect()->route('wilayah.index')->with('success', 'Data Wilayah berhasil diperbarui!');
+        return redirect()->route('wilayah.index')->with('success', 'Village Area Data successfully updated!');
     }
 
     public function destroy($id)
@@ -100,6 +100,6 @@ class WilayahDesaController extends Controller
         $wilayah = WilayahDesa::findOrFail($id);
         $wilayah->delete();
 
-        return redirect()->route('wilayah.index')->with('success', 'Data Wilayah berhasil dihapus!');
+        return redirect()->route('wilayah.index')->with('success', 'Village Area Data successfully deleted!');
     }
 }
